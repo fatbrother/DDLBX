@@ -1,3 +1,3 @@
 # DDLBX
 
-A language that: Develop Derictly, Logically and Beyond Xcellently
+A Desirable Develop Language Beyond Xcellence
