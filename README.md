@@ -2,11 +2,10 @@
 
 A Desirable Develop Language Beyond Xcellence.
 
-## Motivation
-
-After learning so many programming languages, we found that there are so many duplicated syntaxes in each language. So we decided to create a new programming language that is easy to learn and use.
+## Contents
 
 - [DDLBX](#ddlbx)
+  - [Contents](#contents)
   - [Motivation](#motivation)
   - [Comments](#comments)
   - [End of line](#end-of-line)
@@ -31,6 +30,9 @@ After learning so many programming languages, we found that there are so many du
   - [References](#references)
   - [Contributing](#contributing)
 
+## Motivation
+
+After learning so many programming languages, we found that there are so many duplicated syntaxes in each language. So we decided to create a new programming language that is easy to learn and use.
 
 ## Comments
 
