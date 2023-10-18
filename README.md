@@ -2,7 +2,35 @@
 
 A Desirable Develop Language Beyond Xcellence.
 
+## Motivation
+
 After learning so many programming languages, we found that there are so many duplicated syntaxes in each language. So we decided to create a new programming language that is easy to learn and use.
+
+- [DDLBX](#ddlbx)
+  - [Motivation](#motivation)
+  - [Comments](#comments)
+  - [End of line](#end-of-line)
+  - [Variables](#variables)
+    - [Integers](#integers)
+    - [Floats](#floats)
+    - [Strings](#strings)
+    - [Booleans](#booleans)
+  - [Naming](#naming)
+  - [Operators](#operators)
+    - [Arithmetic operators](#arithmetic-operators)
+    - [Comparison operators](#comparison-operators)
+    - [Logical operators](#logical-operators)
+    - [Special operators](#special-operators)
+  - [Conditionals](#conditionals)
+  - [Loops](#loops)
+  - [Functions](#functions)
+  - [Objects](#objects)
+  - [Delete and undelete](#delete-and-undelete)
+  - [Reversing](#reversing)
+  - [Reserved words list](#reserved-words-list)
+  - [References](#references)
+  - [Contributing](#contributing)
+
 
 ## Comments
 
