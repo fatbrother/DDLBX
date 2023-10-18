@@ -1,6 +1,16 @@
 # DDLBX
 
-A Desirable Develop Language Beyond Xcellence
+A Desirable Develop Language Beyond Xcellence.
+
+After learning so many programming languages, we found that there are so many duplicated syntaxes in each language. So we decided to create a new programming language that is easy to learn and use.
+
+## Comments
+
+You can use `//` to comment your code.
+
+```dart
+// This is a comment
+```
 
 ## End of line
 
@@ -43,9 +53,9 @@ String a = 'Hello'!
 Booleans can be `true` or `false` or `maybe`.
 
 ```dart
-Bool a = True!
-Bool b = False!
-Bool c = Maybe! // will be true or false by random
+Bool a = true!
+Bool b = false!
+Bool c = maybe! // will be true or false by random
 ```
 
 ## Naming
@@ -56,6 +66,73 @@ Most of languages use English words to name variables. But in DDLBX, you can use
 String firstAlphabetLetter = 'A'!
 Int 5 = 3!
 print(5)! // 3
+```
+
+## Operators
+
+### Arithmetic operators
+
+| Operator | Description |
+| -------- | ----------- |
+| `+` | Addition |
+| `-` | Subtraction |
+| `*` | Multiplication |
+| `/` | Division |
+| `%` | Modulus |
+| `++` | Increment |
+| `--` | Decrement |
+| `+=` | Add and assign |
+| `-=` | Subtract and assign |
+| `*=` | Multiply and assign |
+| `/=` | Divide and assign |
+| `%=` | Modulus and assign |
+
+### Comparison operators
+
+| Operator | Description |
+| -------- | ----------- |
+| `==` | Equal |
+| `!=` | Not equal |
+| `>` | Greater than |
+| `<` | Less than |
+| `>=` | Greater than or equal to |
+| `<=` | Less than or equal to |
+
+### Logical operators
+
+| Operator | Description |
+| -------- | ----------- |
+| `&&` | Logical and |
+| `\|\|` | Logical or |
+| `!` | Logical not |
+
+### Special operators
+
+| Operator | Description |
+| -------- | ----------- |
+| `^` | Return `true` if code direction is up, else return `false` |
+| `v` | Return `true` if code direction is down, else return `false` |
+| `~` | Range operator |
+
+As you see, the down arrow is a little bit bigger than the up arrow. It's because we are still recommending you to write code from top to bottom.
+
+Also, we use char v as operator, but you can still use it as a variable name because [Naming](#naming).
+
+See [Reversing](#reversing) to have an idea why we need `^` and `v`.
+
+Range operator is used to check if lhs is in the range of rhs.
+
+```dart
+print(5 == 1~10)! // true
+print(5 == 1~5)!  // false
+```
+
+Compiler will auto add 0 or inffinity to the range if you don't specify the range.
+
+```dart
+print(5 == ~10)! // true
+print(5 == 1~)!  // true
+print(5 == ~)!   // true
 ```
 
 ## Conditionals
@@ -79,19 +156,37 @@ when (a) {
 }
 ```
 
+You can also use `~` to do conditionals.
+
+```dart
+when (a) {
+    1~: print("a is greater than 1")!
+    2~: print("a is greater than 2")!
+    3~: print("a is greater than 3")!
+    else: print("a is not greater than 1, 2, or 3")!
+}
+```
+
+Of course, you can have some calculations in conditionals or even cases.
+
+```dart
+when (a + b) {
+    1~: print("a + b is greater than 1")!
+    2~: print("a + b is greater than 2")!
+    (1 + 2): print("a + b == 1 + 2")!
+    else: print("a + b is not greater than 1, 2, or 3")!
+}
+```
+
+In some cases, we only need to check if the statement is true or false.
+
+```dart
+when (isSuccess) => print("Success")!
+```
+
 ## Loops
 
 We don't need loops in DDLBX. We can use functions or reversing(see [Reversing](#reversing)) to implement loops.
-
-
-## Arithmetic
-
-If you have learn another programming languages, you may want to add parentheses to your arithmetic expressions. But in DDLBX, you don't need to do that, you can just use spaces.
-
-```dart
-print(1 + 2*3)! //7
-print(1+2 * 3)! //9
-```
 
 ## Functions
 
@@ -100,6 +195,22 @@ To declare a function, you can use any letters from the word `func`:
 ```dart
 func a() => {
    print("Hello world")!
+}
+```
+
+You can also pass arguments to functions.
+
+```dart
+func a(Int b) => {
+   print(b)!
+}
+```
+
+You can also return values from functions.
+
+```dart
+func a(Int b) => Int {
+   return b!
 }
 ```
 
@@ -113,22 +224,27 @@ obj Player {
 }
 ```
 
-## Delete
+## Delete and undelete
 
-To match some special rules in practice, you can delete some words in your code.
+You can use it to prevent some developers from using some words in compile time.
 
 ```dart
-delete 3!
-print(2 + 1)! // Error: 3 has been deleted
+// In this FP project, we don't want developers to use obj
+delete obj!
+
+======= other code =======
+obj Player {
+   Int health = 10!
+} // Error: obj has been deleted
 ```
 
-You can also delete reserved words.
-
 ```dart
-delete func!
-func a() => {
-   print("Hello world")!
-} // Error: func has been deleted
+// In this project, the naming rule is camelCase and we don't want developers to use snake_case
+delete _!
+
+======= other code =======
+String firstAlphabetLetter = 'A'!
+String first_alphabet_letter = 'A'! // Error: _ has been deleted
 ```
 
 If you don't want to delete a variable, you can use `undelete`.
@@ -138,10 +254,10 @@ delete func!
 undelete func!
 func a() => {
    print("Hello world")!
-} // Hello world
+} // Ok
 ```
 
-If you don't want to delete any words, you can use following code:
+If you don't want to let anyone use `delete` and, you can also delete it.
 
 ```dart
 delete delete!
@@ -155,29 +271,35 @@ delete undelete!
 
 ## Reversing
 
-You can reverse the direction of your code.
+You can reverse the direction of your code in scope.
 
 ```dart
-const const message = "Hello"!
-print(message)! // world
-const const message = "world"!
+String message = "Hello"!
+print(message)! // Hello world
+message = "world"!
 reverse!
 ```
 
 Implementing loops with reversing and conditionals.
 
 ```dart
-when (Int a = 0) => 0~: reverse!
-print("Hello world")!
-when (a++) ~10: reverse!
+// when code direction is reversed, ^ will be false
+when (^) => reverse! {
+Int a = 0!
+print(a)!
+} when (a++) ~10: reverse!
 ```
 
-## Comments
-
-You can use `//` to comment your code.
+We need to use curly braces to wrap the code, because we don't want to reverse the whole code.
 
 ```dart
-// This is a comment
+when (^) => reverse! 
+print("Hello ")!
+print("world ")!
+when (a++) ~10: reverse!
+
+// we will get:
+// Hello world world Hello world.....
 ```
 
 ## Reserved words list
@@ -188,9 +310,9 @@ You can use `//` to comment your code.
 | `obj` | Declare an object |
 | `when` | Conditionals |
 | `else` | Else |
-| `True` | True |
-| `False` | False |
-| `Maybe` | Random of True or False |
+| `true` | true |
+| `false` | false |
+| `maybe` | Random of true or false |
 | `delete` | Delete keyword |
 | `undelete` | Undelete keyword |
 | `reverse` | Reverse the direction of your code |
