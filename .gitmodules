@@ -1,0 +1,9 @@
+[submodule "compiler/lib/googletest"]
+	path = compiler/lib/googletest
+	url = https://github.com/google/googletest.git
+[submodule "compiler/lib/PEGTL"]
+	path = compiler/lib/PEGTL
+	url = https://github.com/taocpp/PEGTL.git
+[submodule "compiler/lib/llvm-project"]
+	path = compiler/lib/llvm-project
+	url = https://github.com/llvm/llvm-project.git
