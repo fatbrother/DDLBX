@@ -12,3 +12,14 @@ generated/
 # Ignore any files or directories that contain sensitive information
 config.ini
 secrets/
+
+# vsc extensions ignore
+.DS_Store
+npm-debug.log
+Thumbs.db
+*/node_modules/
+*/out/
+*/.vs/
+tsconfig.lsif.json
+*.lsif
+*.db
