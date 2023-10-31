@@ -1,13 +1,5 @@
 # Syntex
 
-## Comments
-
-You can use `//` to comment your code.
-
-```dart
-// This is a comment
-```
-
 ## End of line
 
 In some languages like C++, you have to use semicolons to end lines of code. In DDLBX, you have to use exclamation marks!!
@@ -16,11 +8,44 @@ In some languages like C++, you have to use semicolons to end lines of code. In 
 print("Hello world")!
 ```
 
-## Variables
+And if this line is so important, you can use more exclamation marks to make it "more important".
+
+```dart
+print("Hello world")!!!
+```
+
+## Comments
+
+You can use `//` to comment your code.
+
+```dart
+// This is a comment!
+```
+
+Remember to use exclamation marks to end your comments to make it "more important".
+
+```dart
+// This is a comment!!!
+```
+
+Thanks to the exclamation marks, you can use `//` in strings.
+
+```dart
+Str a = "Hello // world"!!
+print(a)! // Hello
+```
+
+Of course, you can use comments in comments, but you have to use more exclamation marks to end your comments.
+
+```dart
+// This is a comment // This is a comment of comment!!
+```
+
+## Variable
 
 There are some types of variables in DDLBX.
 
-### Integers
+### Integer
 
 Integers are numbers without decimal points. They can be positive or negative.
 
@@ -28,40 +53,50 @@ Integers are numbers without decimal points. They can be positive or negative.
 Int a = 1!
 ```
 
-### Floats
+### Float
 
 Floats are numbers with decimal points. They can be positive or negative.
 
 ```dart
-Float a = 1.0!
+Flo a = 1.0!
 ```
 
-### Strings
+### String
 
 Strings are text. They can be declared with single quotes or double quotes.
 
 ```dart
-String a = 'Hello'!
+Str a = 'Hello'!
 ```
 
-### Booleans
+### Boolean
 
 Booleans can be `true` or `false` or `maybe`.
 
 ```dart
-Bool a = true!
-Bool b = false!
-Bool c = maybe! // will be true or false by random
+Boo a = true!
+Boo b = false!
+Boo c = maybe! // will be true or false by random!
 ```
+
+### Regex
+
+Regex is a variable type that can be used to match strings.
+
+```dart
+Reg a = @([a-z]+)!
+```
+
+It can also use with [Delete and undelete](#delete-and-undelete).
 
 ## Naming
 
 Most of languages use English words to name variables. But in DDLBX, you can use any words in asscii.
 
 ```dart
-String firstAlphabetLetter = 'A'!
+Int a = 1!
 Int 5 = 3!
-print(5)! // 3
+Int b = 5! // 3!
 ```
 
 ## Operators
@@ -75,24 +110,11 @@ print(5)! // 3
 | `*` | Multiplication |
 | `/` | Division |
 | `%` | Modulus |
-| `++` | Increment |
-| `--` | Decrement |
 | `+=` | Add and assign |
 | `-=` | Subtract and assign |
 | `*=` | Multiply and assign |
 | `/=` | Divide and assign |
 | `%=` | Modulus and assign |
-
-### Comparison operators
-
-| Operator | Description |
-| -------- | ----------- |
-| `==` | Equal |
-| `!=` | Not equal |
-| `>` | Greater than |
-| `<` | Less than |
-| `>=` | Greater than or equal to |
-| `<=` | Less than or equal to |
 
 ### Logical operators
 
@@ -100,7 +122,32 @@ print(5)! // 3
 | -------- | ----------- |
 | `&&` | Logical and |
 | `\|\|` | Logical or |
-| `!` | Logical not |
+| `\` | Logical not |
+
+Because the `!` is used to end lines of code, we use `\` to do logical not.
+
+```dart
+Boo a = true!
+Boo b = \a! // false
+```
+### Comparison operators
+
+| Operator | Description |
+| -------- | ----------- |
+| `==` | Equal |
+| `\=` | Not equal |
+| `~=` | Approximate equal |
+| `>` | Greater than |
+| `<` | Less than |
+| `>=` | Greater than or equal to |
+| `<=` | Less than or equal to |
+
+There is a thing you need to know about `~=`. It's used to check if two values are approximate equal. It's hard to say if two values are approximate equal, so it will always return `true`.
+
+```dart
+5 ~= 5! // true!
+3 ~= 5! // true!
+```
 
 ### Special operators
 
@@ -108,7 +155,6 @@ print(5)! // 3
 | -------- | ----------- |
 | `^` | Return `true` if code direction is up, else return `false` |
 | `v` | Return `true` if code direction is down, else return `false` |
-| `~` | Range operator |
 
 As you see, the down arrow is a little bit bigger than the up arrow. It's because we are still recommending you to write code from top to bottom.
 
@@ -116,68 +162,19 @@ Also, we use char v as operator, but you can still use it as a variable name bec
 
 See [Reversing](#reversing) to have an idea why we need `^` and `v`.
 
-Range operator is used to check if lhs is in the range of rhs.
-
-```dart
-print(5 == 1~10)! // true
-print(5 == 1~5)!  // false
-```
-
-Compiler will auto add 0 or inffinity to the range if you don't specify the range.
-
-```dart
-print(5 == ~10)! // true
-print(5 == 1~)!  // true
-print(5 == ~)!   // true
-```
-
 ## Conditionals
 
-There are only a keyword in DDLBX to do conditionals. It's `when`.
+You can use `when` to declare conditionals.
 
 ```dart
-when (a) {
-    1: print("a is 1")! 
-}
-```
-
-Use it similar to `switch` in other languages.
-
-```dart
-when (a) {
-    1: print("a is 1")!
-    2: print("a is 2")!
-    3: print("a is 3")!
-    else: print("a is not 1, 2, or 3")!
-}
-```
-
-You can also use `~` to do conditionals.
-
-```dart
-when (a) {
-    1~: print("a is greater than 1")!
-    2~: print("a is greater than 2")!
-    3~: print("a is greater than 3")!
-    else: print("a is not greater than 1, 2, or 3")!
-}
-```
-
-Of course, you can have some calculations in conditionals or even cases.
-
-```dart
-when (a + b) {
-    1~: print("a + b is greater than 1")!
-    2~: print("a + b is greater than 2")!
-    (1 + 2): print("a + b == 1 + 2")!
-    else: print("a + b is not greater than 1, 2, or 3")!
-}
-```
-
-In some cases, we only need to check if the statement is true or false.
-
-```dart
-when (isSuccess) => print("Success")!
+Int a = 0!
+when {
+   case (a == 0): {
+      print("a is 0")!
+      end!
+   }!
+   else: print("a is not 0")!
+}!
 ```
 
 ## Loops
@@ -189,25 +186,31 @@ We don't need loops in DDLBX. We can use functions or reversing(see [Reversing](
 To declare a function, you can use any letters from the word `func`:
 
 ```dart
-func a() => {
+Nul a() {
    print("Hello world")!
-}
+}!
 ```
 
 You can also pass arguments to functions.
 
 ```dart
-func a(Int b) => {
+Nul a(Int b) {
    print(b)!
-}
+}!
 ```
 
 You can also return values from functions.
 
 ```dart
-func a(Int b) => Int {
-   return b!
-}
+Int a(Int b) {
+   ret b!
+}!
+```
+
+You can also use `=>` to declare a function.
+
+```dart
+Int add(Int a, Int b) => a + b!
 ```
 
 ## Objects
@@ -226,7 +229,7 @@ You can use it to prevent some developers from using some words in compile time.
 
 ```dart
 // In this FP project, we don't want developers to use obj
-delete obj!
+del @(obj)!
 
 ======= other code =======
 obj Player {
@@ -235,66 +238,65 @@ obj Player {
 ```
 
 ```dart
-// In this project, the naming rule is camelCase and we don't want developers to use snake_case
-delete _!
+// In this project, the naming rule is camelCase and we don't want developers to use snake_case, delete the regex
+
+```dart
+del @([a-z]+_[a-z]+)!
 
 ======= other code =======
-String firstAlphabetLetter = 'A'!
-String first_alphabet_letter = 'A'! // Error: _ has been deleted
+Int a_b = 1! // Error: [a-z]+_[a-z]+ has been deleted
 ```
 
-If you don't want to delete a variable, you can use `undelete`.
+If you don't want to delete a variable, you can use `undel`.
 
 ```dart
-delete func!
-undelete func!
-func a() => {
-   print("Hello world")!
-} // Ok
+del @(obj)!
+undel @(obj)!
+obj Player {
+   Int health = 10!
+}! // No error
 ```
 
-If you don't want to let anyone use `delete` and, you can also delete it.
+If you don't want to let anyone use `del` and, you can also delete it.
 
 ```dart
-delete delete!
-```
-
-But In a special case...
-
-```dart
-delete undelete!
+del @(undel)!
+del @(del)!
 ```
 
 ## Reversing
 
-You can reverse the direction of your code in scope.
+You can Rev the direction of your code in scope.
 
 ```dart
-String message = "Hello"!
+Str message = "Hello"!
 print(message)! // Hello world
 message = "world"!
-reverse!
+rev!
 ```
 
 Implementing loops with reversing and conditionals.
 
 ```dart
 // when code direction is reversed, ^ will be false
-when (^) => reverse! {
-Int a = 0!
-print(a)!
-} when (a++) ~10: reverse!
+when { case (^): rev! }! {
+   Int a = 0!
+   print(a)!
+}!
+when { case a < 10: rev! }!
 ```
 
 We need to use curly braces to wrap the code, because we don't want to reverse the whole code.
 
 ```dart
-when (^) => reverse! 
+when { case (^): rev! }!
+Int a = 0!
 print("Hello ")!
 print("world ")!
-when (a++) ~10: reverse!
+when { case a < 10: rev! }!
+```
 
-// we will get:
+// you will get:
 // Hello world world Hello world.....
 ```
 
@@ -302,13 +304,12 @@ when (a++) ~10: reverse!
 
 | Word | Description |
 | ---- | ------- |
-| `func` | Declare a function |
-| `obj` | Declare an object |
-| `when` | Conditionals |
+| `obj` | Object |
+| `when` | When |
+| `case` | Case |
 | `else` | Else |
-| `true` | true |
-| `false` | false |
-| `maybe` | Random of true or false |
-| `delete` | Delete keyword |
-| `undelete` | Undelete keyword |
-| `reverse` | Reverse the direction of your code |
+| `end` | End of when |
+| `ret` | Return |
+| `del` | Delete |
+| `undel` | Undelete |
+| `rev` | Reverse |

@@ -1,0 +1,89 @@
+<program> ::= <main> <function>* <object>* <function>*
+
+<main> ::= "Int main(" <argument>* ")" <block>
+
+<end> ::= "!"
+
+<block> ::= "{" <statement>* "}" <end>
+
+<function> ::= <type> <identifier> "(" <argument>* ")" ("=>" <statement> | <block>) <end>
+
+<argument> ::= <type> <identifier> [ "=" <expression> ] <end>
+
+<object> ::= "obj" <identifier> "{" <argument>* <function>* "}" <end>
+
+<statement> ::= <expression> <end>
+              | <when>
+              | <format>
+              | <return>
+              | <end>
+
+<when> ::= "when" "{" <case>* [<else>] "}" <end>
+
+<case> ::= "case" <expression> ":" ( <statement>* | "{" <statement>* | "end!" "}" ) <end>
+
+<else> ::= "else" ( <statement>* | "{" <statement>* | "end!" "}" ) <end>
+
+<format> ::= "del" | "undel" <regex> <end>
+
+<return> ::= "ret" <expression> <end>
+
+<type> ::= "Int"
+         | "Str"
+         | "Nul"
+         | "Boo"
+         | "Reg"
+         | "List" "<" <type> ">"
+
+<expression> ::= (<identifier>
+                | <literal>
+                | <function-call>
+                | <object-call>
+                | <expression> <operator> <expression>
+                | "(" <expression> ")"
+                | <regex>)
+               | <reversing>
+
+<literal> ::= <number> | <string> | <boolean> | <list>
+
+<number> ::= [ "-" ] <digit>+ [ "." <digit>+ ]
+
+<string> ::= "'" <character>* "'"
+
+<boolean> ::= "true" | "false"
+
+<regex> ::= "@(" <character>* ")" 
+
+<list> ::= "[" <literal> ( "," <literal> )* "]"
+
+<function-call> ::= <identifier> "(" <expression>* ")" <end>
+
+<object-call> ::= <identifier> "." <identifier> "(" <expression>* ")" <end>
+
+<reversing> ::= "rev" <end>
+
+<operator> ::= "+"
+             | "-"
+             | "*"
+             | "/"
+             | "%"
+             | "=="
+             | "\="
+             | "<"
+             | ">"
+             | "<="
+             | ">="
+             | "&&"
+             | "||"
+             | "\"
+             | "="
+
+<identifier> ::= (<letter> | <digit> | "_")+
+
+<letter> ::= "a" | "b" | ... | "z" | "A" | "B" | ... | "Z"
+
+<digit> ::= "0" | "1" | ... | "9"
+
+<symbol> ::= "!" | "@" | "#" | "$" | "%" | "^" | "&" | "*" | "(" | ")" | "-" | "+" | "=" | "{" | "}" | "[" | "]" | "|" | "\" | ":" | ";" | "'" | '"' | "<" | ">" | "," | "." | "?" | "/" | "`" | "~" | "_"
+
+<character> ::= <letter> | <digit> | <symbol>
