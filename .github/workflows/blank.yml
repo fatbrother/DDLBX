@@ -26,5 +26,6 @@ jobs:
       # Runs build.sh
       - name: Run a multi-line script
         run: |
+          git submodule update --init --recursive
           chmod +x compiler/build.sh
           compiler/build.sh
