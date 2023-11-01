@@ -12,3 +12,5 @@ generated/
 # Ignore any files or directories that contain sensitive information
 config.ini
 secrets/
+
+.vscode/
