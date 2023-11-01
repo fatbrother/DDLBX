@@ -69,11 +69,18 @@ private:
 };
 
 class Object : public AstNode {
-
+public:
+    Object(std::unique_ptr<AstNode> identifier, std::vector<std::unique_ptr<AstNode>> argument, std::vector<std::unique_ptr<AstNode>> function, std::unique_ptr<AstNode> end)
+        :identifier_(std::move(identifier)), argument_(std::move(argument)), function_(std::move(function)), end_(std::move(end)) {}
+private:
+    std::unique_ptr<AstNode> identifier_;
+    std::vector<std::unique_ptr<AstNode>> argument_;
+    std::vector<std::unique_ptr<AstNode>> function_;
+    std::unique_ptr<AstNode> end_;
 };
 
 class Statement : public AstNode {
-
+    
 };
 
 class When : public AstNode {
