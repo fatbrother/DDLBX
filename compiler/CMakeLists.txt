@@ -35,10 +35,10 @@ link_directories(${CMAKE_SOURCE_DIR}/lib/googletest/build/lib)
 enable_testing()
 include_directories(${CMAKE_SOURCE_DIR}/lib/googletest/googletest/include)
 
-# # unit tests
-# add_executable(ddlbx_test test/ddlbx_test.cpp)
-# target_link_libraries(ddlbx_test gtest gtest_main)
-# add_test(ddlbx_test ddlbx_test)
+# unit tests
+add_executable(ddlbx_test test/ddlbx_test.cc)
+target_link_libraries(ddlbx_test gtest gtest_main)
+add_test(ddlbx_test ddlbx_test)
 
 # find llvm in llvm-project/llvm/build
 set(LLVM_DIR ${CMAKE_SOURCE_DIR}/lib/llvm-project/llvm/build/lib/cmake/llvm)
