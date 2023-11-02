@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: [ "feature/CICD" ]
+    
+  workflow_dispatch:
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build
+        run: |
+          git submodule update --init --recursive
+          chmod +x compiler/build.sh
+          compiler/build.sh
+
+      - name: Test
+        run:
+          compiler/build/ddlbx_test
