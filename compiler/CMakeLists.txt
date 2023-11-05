@@ -18,11 +18,6 @@ if(NOT EXISTS ${CMAKE_SOURCE_DIR}/lib/PEGTL/build)
     execute_process(COMMAND ${CMAKE_COMMAND} --build ${CMAKE_SOURCE_DIR}/lib/PEGTL/build)
 endif()
 
-include_directories(${CMAKE_SOURCE_DIR}/lib/include)
-include_directories(${CMAKE_SOURCE_DIR}/lib/llvm-project/llvm/include)
-include_directories(${CMAKE_SOURCE_DIR}/lib/llvm-project/utils/bazel/llvm-project-overlay/llvm/include)
-include_directories(${CMAKE_SOURCE_DIR}/lib/PEGTL/include)
-
 # if gtest has not been built, build it with CMakeLists.txt in googletest
 if(NOT EXISTS ${CMAKE_SOURCE_DIR}/lib/googletest/build)
     message(STATUS "Building googletest")
@@ -36,7 +31,8 @@ enable_testing()
 include_directories(${CMAKE_SOURCE_DIR}/lib/googletest/googletest/include)
 
 # unit tests
-add_executable(ddlbx_test test/ddlbx_test.cc)
+file(GLOB TESTS test/*.cc test/*.hpp)
+add_executable(ddlbx_test ${TESTS})
 target_link_libraries(ddlbx_test gtest gtest_main)
 add_test(ddlbx_test ddlbx_test)
 
@@ -44,7 +40,16 @@ add_test(ddlbx_test ddlbx_test)
 set(LLVM_DIR ${CMAKE_SOURCE_DIR}/lib/llvm-project/llvm/build/lib/cmake/llvm)
 find_package(LLVM REQUIRED CONFIG PATHS ${LLVM_DIR})
 
-add_executable(ddlbx ddlbx.cc)
+# include headers
+include_directories(${LLVM_INCLUDE_DIRS})
+include_directories(${CMAKE_SOURCE_DIR}/lib/llvm-project/llvm/include)
+include_directories(${CMAKE_SOURCE_DIR}/lib/llvm-project/utils/bazel/llvm-project-overlay/llvm/include)
+include_directories(${CMAKE_SOURCE_DIR}/lib/PEGTL/include)
+include_directories(${CMAKE_SOURCE_DIR}/src)
+
+file(GLOB SOURCES src/*.cc src/*.hpp)
+
+add_executable(ddlbx ddlbx.cc ${SOURCES})
 
 # llvm
 llvm_map_components_to_libnames(llvm_libs support core irreader)
