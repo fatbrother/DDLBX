@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "vscode": "^1.1.37"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.7",
+    "@types/mocha": "^10.0.3",
+    "@types/node": "^20.8.10"
+  }
+}
