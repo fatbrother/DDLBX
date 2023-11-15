@@ -83,24 +83,24 @@ struct Object : pegtl::seq<
 //               | <end>
 struct Statement : pegtl::sor<
     Expression,
-    When,
-    Format,
-    Return,
+    WhenState,
+    FormatState,
+    ReturnState,
     End
 > {};
 
 // <when> ::= "when" "{" <case>* [<else>] "}" <end>
-struct When : pegtl::seq<
+struct WhenState : pegtl::seq<
     pegtl::string<'w', 'h', 'e', 'n'>,
     pegtl::one<'{'>,
-    pegtl::star<Case>,
-    pegtl::opt<Else>,
+    pegtl::star<CaseState>,
+    pegtl::opt<ElseState>,
     pegtl::one<'}'>,
     End
 > {};
 
 // <case> ::= "case" <expression> ":" ( <statement>* | "{" <statement>* | "end!" "}" ) <end>
-struct Case : pegtl::seq<
+struct CaseState : pegtl::seq<
     pegtl::string<'c', 'a', 's', 'e'>,
     Expression,
     pegtl::one<':'>,
@@ -115,7 +115,7 @@ struct Case : pegtl::seq<
 > {};
 
 // <else> ::= "else" ( <statement>* | "{" <statement>* | "end!" "}" ) <end>
-struct Else : pegtl::seq<
+struct ElseState : pegtl::seq<
     pegtl::string<'e', 'l', 's', 'e'>,
     pegtl::sor<
         pegtl::star<Statement>,
@@ -130,7 +130,7 @@ struct Else : pegtl::seq<
 > {};
 
 // <format> ::= "del" | "undel" <regex> <end>
-struct Format : pegtl::seq<
+struct FormatState : pegtl::seq<
     pegtl::sor<
         pegtl::string<'d', 'e', 'l'>,
         pegtl::string<'u', 'n', 'd', 'e', 'l'>
@@ -139,7 +139,7 @@ struct Format : pegtl::seq<
 > {};
 
 // <return> ::= "ret" <expression> <end>
-struct Return : pegtl::seq<
+struct ReturnState : pegtl::seq<
     pegtl::string<'r', 'e', 't'>,
     Expression, 
     End
@@ -295,6 +295,10 @@ struct Operator : pegtl::sor<
     pegtl::string<'*'>,
     pegtl::string<'/'>,
     pegtl::string<'%'>,
+    pegtl::string<'+', '='>,
+    pegtl::string<'-', '='>,
+    pegtl::string<'*', '='>,
+    pegtl::string<'/', '='>,
     pegtl::string<'=', '='>,
     pegtl::string<'\\', '='>,
     pegtl::string<'<'>,

@@ -85,33 +85,31 @@ private:
 //               | <when>
 //               | <format>
 //               | <return>
-//               | <end>
 class Statement : public AstNode {
 public:
-    Statement(std::unique_ptr<AstNode> expression, std::unique_ptr<AstNode> when, std::unique_ptr<AstNode> format, 
-              std::unique_ptr<AstNode> return_, std::unique_ptr<AstNode> end)
-        :expression_(std::move(expression)), when_(std::move(when)), format_(std::move(format)), return_(std::move(return_)), end_(std::move(end)) {}
+    Statement(std::unique_ptr<AstNode> expression, std::unique_ptr<AstNode> whenState, std::unique_ptr<AstNode> formatState, 
+              std::unique_ptr<AstNode> returnState)
+        :expression_(std::move(expression)), whenState_(std::move(whenState)), formatState_(std::move(formatState)), returnState_(std::move(returnState)) {}
 private:
     std::unique_ptr<AstNode> expression_;
-    std::unique_ptr<AstNode> when_;
-    std::unique_ptr<AstNode> format_;
-    std::unique_ptr<AstNode> return_;
-    std::unique_ptr<AstNode> end_;
+    std::unique_ptr<AstNode> whenState_;
+    std::unique_ptr<AstNode> formatState_;
+    std::unique_ptr<AstNode> returnState_;
 };
 
-class When : public AstNode {
+class WhenState : public AstNode {
 public:
-    When(std::vector<std::unique_ptr<AstNode>> Case, std::unique_ptr<AstNode> Else, std::unique_ptr<AstNode> end)
-        :case_(std::move(Case)), else_(std::move(Else)), end_(std::move(end)) {}
+    WhenState(std::vector<std::unique_ptr<AstNode>> caseState, std::unique_ptr<AstNode> elseState, std::unique_ptr<AstNode> end)
+        :caseState_(std::move(caseState)), elseState_(std::move(elseState)), end_(std::move(end)) {}
 private:
-    std::unique_ptr<AstNode> else_;
+    std::unique_ptr<AstNode> elseState_;
     std::unique_ptr<AstNode> end_;
-    std::vector<std::unique_ptr<AstNode>> case_;
+    std::vector<std::unique_ptr<AstNode>> caseState_;
 };
 
-class Case : public AstNode {
+class CaseState : public AstNode {
 public:
-    Case(std::unique_ptr<AstNode> expression, std::unique_ptr<AstNode> statement, std::unique_ptr<AstNode> end)
+    CaseState(std::unique_ptr<AstNode> expression, std::unique_ptr<AstNode> statement, std::unique_ptr<AstNode> end)
         :expression_(std::move(expression)), statement_(std::move(statement)), end_(std::move(end)) {}
 private:
     std::unique_ptr<AstNode> expression_;
@@ -119,27 +117,27 @@ private:
     std::unique_ptr<AstNode> end_;
 };
 
-class Else : public AstNode {
+class ElseState : public AstNode {
 public:
-    Else(std::vector<std::unique_ptr<AstNode>> statement, std::vector<std::unique_ptr<AstNode>> end)
+    ElseState(std::vector<std::unique_ptr<AstNode>> statement, std::vector<std::unique_ptr<AstNode>> end)
         :statement_(std::move(statement)), end_(std::move(end)) {}
 private:
     std::vector<std::unique_ptr<AstNode>> statement_;
     std::vector<std::unique_ptr<AstNode>> end_;
 };
 
-class Format : public AstNode {
+class FormatState : public AstNode {
 public:
-    Format(std::unique_ptr<AstNode> regex, std::unique_ptr<AstNode> end)
+    FormatState(std::unique_ptr<AstNode> regex, std::unique_ptr<AstNode> end)
         :regex_(std::move(regex)), end_(std::move(end)) {}
 private:
     std::unique_ptr<AstNode> regex_;
     std::unique_ptr<AstNode> end_;
 };
 
-class Return : public AstNode {
+class ReturnState : public AstNode {
 public:
-    Return(std::unique_ptr<AstNode> expression, std::unique_ptr<AstNode> end)
+    ReturnState(std::unique_ptr<AstNode> expression, std::unique_ptr<AstNode> end)
         :expression_(std::move(expression)), end_(std::move(end)) {}
 private:
     std::unique_ptr<AstNode> expression_;
