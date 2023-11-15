@@ -8,25 +8,24 @@
 
 <function> ::= <type> <identifier> "(" <argument>* ")" ("=>" <statement> | <block>) <end>
 
-<argument> ::= <type> <identifier> [ "=" <expression> ] <end>
+<argument> ::= <type> <identifier> [ "=" <expression> ]
 
 <object> ::= "obj" <identifier> "{" <argument>* <function>* "}" <end>
 
 <statement> ::= <expression> <end>
-              | <when>
-              | <format>
-              | <return>
-              | <end>
+              | <when-state>
+              | <format-state>
+              | <return-state>
 
-<when> ::= "when" "{" <case>* [<else>] "}" <end>
+<when-state> ::= "when" "{" <case-state>* [<else-state>] "}" <end>
 
-<case> ::= "case" <expression> ":" ( <statement>* | "{" <statement>* | "end!" "}" ) <end>
+<case-state> ::= "case" <expression> ":" ( <statement>* | "{" <statement>* | "end!" "}" ) <end>
 
-<else> ::= "else" ( <statement>* | "{" <statement>* | "end!" "}" ) <end>
+<else-state> ::= "else" ( <statement>* | "{" <statement>* | "end!" "}" ) <end>
 
-<format> ::= "del" | "undel" <regex> <end>
+<format-state> ::= "del" | "undel" <regex> <end>
 
-<return> ::= "ret" <expression> <end>
+<return-state> ::= "ret" <expression> <end>
 
 <type> ::= "Int"
          | "Str"
@@ -42,7 +41,7 @@
                 | <expression> <operator> <expression>
                 | "(" <expression> ")"
                 | <regex>)
-               | <reversing>
+                | <reversing>
 
 <literal> ::= <number> | <string> | <boolean> | <list>
 
@@ -87,6 +86,6 @@
 
 <digit> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
 
-<symbol> ::= "!" | "@" | "#" | "$" | "%" | "^" | "&" | "*" | "(" | ")" | "-" | "+" | "=" | "{" | "}" | "[" | "]" | "|" | "\" | ":" | ";" | "'" | '"' | "<" | ">" | "," | "." | "?" | "/" | "`" | "~" | "_"
-
 <character> ::= <letter> | <digit> | <symbol>
+
+<symbol> ::= "!" | "@" | "#" | "$" | "%" | "^" | "&" | "*" | "(" | ")" | "-" | "+" | "=" | "{" | "}" | "[" | "]" | "|" | "\" | ":" | ";" | "'" | '"' | "<" | ">" | "," | "." | "?" | "/" | "`" | "~" | "_"
