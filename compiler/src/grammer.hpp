@@ -4,6 +4,37 @@ namespace pegtl = tao::pegtl;
 
 namespace ddlbx {
 namespace grammer {
+struct Program;
+struct Main;
+struct End;
+struct Block;
+struct Function;
+struct Argument;
+struct Object;
+struct Statement;
+struct WhenState;
+struct CaseState;
+struct ElseState;
+struct FormatState;
+struct ReturnState;
+struct Type;
+struct Expression;
+struct Literal;
+struct Number;
+struct String;
+struct Boolean;
+struct Regex;
+struct List;
+struct FunctionCall;
+struct ObjectCall;
+struct Reversing;
+struct Operator;
+struct Identifier;
+struct Letter;
+struct Digit;
+struct Symbol;
+struct Character;
+
 
 // <program> ::= <main> <function>* <object>* <function>*
 struct Program : pegtl::seq<
