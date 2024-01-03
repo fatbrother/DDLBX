@@ -43,7 +43,7 @@ Of course, you can use comments in comments, but you have to use more exclamatio
 
 ## Variable
 
-There are some types of variables in DDLBX.
+Below is the variable declaration syntax.
 
 ### Integer
 
@@ -101,6 +101,13 @@ Int b = 5! // 3!
 
 ## Operators
 
+### Logical operators
+
+| Operator | Description |
+| -------- | ----------- |
+| `and` | Logical and |
+| `or` | Logical or |
+
 ### Arithmetic operators
 
 | Operator | Description |
@@ -116,26 +123,12 @@ Int b = 5! // 3!
 | `/=` | Divide and assign |
 | `%=` | Modulus and assign |
 
-### Logical operators
-
-| Operator | Description |
-| -------- | ----------- |
-| `&&` | Logical and |
-| `\|\|` | Logical or |
-| `\` | Logical not |
-
-Because the `!` is used to end lines of code, we use `\` to do logical not.
-
-```dart
-Boo a = true!
-Boo b = \a! // false
-```
 ### Comparison operators
 
 | Operator | Description |
 | -------- | ----------- |
 | `==` | Equal |
-| `\=` | Not equal |
+| `not` | Not equal |
 | `~=` | Approximate equal |
 | `>` | Greater than |
 | `<` | Less than |
@@ -294,10 +287,6 @@ Int a = 0!
 print("Hello ")!
 print("world ")!
 when { case a < 10: rev! }!
-```
-
-// you will get:
-// Hello world world Hello world.....
 ```
 
 ## Reserved words list
