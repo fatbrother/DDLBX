@@ -128,7 +128,7 @@ Int b = 5! // 3!
 | Operator | Description |
 | -------- | ----------- |
 | `==` | Equal |
-| `not` | Not equal |
+| `!=` | Not equal |
 | `~=` | Approximate equal |
 | `>` | Greater than |
 | `<` | Less than |
@@ -157,16 +157,16 @@ See [Reversing](#reversing) to have an idea why we need `^` and `v`.
 
 ## Conditionals
 
-You can use `when` to declare conditionals.
+You can use `case` to declare conditionals.
 
 ```dart
 Int a = 0!
-when {
-   case (a == 0): {
-      print("a is 0")!
-      end!
-   }!
-   else: print("a is not 0")!
+case (a == 0) {
+    print("a is 0")!
+} case (a == 1) {
+    print("a is 1")!
+} else {
+    print("a is not 0 or 1")!
 }!
 ```
 
@@ -271,22 +271,11 @@ rev!
 Implementing loops with reversing and conditionals.
 
 ```dart
-// when code direction is reversed, ^ will be false
-when { case (^): rev! }! {
-   Int a = 0!
-   print(a)!
-}!
-when { case a < 10: rev! }!
-```
-
-We need to use curly braces to wrap the code, because we don't want to reverse the whole code.
-
-```dart
-when { case (^): rev! }!
 Int a = 0!
-print("Hello ")!
-print("world ")!
-when { case a < 10: rev! }!
+// when code direction is reversed, ^ will be false
+case (^) => rev! 
+print(a)!
+case a++ < 10 => rev!
 ```
 
 ## Reserved words list
@@ -294,10 +283,8 @@ when { case a < 10: rev! }!
 | Word | Description |
 | ---- | ------- |
 | `obj` | Object |
-| `when` | When |
 | `case` | Case |
 | `else` | Else |
-| `end` | End of when |
 | `ret` | Return |
 | `del` | Delete |
 | `undel` | Undelete |
