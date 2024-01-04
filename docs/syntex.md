@@ -277,15 +277,3 @@ case (^) => rev!
 print(a)!
 case a++ < 10 => rev!
 ```
-
-## Reserved words list
-
-| Word | Description |
-| ---- | ------- |
-| `obj` | Object |
-| `case` | Case |
-| `else` | Else |
-| `ret` | Return |
-| `del` | Delete |
-| `undel` | Undelete |
-| `rev` | Reverse |

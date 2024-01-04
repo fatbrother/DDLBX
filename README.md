@@ -19,6 +19,7 @@ After learning so many programming languages, we found that there are so many du
 
 [BNF](docs/BNF.md)  
 [Syntex](docs/syntex.md)
+[Examples](docs/examples.md)
 
 ## References
 
