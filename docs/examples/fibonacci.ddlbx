@@ -1,0 +1,5 @@
+fun fib(Int a): Int => fib(a - 1) + fib(a - 2)!
+fun fib(0) => 0!
+fun fib(1) => 1!
+
+print(fib(10))!
