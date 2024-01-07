@@ -230,28 +230,16 @@ fun fabs(0) => 0!
 fun fabs(1) => 1!
 ```
 
-## Objects
-
-Similar to class in other languages, you can use `obj` to declare an object.
-
-```dart
-obj Player {
-   Int health = 10!
-}
-```
-
 ## Delete and undelete
 
 You can use it to prevent some developers from using some words in compile time.
 
 ```dart
 // In this FP project, we don't want developers to use obj
-del @(obj)!
+del @(fun)!
 
 ======= other code =======
-obj Player {
-   Int health = 10!
-} // Error: obj has been deleted
+fun obj(): void! // Error: fun has been deleted
 ```
 
 ```dart
@@ -267,11 +255,9 @@ Int a_b = 1! // Error: [a-z]+_[a-z]+ has been deleted
 If you don't want to delete a variable, you can use `undel`.
 
 ```dart
-del @(obj)!
-undel @(obj)!
-obj Player {
-   Int health = 10!
-}! // No error
+del @(fun)!
+undel @(fun)!
+fun obj(): void! // OK
 ```
 
 If you don't want to let anyone use `del` and, you can also delete it.
