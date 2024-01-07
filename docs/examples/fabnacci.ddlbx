@@ -1,0 +1,5 @@
+fun fabs(Int a): Int => fabs(a - 1) + fabs(a - 2)!
+fun fabs(0) => 0!
+fun fabs(1) => 1!
+
+print(fab(10))!

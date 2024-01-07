@@ -170,6 +170,22 @@ case (a == 0) {
 }!
 ```
 
+If the containing code is only one line, you can use `=>` instead of `{}`.
+
+```dart
+Int a = 0!
+case (a == 0) => print("a is 0")
+case (a == 1) => print("a is 1")
+else => print("a is not 0 or 1")!
+```
+
+Use `!` to end your conditionals.
+
+```dart
+Int a = 0!
+case (a == 0) => print("a is 0")!
+```
+
 ## Loops
 
 We don't need loops in DDLBX. We can use functions or reversing(see [Reversing](#reversing)) to implement loops.
@@ -179,7 +195,7 @@ We don't need loops in DDLBX. We can use functions or reversing(see [Reversing](
 To declare a function, you can use any letters from the word `func`:
 
 ```dart
-Nul a() {
+fun a(): void {
    print("Hello world")!
 }!
 ```
@@ -187,7 +203,7 @@ Nul a() {
 You can also pass arguments to functions.
 
 ```dart
-Nul a(Int b) {
+fun a(Int b): void {
    print(b)!
 }!
 ```
@@ -195,15 +211,23 @@ Nul a(Int b) {
 You can also return values from functions.
 
 ```dart
-Int a(Int b) {
-   ret b!
+fun a(): Int {
+   ret 1!
 }!
 ```
 
 You can also use `=>` to declare a function.
 
 ```dart
-Int add(Int a, Int b) => a + b!
+fun add(Int a, Int b): Int => ret a + b!
+```
+
+If there are some spcific parameters with it's own return value, you can specify it.
+
+```dart
+fun fabs(Int a): Int => fabs(a - 1) + fabs(a - 2)!
+fun fabs(0) => 0!
+fun fabs(1) => 1!
 ```
 
 ## Objects
@@ -275,5 +299,5 @@ Int a = 0!
 // when code direction is reversed, ^ will be false
 case (^) => rev! 
 print(a)!
-case a++ < 10 => rev!
+case (a++ < 10) => rev!
 ```
