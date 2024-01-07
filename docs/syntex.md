@@ -224,10 +224,12 @@ fun add(Int a, Int b): Int => ret a + b!
 
 If there are some spcific parameters with it's own return value, you can specify it.
 
+See [Fibonacci](examples/fibonacci.ddlbx) for complete example.
+
 ```dart
-fun fabs(Int a): Int => fabs(a - 1) + fabs(a - 2)!
-fun fabs(0) => 0!
-fun fabs(1) => 1!
+fun fib(Int a): Int => fib(a - 1) + fib(a - 2)!
+fun fib(0) => 0!
+fun fib(1) => 1!
 ```
 
 ## Delete and undelete
