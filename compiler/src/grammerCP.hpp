@@ -150,17 +150,22 @@ namespace grammer {
 
     struct List : pegtl::seq<
         pegtl::one<'['>,
-        Space,
-        Literal,
-        pegtl::star<
+        pegtl::sor<
             pegtl::seq<
                 Space,
-                pegtl::one<','>,
-                Space,
-                Literal
-            >
+                Literal,
+                pegtl::star<
+                    pegtl::seq<
+                        Space,
+                        pegtl::one<','>,
+                        Space,
+                        Literal
+                    >
+                >,
+                Space
+            >,
+            Space
         >,
-        Space,
         pegtl::one<']'>
     > {};
 
@@ -179,7 +184,6 @@ namespace grammer {
         pegtl::string<'R', 'e', 'g'>,
         pegtl::seq<
             pegtl::string<'L', 'i', 's', 't'>,
-            Space,
             pegtl::one<'<'>,
             Space,
             Type,
