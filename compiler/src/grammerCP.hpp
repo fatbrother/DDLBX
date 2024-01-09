@@ -90,13 +90,26 @@ namespace grammer {
 
     //variable-------------------------------------------------
 
-    struct Identifier : pegtl::plus<
+    struct Identifier : pegtl::seq<
         pegtl::sor<
             Letter,
-            Digit,
             pegtl::one<'_'>
+        >,
+        pegtl::star<
+            pegtl::sor<
+                Letter,
+                Digit,
+                pegtl::one<'_'>
+            >
         >
     > {};
+    // pegtl::plus<
+    //     pegtl::sor<
+    //         Letter,
+    //         Digit,
+    //         pegtl::one<'_'>
+    //     >
+    // > {};
 
     struct Number : pegtl::seq<
         pegtl::opt<
@@ -113,7 +126,10 @@ namespace grammer {
 
     struct String : pegtl::seq<
         pegtl::one<'\''>,
-        pegtl::star<Character>,
+        pegtl::star<
+            pegtl::not_at<pegtl::one<'\''>>,
+            Character
+        >,
         pegtl::one<'\''>
     > {};  
 
@@ -134,13 +150,17 @@ namespace grammer {
 
     struct List : pegtl::seq<
         pegtl::one<'['>,
+        Space,
         Literal,
         pegtl::star<
             pegtl::seq<
+                Space,
                 pegtl::one<','>,
+                Space,
                 Literal
             >
         >,
+        Space,
         pegtl::one<']'>
     > {};
 
@@ -159,8 +179,11 @@ namespace grammer {
         pegtl::string<'R', 'e', 'g'>,
         pegtl::seq<
             pegtl::string<'L', 'i', 's', 't'>,
+            Space,
             pegtl::one<'<'>,
+            Space,
             Type,
+            Space,
             pegtl::one<'>'>
         >
     > {};
@@ -193,6 +216,7 @@ namespace grammer {
         End
     > {};
 
+    //struct Argument;
     struct Expression : pegtl::sor<
         Identifier,
         Literal,
@@ -210,6 +234,7 @@ namespace grammer {
         >,
         Regex,
         Reversing
+        //Argument
     > {};
 
     //expression-----------------------------------------------
@@ -273,11 +298,13 @@ namespace grammer {
     > {};
 
 
-    struct Statement : pegtl::sor<
-        Expression,
-        WhenState,
-        FormatState,
-        ReturnState,
+    struct Statement : pegtl::seq<
+        pegtl::sor<
+            Expression,
+            WhenState,
+            FormatState,
+            ReturnState
+        >,
         End
     > {};
 
@@ -287,10 +314,13 @@ namespace grammer {
 
     struct Argument : pegtl::seq<
         Type,
+        pegtl::plus<pegtl::one<' '>>,
         Identifier,
         pegtl::opt<
+            pegtl::plus<pegtl::one<' '>>,
             pegtl::seq<
                 pegtl::one<'='>,
+                pegtl::plus<pegtl::one<' '>>,
                 Expression
             >
         >,
@@ -345,6 +375,7 @@ namespace grammer {
 
     struct Main : pegtl::seq<
         pegtl::string<'I', 'n', 't'>,
+        Space,
         pegtl::string<'m', 'a', 'i', 'n'>,
         pegtl::one<'('>,
         pegtl::star<Argument>,
@@ -365,8 +396,38 @@ namespace grammer {
 
     template< typename Rule >
     struct my_selector : std::false_type {};
+    template<> struct my_selector< End > : std::true_type {};
+    //template<> struct my_selector< Letter > : std::true_type {};
+    //template<> struct my_selector< Digit > : std::true_type {};
+    //template<> struct my_selector< Symbol > : std::true_type {};
+    template<> struct my_selector< Operator > : std::true_type {};
+    template<> struct my_selector< Character > : std::true_type {};
+    template<> struct my_selector< Identifier > : std::true_type {};
+    template<> struct my_selector< Number > : std::true_type {};
+    template<> struct my_selector< String > : std::true_type {};
+    template<> struct my_selector< Boolean > : std::true_type {};
+    template<> struct my_selector< Literal > : std::true_type {};
+    template<> struct my_selector< List > : std::true_type {};
+    template<> struct my_selector< Regex > : std::true_type {};
     template<> struct my_selector< Type > : std::true_type {};
-    template<> struct my_selector< Space > : std::false_type {};
+    template<> struct my_selector< Expression > : std::true_type {};
+    template<> struct my_selector< FunctionCall > : std::true_type {};
+    template<> struct my_selector< ObjectCall > : std::true_type {};
+    template<> struct my_selector< Reversing > : std::true_type {};
+    template<> struct my_selector< Statement > : std::true_type {};
+    template<> struct my_selector< CaseState > : std::true_type {};
+    template<> struct my_selector< ElseState > : std::true_type {};
+    template<> struct my_selector< WhenState > : std::true_type {};
+    template<> struct my_selector< FormatState > : std::true_type {};
+    template<> struct my_selector< ReturnState > : std::true_type {};
+    template<> struct my_selector< Argument > : std::true_type {};
+    template<> struct my_selector< Block > : std::true_type {};
+    template<> struct my_selector< Function > : std::true_type {};
+    template<> struct my_selector< Object > : std::true_type {};
+    template<> struct my_selector< Main > : std::true_type {};
+    template<> struct my_selector< Program > : std::true_type {};
+    
+
 }//namespace grammer
 
 }//namespace ddlbx
