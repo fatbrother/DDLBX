@@ -58,7 +58,7 @@ Int a = 1!
 Floats are numbers with decimal points. They can be positive or negative.
 
 ```dart
-Flo a = 1.0!
+Flt a = 1.0!
 ```
 
 ### String
