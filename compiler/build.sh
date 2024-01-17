@@ -2,8 +2,7 @@ root_path=$(cd `dirname $0`; pwd)
 
 mkdir -p $root_path/build
 mkdir -p $root_path/build/bin
-cd $root_path/build
 
 # Build
-cmake ..
-cmake --build . --config Release
+cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Release
+cmake --build ./build --config Release
