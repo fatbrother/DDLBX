@@ -30,27 +30,36 @@ link_directories(${CMAKE_SOURCE_DIR}/lib/googletest/build/lib)
 enable_testing()
 include_directories(${CMAKE_SOURCE_DIR}/lib/googletest/googletest/include)
 
-# unit tests
-file(GLOB TESTS test/*.cc test/*.hpp)
-add_executable(ddlbx_test ${TESTS})
-target_link_libraries(ddlbx_test gtest gtest_main)
-add_test(ddlbx_test ddlbx_test)
-
 # find llvm in llvm-project/llvm/build
 set(LLVM_DIR ${CMAKE_SOURCE_DIR}/lib/llvm-project/llvm/build/lib/cmake/llvm)
 find_package(LLVM REQUIRED CONFIG PATHS ${LLVM_DIR})
 
-# include headers
-include_directories(${LLVM_INCLUDE_DIRS})
-include_directories(${CMAKE_SOURCE_DIR}/lib/llvm-project/llvm/include)
-include_directories(${CMAKE_SOURCE_DIR}/lib/llvm-project/utils/bazel/llvm-project-overlay/llvm/include)
-include_directories(${CMAKE_SOURCE_DIR}/lib/PEGTL/include)
-include_directories(${CMAKE_SOURCE_DIR}/src)
-
-file(GLOB SOURCES src/*.cc src/*.hpp)
-
+file(GLOB SOURCES src/*.cc)
 add_executable(ddlbx ddlbx.cc ${SOURCES})
+
+# include headers
+target_include_directories(ddlbx PUBLIC ${LLVM_INCLUDE_DIRS})
+target_include_directories(ddlbx PUBLIC ${CMAKE_CURRENT_LIST_DIR}/lib/llvm-project/llvm/include)
+target_include_directories(ddlbx PUBLIC ${CMAKE_CURRENT_LIST_DIR}/lib/llvm-project/utils/bazel/llvm-project-overlay/llvm/include)
+target_include_directories(ddlbx PUBLIC ${CMAKE_CURRENT_LIST_DIR}/lib/PEGTL/include)
+target_include_directories(ddlbx PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
+
+# unit tests
+file(GLOB TESTS test/*.cc)
+add_executable(ddlbx_test ${TESTS})
+
+#include headers
+target_include_directories(ddlbx_test PUBLIC ${LLVM_INCLUDE_DIRS})
+target_include_directories(ddlbx_test PUBLIC ${CMAKE_CURRENT_LIST_DIR}/lib/llvm-project/llvm/include)
+target_include_directories(ddlbx_test PUBLIC ${CMAKE_CURRENT_LIST_DIR}/lib/llvm-project/utils/bazel/llvm-project-overlay/llvm/include)
+target_include_directories(ddlbx_test PUBLIC ${CMAKE_CURRENT_LIST_DIR}/lib/PEGTL/include)
+target_include_directories(ddlbx_test PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
+
+# link gtest
+add_test(ddlbx_test ddlbx_test)
+target_link_libraries(ddlbx_test gtest gtest_main)
 
 # llvm
 llvm_map_components_to_libnames(llvm_libs support core irreader)
 target_link_libraries(ddlbx ${llvm_libs})
+target_link_libraries(ddlbx_test ${llvm_libs})

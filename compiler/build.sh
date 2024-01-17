@@ -6,4 +6,4 @@ cd $root_path/build
 
 # Build
 cmake ..
-make
+cmake --build . --config Release
