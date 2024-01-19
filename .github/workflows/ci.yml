@@ -16,8 +16,9 @@ jobs:
       - name: Build
         run: |
           git submodule update --init --recursive
-          chmod +x compiler/build.sh
-          compiler/build.sh
+          cd compiler
+          chmod +x ./build.sh
+          ./build.sh
 
       - name: Test
         run:
