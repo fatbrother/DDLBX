@@ -28,13 +28,6 @@ Remember to use exclamation marks to end your comments to make it "more importan
 // This is a comment!!!
 ```
 
-Thanks to the exclamation marks, you can use `//` in strings.
-
-```dart
-Str a = "Hello // world"!!
-print(a)! // Hello
-```
-
 Of course, you can use comments in comments, but you have to use more exclamation marks to end your comments.
 
 ```dart
@@ -43,14 +36,14 @@ Of course, you can use comments in comments, but you have to use more exclamatio
 
 ## Variable
 
-Below is the variable declaration syntax.
+In DDLBX, there are some types of variables like `Int`, `Float`, `String`, `Boolean` and `Regex`, we can simply declare a variable like below:
 
 ### Integer
 
 Integers are numbers without decimal points. They can be positive or negative.
 
 ```dart
-Int a = 1!
+var a = 1!
 ```
 
 ### Float
@@ -58,7 +51,7 @@ Int a = 1!
 Floats are numbers with decimal points. They can be positive or negative.
 
 ```dart
-Flt a = 1.0!
+var a = 1.0!
 ```
 
 ### String
@@ -66,7 +59,7 @@ Flt a = 1.0!
 Strings are text. They can be declared with single quotes or double quotes.
 
 ```dart
-Str a = 'Hello'!
+var a = 'Hello'!
 ```
 
 ### Boolean
@@ -74,9 +67,9 @@ Str a = 'Hello'!
 Booleans can be `true` or `false` or `maybe`.
 
 ```dart
-Boo a = true!
-Boo b = false!
-Boo c = maybe! // will be true or false by random!
+var a = true!
+var b = false!
+var c = maybe! // will be true or false by random!
 ```
 
 ### Regex
@@ -84,7 +77,7 @@ Boo c = maybe! // will be true or false by random!
 Regex is a variable type that can be used to match strings.
 
 ```dart
-Reg a = @([a-z]+)!
+var a = @([a-z]+)!
 ```
 
 It can also use with [Delete and undelete](#delete-and-undelete).
@@ -94,9 +87,9 @@ It can also use with [Delete and undelete](#delete-and-undelete).
 Most of languages use English words to name variables. But in DDLBX, you can use any words in asscii.
 
 ```dart
-Int a = 1!
-Int 5 = 3!
-Int b = 5! // 3!
+var a = 1!
+var 5 = 3!
+var b = 5! // 3!
 ```
 
 ## Operators
@@ -160,7 +153,7 @@ See [Reversing](#reversing) to have an idea why we need `^` and `v`.
 You can use `case` to declare conditionals.
 
 ```dart
-Int a = 0!
+var a = 0!
 case (a == 0) {
     print("a is 0")!
 } case (a == 1) {
@@ -173,7 +166,7 @@ case (a == 0) {
 If the containing code is only one line, you can use `=>` instead of `{}`.
 
 ```dart
-Int a = 0!
+var a = 0!
 case (a == 0) => print("a is 0")
 case (a == 1) => print("a is 1")
 else => print("a is not 0 or 1")!
@@ -182,7 +175,7 @@ else => print("a is not 0 or 1")!
 Use `!` to end your conditionals.
 
 ```dart
-Int a = 0!
+var a = 0!
 case (a == 0) => print("a is 0")!
 ```
 
@@ -195,7 +188,7 @@ We don't need loops in DDLBX. We can use functions or reversing(see [Reversing](
 To declare a function, you can use any letters from the word `func`:
 
 ```dart
-fun a(): void {
+fun a(): Null {
    print("Hello world")!
 }!
 ```
@@ -203,7 +196,7 @@ fun a(): void {
 You can also pass arguments to functions.
 
 ```dart
-fun a(Int b): void {
+fun a(b: Int): Null {
    print(b)!
 }!
 ```
@@ -219,7 +212,7 @@ fun a(): Int {
 You can also use `=>` to declare a function.
 
 ```dart
-fun add(Int a, Int b): Int => ret a + b!
+fun add(a: Int, b: Int ): Int => ret a + b!
 ```
 
 If there are some spcific parameters with it's own return value, you can specify it.
@@ -227,7 +220,7 @@ If there are some spcific parameters with it's own return value, you can specify
 See [Fibonacci](examples/fibonacci.ddlbx) for complete example.
 
 ```dart
-fun fib(Int a): Int => fib(a - 1) + fib(a - 2)!
+fun fib(a: Int): Int => fib(a - 1) + fib(a - 2)!
 fun fib(0) => 0!
 fun fib(1) => 1!
 ```
@@ -241,7 +234,7 @@ You can use it to prevent some developers from using some words in compile time.
 del @(fun)!
 
 ======= other code =======
-fun obj(): void! // Error: fun has been deleted
+fun obj(): Null! // Error: fun has been deleted
 ```
 
 ```dart
@@ -251,7 +244,7 @@ fun obj(): void! // Error: fun has been deleted
 del @([a-z]+_[a-z]+)!
 
 ======= other code =======
-Int a_b = 1! // Error: [a-z]+_[a-z]+ has been deleted
+var a_b = 1! // Error: [a-z]+_[a-z]+ has been deleted
 ```
 
 If you don't want to delete a variable, you can use `undel`.
@@ -259,7 +252,7 @@ If you don't want to delete a variable, you can use `undel`.
 ```dart
 del @(fun)!
 undel @(fun)!
-fun obj(): void! // OK
+fun obj(): Null! // OK
 ```
 
 If you don't want to let anyone use `del` and, you can also delete it.
@@ -274,7 +267,7 @@ del @(del)!
 You can Rev the direction of your code in scope.
 
 ```dart
-Str message = "Hello"!
+var message = "Hello"!
 print(message)! // Hello world
 message = "world"!
 rev!
@@ -283,7 +276,7 @@ rev!
 Implementing loops with reversing and conditionals.
 
 ```dart
-Int a = 0!
+var a = 0!
 // when code direction is reversed, ^ will be false
 case (^) => rev! 
 print(a)!

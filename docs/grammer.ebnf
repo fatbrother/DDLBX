@@ -4,9 +4,11 @@
 
 <block> ::= ("{" <statement>* "}" <end>) | ("=>" <statement> <end>)
 
-<function> ::= fun <identifier> "(" <argument>* ")" ":" <type> <block>
+<function> ::= "fun" <identifier> "(" <parameter>* ")" ":" <type> <block>
 
-<argument> ::= <type> <identifier> [ "=" <expression> ]
+<parameter> ::= <identifier> ":" <type>
+
+<argument> ::= var <identifier> ":" <type> [ "=" <expression> ]
 
 <statement> ::= <expression>
               | <case-state>
@@ -26,7 +28,6 @@
          | "Flt"
          | "Boo"
          | "Reg"
-         | "List" "<" <type> ">"
 
 <expression> ::= (
                 | <function-call>
@@ -47,7 +48,9 @@
 
 <literal> ::= <number> | <string> | <boolean> | <list>
 
-<number> ::= [ "-" ] <digit>+ [ "." <digit>+ ]
+<interger> ::= <digit>+
+
+<float> ::= <digit>+ "." <digit>*
 
 <string> ::= "'" <character>* "'"
 
