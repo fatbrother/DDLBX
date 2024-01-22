@@ -59,11 +59,11 @@ class Operator : public pegtl::sor<
 > {};
 
 class Type : public pegtl::sor<
-    pegtl::string<'I', 'n', 't'>,
-    pegtl::string<'F', 'l', 'o'>,
-    pegtl::string<'S', 't', 'r'>,
-    pegtl::string<'B', 'o', 'o'>,
-    pegtl::string<'N', 'o', 'n'>
+    pegtl::keyword<'I', 'n', 't'>,
+    pegtl::keyword<'F', 'l', 'o'>,
+    pegtl::keyword<'S', 't', 'r'>,
+    pegtl::keyword<'B', 'o', 'o'>,
+    pegtl::keyword<'N', 'o', 'n'>
 > {};
 
 class Identifier : public pegtl::plus<
@@ -74,13 +74,15 @@ class Identifier : public pegtl::plus<
 > {};
 
 class RightExpression : public pegtl::seq<
-    pegtl::star<pegtl::blank>,
-    Operator,
-    pegtl::star<pegtl::blank>,
+    pegtl::pad<
+        Operator,
+        pegtl::space
+    >,
     pegtl::sor<
         Value,
         Identifier
-    >
+    >,
+    pegtl::opt<RightExpression>
 > {};
 
 class Expression : public pegtl::seq<
@@ -88,15 +90,16 @@ class Expression : public pegtl::seq<
         Value,
         Identifier
     >,
-    pegtl::star<pegtl::blank>,
+    pegtl::star<pegtl::space>,
     pegtl::opt<RightExpression>
 > {};
 
 class Declaration : public pegtl::seq<
     Type,
-    pegtl::star<pegtl::blank>,
-    Identifier,
-    pegtl::star<pegtl::blank>,
+    pegtl::pad<
+        Identifier,
+        pegtl::space
+    >,
     pegtl::opt<RightExpression>
 > {};
 
@@ -105,7 +108,7 @@ class Statement : public pegtl::seq<
         Expression,
         Declaration
     >,
-    pegtl::star<pegtl::blank>,
+    pegtl::star<pegtl::space>,
     End
 > {};
 
@@ -117,36 +120,40 @@ class Block : public pegtl::seq<
 
 class Parameter : public pegtl::seq<
     Type,
-    pegtl::star<pegtl::blank>,
+    pegtl::star<pegtl::space>,
     Identifier
 > {};
 
 class Function : public pegtl::seq<
-    pegtl::string<'f', 'u', 'n'>,
-    pegtl::star<pegtl::blank>,
+    pegtl::keyword<'f', 'u', 'n'>,
     Identifier,
     pegtl::one<'('>,
-    pegtl::star<pegtl::blank>,
+    pegtl::star<pegtl::space>,
     pegtl::list<
         Parameter,
-        pegtl::one<','>,
-        pegtl::star<pegtl::blank>
+        pegtl::pad<
+            pegtl::one<','>,
+            pegtl::space
+        >
     >,
     pegtl::one<')'>,
-    pegtl::star<pegtl::blank>,
+    pegtl::star<pegtl::space>,
     pegtl::one<':'>,
     Type,
-    pegtl::star<pegtl::blank>,
+    pegtl::star<pegtl::space>,
     Block
 > {};
 
-class Program : public pegtl::seq<
-    pegtl::star<pegtl::blank>,
-    pegtl::sor<
-        Function,
-        Statement
+class Program : public pegtl::pad<
+    pegtl::star<
+        pegtl::sor<
+            Function,
+            Statement,
+            pegtl::space,
+            pegtl::eol
+        >
     >,
-    pegtl::star<pegtl::blank>
+    pegtl::star<pegtl::space>
 > {};
 
 
