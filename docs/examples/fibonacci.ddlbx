@@ -1,5 +1,5 @@
-fun fib(Int a): Int => fib(a - 1) + fib(a - 2)!
-fun fib(0) => 0!
-fun fib(1) => 1!
+fun fib(a: Int): Int => fib(a - 1) + fib(a - 2)!
+fun fib(a: 0): Int => 0!
+fun fib(a: 1): Int => 1!
 
 print(fib(10))!
