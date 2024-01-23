@@ -48,7 +48,9 @@
 
 <literal> ::= <number> | <string> | <boolean> | <list>
 
-<interger> ::= <digit>+
+<number> ::= <integer> | <float>
+
+<integer> ::= <digit>+
 
 <float> ::= <digit>+ "." <digit>*
 
