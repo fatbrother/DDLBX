@@ -26,12 +26,12 @@ TEST(grammer, expression) {
     string_input<> in7(sample7, "input");
     string_input<> in8(sample8, "input");
 
-    EXPECT_TRUE(parse<RightExpression>(in1));
-    EXPECT_TRUE(parse<RightExpression>(in2));
-    EXPECT_TRUE(parse<RightExpression>(in3));
-    EXPECT_TRUE(parse<RightExpression>(in4));
-    EXPECT_TRUE(parse<RightExpression>(in5));
-    EXPECT_TRUE(parse<RightExpression>(in6));
-    EXPECT_TRUE(parse<RightExpression>(in7));
-    EXPECT_FALSE(parse<RightExpression>(in8));
+    EXPECT_TRUE(parse<Expression>(in1));
+    EXPECT_TRUE(parse<Expression>(in2));
+    EXPECT_TRUE(parse<Expression>(in3));
+    EXPECT_TRUE(parse<Expression>(in4));
+    EXPECT_TRUE(parse<Expression>(in5));
+    EXPECT_TRUE(parse<Expression>(in6));
+    EXPECT_TRUE(parse<Expression>(in7));
+    EXPECT_FALSE(parse<Expression>(in8));
 }

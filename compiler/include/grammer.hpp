@@ -8,13 +8,21 @@ namespace ddlbx {
 namespace grammer {
 
 
-class Number : public pegtl::seq<
-    pegtl::opt<pegtl::one<'-'>>,
-    pegtl::plus<pegtl::digit>,
-    pegtl::opt<pegtl::seq<
-        pegtl::one<'.'>,
-        pegtl::star<pegtl::digit>
-    >>
+class Integer : public pegtl::seq<
+    pegtl::opt<
+        pegtl::one<'-'>
+    >,
+    pegtl::plus<
+        pegtl::digit
+    >
+> {};
+
+class Float : public pegtl::seq<
+    Integer,
+    pegtl::one<'.'>,
+    pegtl::plus<
+        pegtl::digit
+    >
 > {};
 
 class String : public pegtl::seq<
@@ -30,7 +38,8 @@ class Boolean : public pegtl::sor<
 > {};
 
 class Value : public pegtl::sor<
-    Number,
+    Integer,
+    Float,
     String,
     Boolean
 > {};
@@ -81,8 +90,7 @@ class RightExpression : public pegtl::seq<
     pegtl::sor<
         Value,
         Identifier
-    >,
-    pegtl::opt<RightExpression>
+    >
 > {};
 
 class Expression : public pegtl::seq<
@@ -90,17 +98,22 @@ class Expression : public pegtl::seq<
         Value,
         Identifier
     >,
-    pegtl::star<pegtl::space>,
-    pegtl::opt<RightExpression>
+    pegtl::star<RightExpression>
 > {};
 
 class Declaration : public pegtl::seq<
-    Type,
+    pegtl::string<'v', 'a', 'r'>,
     pegtl::pad<
         Identifier,
         pegtl::space
     >,
-    pegtl::opt<RightExpression>
+    pegtl::seq<
+        pegtl::one<'='>,
+        pegtl::pad<
+            Expression,
+            pegtl::space
+        >
+    >
 > {};
 
 class Statement : public pegtl::seq<
