@@ -82,25 +82,26 @@ class Identifier : public pegtl::plus<
 > {};
 
 class Call;
-class RightExpression : public pegtl::seq<
-    pegtl::pad<
-        Operator,
-        pegtl::space
-    >,
-    pegtl::sor<
-        Value,
-        Call,
-        Identifier
-    >
-> {};
-
 class Expression : public pegtl::seq<
     pegtl::sor<
         Value,
         Call,
         Identifier
     >,
-    pegtl::star<RightExpression>
+    pegtl::star<
+        pegtl::pad<
+            Operator,
+            pegtl::space
+        >,
+
+        // Below code can reduce the hight of AST from expr->expr->value to expr->value
+        pegtl::sor<
+            Value,
+            Call,
+            Identifier,
+            Expression
+        >
+    >
 > {};
 
 class Call : public pegtl::seq<
@@ -132,9 +133,18 @@ class Declaration : public pegtl::seq<
     >
 > {};
 
+class Return : public pegtl::seq<
+    pegtl::keyword<'r', 'e', 't'>,
+    pegtl::pad<
+        Expression,
+        pegtl::space
+    >
+> {};
+
 class Statement : public pegtl::seq<
     pegtl::sor<
         Declaration,
+        Return,
         Expression
     >,
     End
@@ -205,7 +215,7 @@ class Program : public pegtl::pad<
             pegtl::eol
         >
     >,
-    pegtl::star<pegtl::space>
+    pegtl::space
 > {};
 
 
