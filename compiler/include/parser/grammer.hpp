@@ -190,6 +190,8 @@ class MultiParameter : public pegtl::list<
     pegtl::space
 > {};
 
+class EmptyParameter : public pegtl::success {};
+
 class Function : public pegtl::seq<
     pegtl::keyword<'f', 'u', 'n'>,
     pegtl::pad<
@@ -200,7 +202,7 @@ class Function : public pegtl::seq<
     pegtl::sor<
         MultiParameter,
         Parameter,
-        pegtl::success
+        EmptyParameter
     >,
     pegtl::one<')'>,
     pegtl::pad<

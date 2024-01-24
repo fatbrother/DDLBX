@@ -34,7 +34,7 @@ include_directories(${CMAKE_SOURCE_DIR}/lib/googletest/googletest/include)
 set(LLVM_DIR ${CMAKE_SOURCE_DIR}/lib/llvm-project/llvm/build/lib/cmake/llvm)
 find_package(LLVM REQUIRED CONFIG PATHS ${LLVM_DIR})
 
-file(GLOB SOURCES src/*.cc)
+file(GLOB SOURCES src/**/*.cc src/*.cc)
 add_executable(ddlbx ddlbx.cc ${SOURCES})
 
 # include headers
