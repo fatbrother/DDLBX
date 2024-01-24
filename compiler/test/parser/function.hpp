@@ -5,7 +5,7 @@
 #include "grammer.hpp"
 
 using namespace tao::pegtl;
-using namespace ddlbx::grammer;
+using namespace ddlbx::parser;
 
 TEST(grammer, function) {
     std::string sample1 = R"(fun add(a: Int): Int { a + 1! })";

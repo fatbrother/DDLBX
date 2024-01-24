@@ -7,7 +7,7 @@
 namespace pegtl = tao::pegtl;
 
 namespace ddlbx {
-namespace grammer {
+namespace parser {
 
 template <typename Rule>
 struct Selector : std::false_type {};
@@ -29,5 +29,5 @@ template <> struct Selector<MultiParameter> : std::true_type {};
 template <> struct Selector<Function> : std::true_type {};
 template <> struct Selector<Program> : std::true_type {};
 
-}  // namespace grammer
+}  // namespace parser
 }  // namespace ddlbx

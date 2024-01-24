@@ -5,7 +5,7 @@
 #include "grammer.hpp"
 
 using namespace tao::pegtl;
-using namespace ddlbx::grammer;
+using namespace ddlbx::parser;
 
 TEST(grammer, ret) {
     std::string input1 = "ret 123";

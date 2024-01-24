@@ -5,7 +5,7 @@
 namespace pegtl = tao::pegtl;
 
 namespace ddlbx {
-namespace grammer {
+namespace parser {
 
 class Integer : public pegtl::seq<
     pegtl::opt<
@@ -167,6 +167,14 @@ class Block : public pegtl::seq<
     >
 > {};
 
+class ArrowBlock : public pegtl::seq<
+    pegtl::string<'=', '>'>,
+    pegtl::pad<
+        Expression,
+        pegtl::space
+    >
+> {};
+
 class Parameter : public pegtl::seq<
     Identifier,
     pegtl::pad<
@@ -201,7 +209,10 @@ class Function : public pegtl::seq<
     >,
     Type,
     pegtl::pad<
-        Block,
+        pegtl::sor<
+            ArrowBlock,
+            Block
+        >,
         pegtl::space
     >
 > {};
@@ -219,5 +230,5 @@ class Program : public pegtl::pad<
 > {};
 
 
-} // namespace grammer    
+} // namespace parser    
 } // namespace ddlbx
