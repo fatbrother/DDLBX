@@ -7,7 +7,6 @@ namespace pegtl = tao::pegtl;
 namespace ddlbx {
 namespace grammer {
 
-
 class Integer : public pegtl::seq<
     pegtl::opt<
         pegtl::one<'-'>
@@ -82,6 +81,7 @@ class Identifier : public pegtl::plus<
     >
 > {};
 
+class Call;
 class RightExpression : public pegtl::seq<
     pegtl::pad<
         Operator,
@@ -89,6 +89,7 @@ class RightExpression : public pegtl::seq<
     >,
     pegtl::sor<
         Value,
+        Call,
         Identifier
     >
 > {};
@@ -96,9 +97,24 @@ class RightExpression : public pegtl::seq<
 class Expression : public pegtl::seq<
     pegtl::sor<
         Value,
+        Call,
         Identifier
     >,
     pegtl::star<RightExpression>
+> {};
+
+class Call : public pegtl::seq<
+    Identifier,
+    pegtl::one<'('>,
+    pegtl::opt<
+        pegtl::list<
+            Expression,
+            pegtl::one<','>,
+            pegtl::space
+        >,
+        pegtl::success
+    >,
+    pegtl::one<')'>
 > {};
 
 class Declaration : public pegtl::seq<
@@ -152,10 +168,8 @@ class Parameter : public pegtl::seq<
 
 class MultiParameter : public pegtl::list<
     Parameter,
-    pegtl::pad<
-        pegtl::one<','>,
-        pegtl::space
-    >
+    pegtl::one<','>,
+    pegtl::space
 > {};
 
 class Function : public pegtl::seq<

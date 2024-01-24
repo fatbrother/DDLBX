@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "./parser/block.hpp"
+#include "./parser/call.hpp"
 #include "./parser/declaration.hpp"
 #include "./parser/end.hpp"
 #include "./parser/expression.hpp"

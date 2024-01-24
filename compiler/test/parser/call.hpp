@@ -1,0 +1,28 @@
+#include <gtest/gtest.h>
+
+#include <tao/pegtl.hpp>
+
+#include "grammer.hpp"
+
+using namespace tao::pegtl;
+using namespace ddlbx::grammer;
+
+TEST(grammer, call) {
+    std::string input1 = "foo()";
+    std::string input2 = "foo(1)";
+    std::string input3 = "foo(1, 2, 3)";
+    std::string input4 = "foo(1, 2, 3,)";
+    std::string input5 = "foo(1,";
+
+    string_input<> in1(input1, "input");
+    string_input<> in2(input2, "input");
+    string_input<> in3(input3, "input");
+    string_input<> in4(input4, "input");
+    string_input<> in5(input5, "input");
+
+    EXPECT_TRUE(parse<Call>(in1));
+    EXPECT_TRUE(parse<Call>(in2));
+    EXPECT_TRUE(parse<Call>(in3));
+    EXPECT_FALSE(parse<Call>(in4));
+    EXPECT_FALSE(parse<Call>(in5));
+}
