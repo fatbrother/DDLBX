@@ -16,6 +16,7 @@ TEST(grammer, expression) {
     std::string sample6 = "a + b = 1";
     std::string sample7 = "a";
     std::string sample8 = "";
+    std::string sample9 = "foo()";
 
     string_input<> in1(sample1, "input");
     string_input<> in2(sample2, "input");
@@ -25,6 +26,7 @@ TEST(grammer, expression) {
     string_input<> in6(sample6, "input");
     string_input<> in7(sample7, "input");
     string_input<> in8(sample8, "input");
+    string_input<> in9(sample9, "input");
 
     EXPECT_TRUE(parse<Expression>(in1));
     EXPECT_TRUE(parse<Expression>(in2));
@@ -34,4 +36,5 @@ TEST(grammer, expression) {
     EXPECT_TRUE(parse<Expression>(in6));
     EXPECT_TRUE(parse<Expression>(in7));
     EXPECT_FALSE(parse<Expression>(in8));
+    EXPECT_TRUE(parse<Expression>(in9));
 }
