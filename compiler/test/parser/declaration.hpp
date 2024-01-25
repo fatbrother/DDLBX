@@ -24,11 +24,11 @@ TEST(grammer, declaration) {
     string_input<> in6(sample6, "input");
     string_input<> in7(sample7, "input");
 
-    EXPECT_TRUE(parse<Declaration>(in1));
-    EXPECT_TRUE(parse<Declaration>(in2));
-    EXPECT_TRUE(parse<Declaration>(in3));
-    EXPECT_TRUE(parse<Declaration>(in4));
-    EXPECT_TRUE(parse<Declaration>(in5));
-    EXPECT_FALSE(parse<Declaration>(in6));
-    EXPECT_FALSE(parse<Declaration>(in7));
+    EXPECT_TRUE(parse<VariableDeclaration>(in1));
+    EXPECT_TRUE(parse<VariableDeclaration>(in2));
+    EXPECT_TRUE(parse<VariableDeclaration>(in3));
+    EXPECT_TRUE(parse<VariableDeclaration>(in4));
+    EXPECT_TRUE(parse<VariableDeclaration>(in5));
+    EXPECT_FALSE(parse<VariableDeclaration>(in6));
+    EXPECT_FALSE(parse<VariableDeclaration>(in7));
 }

@@ -81,11 +81,11 @@ class Identifier : public pegtl::plus<
     >
 > {};
 
-class Call;
-class Expression : public pegtl::seq<
+class FunctionCall;
+class Statement : public pegtl::seq<
     pegtl::sor<
         Value,
-        Call,
+        FunctionCall,
         Identifier
     >,
     pegtl::star<
@@ -97,19 +97,19 @@ class Expression : public pegtl::seq<
         // Below code can reduce the hight of AST from expr->expr->value to expr->value
         pegtl::sor<
             Value,
-            Call,
+            FunctionCall,
             Identifier,
-            Expression
+            Statement
         >
     >
 > {};
 
-class Call : public pegtl::seq<
+class FunctionCall : public pegtl::seq<
     Identifier,
     pegtl::one<'('>,
     pegtl::opt<
         pegtl::list<
-            Expression,
+            Statement,
             pegtl::one<','>,
             pegtl::space
         >,
@@ -118,7 +118,7 @@ class Call : public pegtl::seq<
     pegtl::one<')'>
 > {};
 
-class Declaration : public pegtl::seq<
+class VariableDeclaration : public pegtl::seq<
     pegtl::keyword<'v', 'a', 'r'>,
     pegtl::pad<
         Identifier,
@@ -127,7 +127,7 @@ class Declaration : public pegtl::seq<
     pegtl::seq<
         pegtl::one<'='>,
         pegtl::pad<
-            Expression,
+            Statement,
             pegtl::space
         >
     >
@@ -136,16 +136,16 @@ class Declaration : public pegtl::seq<
 class Return : public pegtl::seq<
     pegtl::keyword<'r', 'e', 't'>,
     pegtl::pad<
-        Expression,
+        Statement,
         pegtl::space
     >
 > {};
 
-class Statement : public pegtl::seq<
+class Expression : public pegtl::seq<
     pegtl::sor<
-        Declaration,
+        VariableDeclaration,
         Return,
-        Expression
+        Statement
     >,
     End
 > {};
@@ -157,7 +157,7 @@ class Block : public pegtl::seq<
     >,
     pegtl::star<
         pegtl::pad<
-            Statement,
+            Expression,
             pegtl::space
         >
     >,
@@ -170,7 +170,7 @@ class Block : public pegtl::seq<
 class ArrowBlock : public pegtl::seq<
     pegtl::string<'=', '>'>,
     pegtl::pad<
-        Expression,
+        Statement,
         pegtl::space
     >
 > {};
@@ -223,7 +223,7 @@ class Program : public pegtl::pad<
     pegtl::star<
         pegtl::sor<
             Function,
-            Statement,
+            Expression,
             pegtl::space,
             pegtl::eol
         >

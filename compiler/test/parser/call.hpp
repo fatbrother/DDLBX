@@ -20,9 +20,9 @@ TEST(grammer, call) {
     string_input<> in4(input4, "input");
     string_input<> in5(input5, "input");
 
-    EXPECT_TRUE(parse<Call>(in1));
-    EXPECT_TRUE(parse<Call>(in2));
-    EXPECT_TRUE(parse<Call>(in3));
-    EXPECT_FALSE(parse<Call>(in4));
-    EXPECT_FALSE(parse<Call>(in5));
+    EXPECT_TRUE(parse<FunctionCall>(in1));
+    EXPECT_TRUE(parse<FunctionCall>(in2));
+    EXPECT_TRUE(parse<FunctionCall>(in3));
+    EXPECT_FALSE(parse<FunctionCall>(in4));
+    EXPECT_FALSE(parse<FunctionCall>(in5));
 }
