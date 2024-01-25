@@ -60,6 +60,6 @@ add_test(ddlbx_test ddlbx_test)
 target_link_libraries(ddlbx_test gtest gtest_main)
 
 # llvm
-llvm_map_components_to_libnames(llvm_libs support core irreader mcjit native orcjit)
+llvm_map_components_to_libnames(llvm_libs support core irreader mcjit native orcjit support)
 target_link_libraries(ddlbx ${llvm_libs})
 target_link_libraries(ddlbx_test ${llvm_libs})
