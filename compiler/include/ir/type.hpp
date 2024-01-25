@@ -19,15 +19,10 @@ namespace ir {
 
 class Type {
 public:
-    Type(llvm::LLVMContext& context);
-
-    llvm::Type* get(const std::string& type);
+    static llvm::Type* get(const std::string&, llvm::LLVMContext&);
 
 private:
-    void initTypes();
-
-    llvm::LLVMContext& context;
-
+    static void initTypes(llvm::LLVMContext&);
     static std::map<std::string, llvm::Type*> types;
     static bool init;
 };

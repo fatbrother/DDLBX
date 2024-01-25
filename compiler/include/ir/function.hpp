@@ -18,38 +18,19 @@ namespace ir {
 
 class Function {
 public:
+    Function() = delete;
+
     /**
      * @brief Construct a new Function object
      *
      * @param root
      * @param context
      * @param module
-     */
-    Function(const std::unique_ptr<pegtl::parse_tree::node>&, llvm::LLVMContext&, llvm::Module&);
-
-    /**
-     * @brief Get the LLVM function
      *
-     * @return llvm::Function*
+     * @details
+     * The root node must be of type ddlbx::parser::Function.
      */
-    llvm::Function* get() const;
-
-    /**
-     * @brief Get the LLVM function name
-     *
-     * @return std::string
-     */
-    std::string getName() const;
-
-private:
-    llvm::LLVMContext& context;
-    llvm::Module& module;
-    llvm::IRBuilder<> builder;
-
-    std::string name;
-    std::vector<llvm::Type*> paramTypes;
-    llvm::Type* retType;
-    llvm::Function* func;
+    static void create(const std::unique_ptr<pegtl::parse_tree::node>&, llvm::LLVMContext&, llvm::Module&);
 };
 
 }  // namespace ir

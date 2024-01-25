@@ -8,15 +8,12 @@ namespace ir {
 std::map<std::string, llvm::Type*> Type::types;
 bool Type::init = false;
 
-Type::Type(llvm::LLVMContext& context) : context(context) {
-    if (!init) initTypes();
-}
-
-llvm::Type* Type::get(const std::string& type) {
+llvm::Type* Type::get(const std::string& type, llvm::LLVMContext& context) {
+    if (!init) initTypes(context);
     return types[type];
 }
 
-void Type::initTypes() {
+void Type::initTypes(llvm::LLVMContext& context) {
     types["Int"] = llvm::Type::getInt32Ty(context);
     types["Flo"] = llvm::Type::getFloatTy(context);
     types["Str"] = llvm::Type::getInt8PtrTy(context);
