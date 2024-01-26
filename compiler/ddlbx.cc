@@ -1,11 +1,12 @@
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
+#include <llvm/Support/CodeGen.h>
+#include <llvm/Support/raw_ostream.h>
 
 #include <iostream>
 #include <tao/pegtl.hpp>
 #include <tao/pegtl/contrib/parse_tree.hpp>
-#include <tao/pegtl/contrib/parse_tree_to_dot.hpp>
 
 #include "ir/function.hpp"
 #include "parser/grammer.hpp"
@@ -39,12 +40,10 @@ int main(int argc, char** argv) {
     const auto& program = root->children[0];
     for (const auto& func : program->children) {
         if (func->type == "ddlbx::parser::Function") {
-            ddlbx::ir::Function funcIR(func, context, module);
-            std::cout << funcIR.getName() << std::endl;
-
-            llvm::Function* llvmFunc = funcIR.get();
-            llvmFunc->print(llvm::outs());
+            ddlbx::ir::Function::create(func, context, module);
         }
     }
-    return 0;
+
+    // print module
+    module.print(llvm::errs(), nullptr);
 }
