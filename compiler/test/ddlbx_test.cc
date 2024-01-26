@@ -13,8 +13,7 @@
 #include "./parser/statement.hpp"
 #include "./parser/type.hpp"
 #include "./parser/value.hpp"
-
-using namespace tao::pegtl;
+#include "./ir/function_test.hpp"
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);

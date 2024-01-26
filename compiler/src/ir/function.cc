@@ -1,12 +1,14 @@
 #include "ir/function.hpp"
 
+#include "ir/block.hpp"
 #include "ir/type.hpp"
 
 namespace ddlbx {
 namespace ir {
 
-void Function::create(const std::unique_ptr<pegtl::parse_tree::node>& root, llvm::LLVMContext& context, llvm::Module& module) {
-    assert(root->type == "ddlbx::parser::Function");
+llvm::Function* Function::create(const std::unique_ptr<pegtl::parse_tree::node>& root, llvm::LLVMContext& context, llvm::Module& module) {
+    if (!root) return nullptr;
+    if (root->type != "ddlbx::parser::Function") return nullptr;
 
     llvm::IRBuilder<> builder(context);
 
@@ -35,15 +37,17 @@ void Function::create(const std::unique_ptr<pegtl::parse_tree::node>& root, llvm
         func->getArg(i)->setName(params->children[i]->children[0]->string());
     }
 
-    // Create entry block
-    llvm::BasicBlock* entry = llvm::BasicBlock::Create(context, "entry", func);
-    builder.SetInsertPoint(entry);
+    // // Create entry block
+    // llvm::BasicBlock* entry = Block::create(body, context, module, func);
+    // builder.SetInsertPoint(entry);
 
     // Create return instruction
     if (retType->isVoidTy())
         builder.CreateRetVoid();
     else
         builder.CreateRet(llvm::ConstantInt::get(retType, 0));
+
+    return func;
 }
 
 }  // namespace ir

@@ -6,10 +6,6 @@
 
 #include <tao/pegtl.hpp>
 #include <tao/pegtl/contrib/parse_tree.hpp>
-#include <tao/pegtl/contrib/parse_tree_to_dot.hpp>
-
-#include "parser/grammer.hpp"
-#include "parser/selector.hpp"
 
 namespace pegtl = tao::pegtl;
 
@@ -30,7 +26,7 @@ public:
      * @details
      * The root node must be of type ddlbx::parser::Function.
      */
-    static void create(const std::unique_ptr<pegtl::parse_tree::node>&, llvm::LLVMContext&, llvm::Module&);
+    static llvm::Function* create(const std::unique_ptr<pegtl::parse_tree::node>&, llvm::LLVMContext&, llvm::Module&);
 };
 
 }  // namespace ir
