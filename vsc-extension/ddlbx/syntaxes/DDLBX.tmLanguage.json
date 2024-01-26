@@ -1,0 +1,16 @@
+{
+    "scopeName": "source.DDLBX",
+    "fileTypes": ["ddlbx"],
+    "name": "DDLBX",
+    "patterns": [
+      {
+        "match": "\\b(var|fun|)\\b",
+        "name": "keyword.DDLBX"
+      },
+      {
+        "match": "\\'[^\\']*\\'",
+        "name": "string.DDLBX"
+      }
+    ],
+    "uuid": "desirable.develop.language.beyond.xcellence"
+}
