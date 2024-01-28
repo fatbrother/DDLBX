@@ -1,16 +1,32 @@
 {
-    "scopeName": "source.DDLBX",
-    "fileTypes": ["ddlbx"],
-    "name": "DDLBX",
-    "patterns": [
-      {
-        "match": "\\b(var|fun|)\\b",
-        "name": "keyword.DDLBX"
-      },
-      {
-        "match": "\\'[^\\']*\\'",
-        "name": "string.DDLBX"
-      }
-    ],
-    "uuid": "desirable.develop.language.beyond.xcellence"
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "DDLBX",
+	"patterns": [
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#strings"
+		}
+	],
+	"repository": {
+		"keywords": {
+			"patterns": [{
+				"name": "keyword.control.ddlbx",
+				"match": "\\b(if|while|for|return)\\b"
+			}]
+		},
+		"strings": {
+			"name": "string.quoted.double.ddlbx",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.ddlbx",
+					"match": "\\\\."
+				}
+			]
+		}
+	},
+	"scopeName": "source.ddlbx"
 }
