@@ -13,45 +13,50 @@
 using namespace tao::pegtl;
 using namespace ddlbx::parser;
 
-// Parameterized test fixture
-class FunctionTest : public ::testing::TestWithParam<std::tuple<std::string, std::string, int, std::function<llvm::Type*(llvm::LLVMContext&)>, llvm::Function::LinkageTypes>> {
+class FunctionTest : public ::testing::Test {
 protected:
-    FunctionTest() = default;
-    ~FunctionTest() override = default;
+    llvm::LLVMContext context;
+    llvm::IRBuilder<> builder;
+    llvm::Module module;
+
+public:
+    FunctionTest() : context(), builder(context), module("test", context) {}
 
     void SetUp() override {}
-    void TearDown() override {}
+
+    llvm::Function* parse(const std::string& input) {
+        memory_input<> in(input, "test");
+        const auto root = parse_tree::parse<Function, Selector>(in);
+        return ddlbx::ir::Function::create(root->children[0], context, module);
+    }
 };
 
-// Parameterized test case
-TEST_P(FunctionTest, ParseAndCreateFunction) {
-    llvm::LLVMContext context;
-    llvm::Module module("test", context);
-
-    const auto& [input, name, numArgs, getReturnType, linkage] = GetParam();
-    const auto returnType = getReturnType(context);
-    memory_input<> in(input, "test");
-    const auto root = parse_tree::parse<ddlbx::parser::Function, ddlbx::parser::Selector>(in);
-
-    ASSERT_NE(nullptr, root);
-    ASSERT_NE(0, root->children.size());
-
-    auto result = ddlbx::ir::Function::create(root->children[0], context, module);
+TEST_F(FunctionTest, CreateEmptyParameterFunction) {
+    auto result = parse("fun main(): Int { ret 0! }");
 
     EXPECT_NE(nullptr, result);
-    EXPECT_EQ(name, result->getName().str());
-    EXPECT_EQ(numArgs, result->arg_size());
-    EXPECT_EQ(returnType->getTypeID(), result->getReturnType()->getTypeID());
-    EXPECT_EQ(linkage, result->getLinkage());
-
-    result->eraseFromParent();
+    EXPECT_EQ("main", result->getName().str());
+    EXPECT_EQ(0, result->arg_size());
+    EXPECT_EQ(llvm::Type::getInt32Ty(context), result->getReturnType());
+    EXPECT_EQ(llvm::Function::ExternalLinkage, result->getLinkage());
 }
 
-// Parameterized test cases
-INSTANTIATE_TEST_SUITE_P(Functions, FunctionTest,
-    ::testing::Values(
-        std::make_tuple("fun main(): Int { ret 0! }", "main", 0, llvm::Type::getInt32Ty, llvm::Function::ExternalLinkage),
-        std::make_tuple("fun main(a: Int): Int { ret 0! }", "main", 1, llvm::Type::getInt32Ty, llvm::Function::ExternalLinkage),
-        std::make_tuple("fun main(a: Int, b: Int): Non { ret 0! }", "main", 2, llvm::Type::getVoidTy, llvm::Function::ExternalLinkage)
-    )
-);
+TEST_F(FunctionTest, CreateSingleParameterFunction) {
+    auto result = parse("fun main(a: Int): Int { ret 0! }");
+
+    EXPECT_NE(nullptr, result);
+    EXPECT_EQ("main", result->getName().str());
+    EXPECT_EQ(1, result->arg_size());
+    EXPECT_EQ(llvm::Type::getInt32Ty(context), result->getReturnType());
+    EXPECT_EQ(llvm::Function::ExternalLinkage, result->getLinkage());
+}
+
+TEST_F(FunctionTest, CreateMultipleParameterFunction) {
+    auto result = parse("fun main(a: Int, b: Int): Non { ret 0! }");
+
+    EXPECT_NE(nullptr, result);
+    EXPECT_EQ("main", result->getName().str());
+    EXPECT_EQ(2, result->arg_size());
+    EXPECT_EQ(llvm::Type::getVoidTy(context), result->getReturnType());
+    EXPECT_EQ(llvm::Function::ExternalLinkage, result->getLinkage());
+}

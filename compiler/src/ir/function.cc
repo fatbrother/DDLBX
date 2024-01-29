@@ -37,15 +37,9 @@ llvm::Function* Function::create(const std::unique_ptr<pegtl::parse_tree::node>&
         func->getArg(i)->setName(params->children[i]->children[0]->string());
     }
 
-    // // Create entry block
+    // Create entry block
     // llvm::BasicBlock* entry = Block::create(body, context, module, func);
     // builder.SetInsertPoint(entry);
-
-    // Create return instruction
-    if (retType->isVoidTy())
-        builder.CreateRetVoid();
-    else
-        builder.CreateRet(llvm::ConstantInt::get(retType, 0));
 
     return func;
 }
