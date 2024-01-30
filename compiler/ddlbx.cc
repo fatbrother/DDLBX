@@ -1,15 +1,10 @@
-#include <llvm/IR/IRBuilder.h>
-#include <llvm/IR/LLVMContext.h>
-#include <llvm/IR/Module.h>
-#include <llvm/Support/CodeGen.h>
-#include <llvm/Support/raw_ostream.h>
-
 #include <iostream>
+
 #include <tao/pegtl.hpp>
 #include <tao/pegtl/contrib/parse_tree.hpp>
 
-#include "ir/function.hpp"
-#include "parser/grammer.hpp"
+#include "ir/code_genner.hpp"
+#include "parser/grammar.hpp"
 #include "parser/selector.hpp"
 
 std::string test = R"(
@@ -36,14 +31,9 @@ int main(int argc, char** argv) {
 
     llvm::LLVMContext context;
     llvm::Module module("test", context);
-
-    const auto& program = root->children[0];
-    for (const auto& func : program->children) {
-        if (func->type == "ddlbx::parser::Function") {
-            ddlbx::ir::Function::create(func, context, module);
-        }
-    }
+    ddlbx::ir::CodeGenner codeGenner(context, module);
+    codeGenner.generate(root->children[0]);
 
     // print module
-    module.print(llvm::errs(), nullptr);
+    codeGenner.getModule().print(llvm::errs(), nullptr);
 }
