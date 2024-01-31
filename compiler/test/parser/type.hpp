@@ -2,7 +2,7 @@
 
 #include <tao/pegtl.hpp>
 
-#include "parser/grammer.hpp"
+#include "parser/grammar.hpp"
 
 using namespace tao::pegtl;
 using namespace ddlbx::parser;

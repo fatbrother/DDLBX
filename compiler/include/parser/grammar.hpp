@@ -37,8 +37,8 @@ class Boolean : public pegtl::sor<
 > {};
 
 class Value : public pegtl::sor<
-    Integer,
     Float,
+    Integer,
     String,
     Boolean
 > {};
@@ -94,12 +94,11 @@ class Statement : public pegtl::seq<
             pegtl::space
         >,
 
-        // Below code can reduce the hight of AST from expr->expr->value to expr->value
+        // Below code can reduce the hight of AST from stmt->stmt->value to stmt->value
         pegtl::sor<
             Value,
             FunctionCall,
-            Identifier,
-            Statement
+            Identifier
         >
     >
 > {};
