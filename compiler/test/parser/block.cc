@@ -7,7 +7,7 @@
 using namespace tao::pegtl;
 using namespace ddlbx::parser;
 
-TEST(grammer, block) {
+TEST(Grammar, Block) {
     std::string sample1 = R"(
 {
     var a = 1!

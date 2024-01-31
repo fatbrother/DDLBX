@@ -7,7 +7,7 @@
 using namespace tao::pegtl;
 using namespace ddlbx::parser;
 
-TEST(grammer, function) {
+TEST(Grammar, Function) {
     std::string sample1 = R"(fun add(a: Int): Int { a + 1! })";
 
     std::string sample2 = R"(fun add(a: Int, b: Int): Int {

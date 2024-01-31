@@ -7,7 +7,7 @@
 using namespace tao::pegtl;
 using namespace ddlbx::parser;
 
-TEST(grammer, ret) {
+TEST(Grammar, Return) {
     std::string input1 = "ret 123";
     std::string input2 = "ret 1 + 2";
     std::string input3 = "ret 1 + 2 + 3";

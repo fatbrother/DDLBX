@@ -7,7 +7,7 @@
 using namespace tao::pegtl;
 using namespace ddlbx::parser;
 
-TEST(grammer, expression) {
+TEST(Grammar, Expression) {
     std::string sample1 = "1 = 1";
     std::string sample2 = "1 =1";
     std::string sample3 = "1= 1";
