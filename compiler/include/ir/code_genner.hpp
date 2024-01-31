@@ -22,9 +22,6 @@ namespace ir {
  * For each block, we should create a new CodeGenner object.
  * The CodeGenner object can maintain the state of the code generation.
  */
-/**
- * @brief Class for generating LLVM IR code from a parse tree.
- */
 class CodeGenner {
     llvm::LLVMContext &context;
     llvm::Module &module;
@@ -67,10 +64,16 @@ public:
     llvm::Module &getModule() { return module; }
 
 private:
-    /**
-     * @brief Map from type in ddlbx to LLVM type.
-     */
+    enum class ExpressionType {
+        VariableDeclaration,
+        FunctionCall,
+        Return,
+        Statement,
+    };
     static std::map<std::string, std::function<llvm::Type *(llvm::LLVMContext &)>> typeMap;
+    static std::map<std::string, int> opPropertyMap;
+    static std::map<std::string, llvm::Instruction::BinaryOps> opMap;
+    static std::map<std::string, ExpressionType> expressionTypeMap;
 
     /**
      * @brief Generate LLVM IR code for a block.
@@ -92,6 +95,40 @@ private:
      * @param node The node representing the function declaration.
      */
     void generateExpression(const std::unique_ptr<pegtl::parse_tree::node> &node);
+
+    /**
+     * @brief Generate LLVM IR code for a statement.
+     *
+     * @param node The node representing the statement.
+     *
+     * @return llvm::Value* The LLVM value.
+     */
+    llvm::Value *generateStatement(const std::unique_ptr<pegtl::parse_tree::node> &node);
+
+    /**
+     * @brief Generate LLVM IR code for a value.
+     *
+     * @param node The node representing the value.
+     *
+     * @return llvm::Value* The LLVM value.
+     */
+    llvm::Value *generateValue(const std::unique_ptr<pegtl::parse_tree::node> &node);
+
+    /**
+     * @brief Generate LLVM IR code for a function call.
+     *
+     * @param node The node representing the variable function call.
+     *
+     * @return llvm::Value* The LLVM value.
+     */
+    llvm::Value *generateFunctionCall(const std::unique_ptr<pegtl::parse_tree::node> &node);
+
+    /**
+     * @brief Generate LLVM IR code for a variable declaration.
+     *
+     * @param node The node representing the variable declaration.
+     */
+    void generateVariableDeclaration(const std::unique_ptr<pegtl::parse_tree::node> &node);
 };
 
 }  // namespace ir

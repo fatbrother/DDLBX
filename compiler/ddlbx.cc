@@ -11,7 +11,8 @@ std::string test = R"(
 fun main(): Non {
     var a = 1!
     var b = 2!
-    a + b!
+    var c = 5!
+    a * b + c!
 }
 
 fun add(a: Int, b: Int): Int {
