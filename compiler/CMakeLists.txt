@@ -45,7 +45,7 @@ target_include_directories(ddlbx PUBLIC ${CMAKE_CURRENT_LIST_DIR}/lib/PEGTL/incl
 target_include_directories(ddlbx PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
 
 # unit tests
-file(GLOB TESTS test/*.cc src/**/*.cc src/*.cc)
+file(GLOB TESTS test/*.cc test/**/*.cc  src/**/*.cc src/*.cc)
 add_executable(ddlbx_test ${TESTS})
 
 #include headers

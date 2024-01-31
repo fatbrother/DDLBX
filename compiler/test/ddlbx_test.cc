@@ -13,8 +13,6 @@
 #include "./parser/statement.hpp"
 #include "./parser/type.hpp"
 #include "./parser/value.hpp"
-#include "./ir/function_test.hpp"
-#include "./ir/value_test.hpp"
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
