@@ -82,8 +82,10 @@ class Identifier : public pegtl::plus<
 > {};
 
 class FunctionCall;
+class Bracket;
 class Statement : public pegtl::seq<
     pegtl::sor<
+        Bracket,
         Value,
         FunctionCall,
         Identifier
@@ -96,11 +98,21 @@ class Statement : public pegtl::seq<
 
         // Below code can reduce the hight of AST from stmt->stmt->value to stmt->value
         pegtl::sor<
+            Bracket,
             Value,
             FunctionCall,
             Identifier
         >
     >
+> {};
+
+class Bracket : public pegtl::seq<
+    pegtl::one<'('>,
+    pegtl::pad<
+        Statement,
+        pegtl::space
+    >,
+    pegtl::one<')'>
 > {};
 
 class FunctionCall : public pegtl::seq<

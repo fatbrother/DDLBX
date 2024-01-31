@@ -121,6 +121,8 @@ llvm::Value* CodeGenner::generateStatement(const std::unique_ptr<pegtl::parse_tr
     std::stack<std::string> opStack;
 
     for (const auto& child : node->children) {
+        if (child->type == "ddlbx::parser::Bracket")
+            valueStack.push(generateStatement(child->children[0]));
         if (child->type == "ddlbx::parser::Value")
             valueStack.push(generateValue(child));
         if (child->type == "ddlbx::parser::FunctionCall")

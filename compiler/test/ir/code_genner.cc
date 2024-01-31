@@ -128,3 +128,29 @@ TEST_F(CodeGennerTest, GenerateSimpleStatement) {
     EXPECT_EQ(5, llvm::cast<llvm::ConstantInt>(retInst->getReturnValue())->getSExtValue());
 }
 
+TEST_F(CodeGennerTest, GenerateBracketStatement) {
+    const std::string input = R"(
+        fun test5(): Int {
+            ret (1 + 2) * 2!
+        }
+    )";
+    generate(input);
+
+    // Assuming the test function is declared in the module
+    llvm::Function* testFunction = module.getFunction("test5");
+
+    ASSERT_NE(nullptr, testFunction);
+    EXPECT_EQ("test5", testFunction->getName().str());
+
+    // Assuming the test function has a single basic block
+    llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
+    ASSERT_NE(nullptr, entryBlock);
+    EXPECT_EQ(1, entryBlock->size());
+
+    // Assuming the first instruction is a return instruction
+    llvm::ReturnInst* retInst = llvm::dyn_cast<llvm::ReturnInst>(&entryBlock->front());
+    ASSERT_NE(nullptr, retInst);
+
+    // Assuming the return value is 6
+    EXPECT_EQ(6, llvm::cast<llvm::ConstantInt>(retInst->getReturnValue())->getSExtValue());
+}

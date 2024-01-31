@@ -9,14 +9,11 @@
 
 std::string test = R"(
 fun main(): Non {
-    var a = 1!
-    var b = 2!
-    var c = 5!
-    a * b + c!
+    var a = maybe!
 }
 
-fun add(a: Int, b: Int): Int {
-    ret a + b!
+fun test(x: Int): Int {
+    ret (1+2+x)*(x+(1+2))!
 }
 )";
 

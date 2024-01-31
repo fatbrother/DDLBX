@@ -17,6 +17,9 @@ TEST(Grammar, Expression) {
     std::string sample7 = "a";
     std::string sample8 = "";
     std::string sample9 = "foo()";
+    std::string sample10 = "(1 + 2) * 3";
+    std::string sample11 = "(1 + 2) * (3 + 4)";
+    std::string sample12 = "((1 + 2) * (3 + 4))";
 
     string_input<> in1(sample1, "input");
     string_input<> in2(sample2, "input");
@@ -27,6 +30,9 @@ TEST(Grammar, Expression) {
     string_input<> in7(sample7, "input");
     string_input<> in8(sample8, "input");
     string_input<> in9(sample9, "input");
+    string_input<> in10(sample10, "input");
+    string_input<> in11(sample11, "input");
+    string_input<> in12(sample12, "input");
 
     EXPECT_TRUE(parse<Statement>(in1));
     EXPECT_TRUE(parse<Statement>(in2));
@@ -37,4 +43,7 @@ TEST(Grammar, Expression) {
     EXPECT_TRUE(parse<Statement>(in7));
     EXPECT_FALSE(parse<Statement>(in8));
     EXPECT_TRUE(parse<Statement>(in9));
+    EXPECT_TRUE(parse<Statement>(in10));
+    EXPECT_TRUE(parse<Statement>(in11));
+    EXPECT_TRUE(parse<Statement>(in12));
 }
