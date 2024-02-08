@@ -231,6 +231,8 @@ You can use `obj` to declare an object.
 
 ```ddlbx
 obj a {}!
+
+var b = a! // OK
 ```
 
 In DDLBX, obj only brings variables in the scope of the object. If you want to use a function in an object, you can use `fun` to declare it.
@@ -330,8 +332,16 @@ get "path/to/file.ddlbx"!
 But every object, function, variable in the file will default to private. If you want to use them, you can use `pub` to make them public.
 
 ```ddlbx
+// file.ddlbx
 pub obj a {}!
 pub fun b(): Null => print("Hello world")!
+obj c {}!
+
+// main.ddlbx
+get "file.ddlbx"!
+var obj_a = a! // OK
+b()! // OK
+var obj_c = c! // Error: c is not found
 ```
 
 If there are some variables in obj and you want to make them private, you can just declare them in other objects.
