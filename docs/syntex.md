@@ -316,3 +316,34 @@ case (^) => rev!
 print(a)!
 case (a++ < 10) => rev!
 ```
+
+## Import
+
+In DDLBX, every file is a namespace. You can use `get` to import a file.
+
+```ddlbx
+get "path/to/file.ddlbx"!
+```
+
+## Export
+
+But every object, function, variable in the file will default to private. If you want to use them, you can use `pub` to make them public.
+
+```ddlbx
+pub obj a {}!
+pub fun b(): Null => print("Hello world")!
+```
+
+If there are some variables in obj and you want to make them private, you can just declare them in other objects.
+
+```ddlbx
+pub obj a {
+    var b = 1! // public
+}!
+
+obj a {
+    var c = 2! // private
+}!
+```
+
+These two objects will be merged into one object in the compile time.
