@@ -1,17 +1,13 @@
 #include <iostream>
-
 #include <tao/pegtl.hpp>
 #include <tao/pegtl/contrib/parse_tree.hpp>
 
 #include "ir/code_genner.hpp"
 #include "parser/grammar.hpp"
 #include "parser/selector.hpp"
+#include "pass/object_genner.hpp"
 
 std::string test = R"(
-fun main(): Non {
-    var a = maybe!
-}
-
 fun test(x: Int): Int {
     ret (1+2+x)*(x+(1+2))!
 }
@@ -34,4 +30,8 @@ int main(int argc, char** argv) {
 
     // print module
     codeGenner.getModule().print(llvm::errs(), nullptr);
+
+    // generate object file
+    ddlbx::pass::ObjectGenner objectGenner;
+    objectGenner.generate(codeGenner.getModule());
 }

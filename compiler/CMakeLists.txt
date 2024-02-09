@@ -59,7 +59,9 @@ target_include_directories(ddlbx_test PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
 add_test(ddlbx_test ddlbx_test)
 target_link_libraries(ddlbx_test gtest gtest_main)
 
+set(LLVM_LINK_COMPONENTS ${LLVM_TARGETS_TO_BUILD})
+
 # llvm
-llvm_map_components_to_libnames(llvm_libs support core irreader mcjit native orcjit support)
+llvm_map_components_to_libnames(llvm_libs ${LLVM_TARGETS_TO_BUILD})
 target_link_libraries(ddlbx ${llvm_libs})
 target_link_libraries(ddlbx_test ${llvm_libs})
