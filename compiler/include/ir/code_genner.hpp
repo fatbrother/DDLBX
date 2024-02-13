@@ -23,14 +23,6 @@ namespace ir {
  * The CodeGenner object can maintain the state of the code generation.
  */
 class CodeGenner {
-    llvm::LLVMContext &context;
-    llvm::Module &module;
-    llvm::IRBuilder<> builder;
-    llvm::Function *parentFunction = nullptr;
-
-    std::map<std::string, llvm::AllocaInst *> variableMap;
-    std::map<std::string, llvm::Function *> functionMap;
-
 public:
     /**
      * @brief Constructor for CodeGenner class.
@@ -39,13 +31,8 @@ public:
      * @param module The LLVM module.
      * @param variableMap The map from variable name to LLVM alloca instruction.
      */
-    CodeGenner(llvm::LLVMContext &context, llvm::Module &module, llvm::Function *function = nullptr)
-        : context(context), module(module), builder(context), parentFunction(function) {}
-
-    // CodeGenner(const CodeGenner &) = delete;
-    // CodeGenner(CodeGenner &&) = delete;
-    // CodeGenner &operator=(const CodeGenner &) = delete;
-    // CodeGenner &operator=(CodeGenner &&) = delete;
+    CodeGenner(llvm::LLVMContext &context, llvm::Module &module)
+        : context(context), module(module), builder(context) {}
 
     /**
      * @brief Generate LLVM IR code from the parse tree.
@@ -54,7 +41,7 @@ public:
      *
      * @details The root node must be of type ddlbx::parser::Block.
      */
-    void generate(const std::unique_ptr<pegtl::parse_tree::node> &root);
+    void generate(const std::unique_ptr<pegtl::parse_tree::node> &);
 
     /**
      * @brief Get the LLVM IR module.
@@ -64,6 +51,13 @@ public:
     llvm::Module &getModule() { return module; }
 
 private:
+    llvm::LLVMContext &context;
+    llvm::Module &module;
+    llvm::IRBuilder<> builder;
+
+    std::map<std::string, llvm::AllocaInst *> variableMap;
+    std::map<std::string, llvm::Function *> functionMap;
+
     enum class ExpressionType {
         VariableDeclaration,
         FunctionCall,
@@ -80,21 +74,21 @@ private:
      *
      * @param node The node representing the block.
      */
-    void generateBlock();
+    void generateBlock(const std::unique_ptr<pegtl::parse_tree::node> &, llvm::Function *);
 
     /**
      * @brief Generate LLVM IR code for a function declaration.
      *
      * @param node The node representing the function declaration.
      */
-    void generateFunctionDeclaration(const std::unique_ptr<pegtl::parse_tree::node> &node);
+    void generateFunctionDeclaration(const std::unique_ptr<pegtl::parse_tree::node> &);
 
     /**
      * @brief Generate LLVM IR code for a expression.
      *
      * @param node The node representing the function declaration.
      */
-    void generateExpression(const std::unique_ptr<pegtl::parse_tree::node> &node);
+    void generateExpression(const std::unique_ptr<pegtl::parse_tree::node> &, llvm::Function *);
 
     /**
      * @brief Generate LLVM IR code for a statement.
@@ -103,7 +97,7 @@ private:
      *
      * @return llvm::Value* The LLVM value.
      */
-    llvm::Value *generateStatement(const std::unique_ptr<pegtl::parse_tree::node> &node);
+    llvm::Value *generateStatement(const std::unique_ptr<pegtl::parse_tree::node> &, llvm::Function *);
 
     /**
      * @brief Generate LLVM IR code for a value.
@@ -112,7 +106,7 @@ private:
      *
      * @return llvm::Value* The LLVM value.
      */
-    llvm::Value *generateValue(const std::unique_ptr<pegtl::parse_tree::node> &node);
+    llvm::Value *generateValue(const std::unique_ptr<pegtl::parse_tree::node> &);
 
     /**
      * @brief Generate LLVM IR code for a function call.
@@ -121,14 +115,14 @@ private:
      *
      * @return llvm::Value* The LLVM value.
      */
-    llvm::Value *generateFunctionCall(const std::unique_ptr<pegtl::parse_tree::node> &node);
+    llvm::Value *generateFunctionCall(const std::unique_ptr<pegtl::parse_tree::node> &, llvm::Function *);
 
     /**
      * @brief Generate LLVM IR code for a variable declaration.
      *
      * @param node The node representing the variable declaration.
      */
-    void generateVariableDeclaration(const std::unique_ptr<pegtl::parse_tree::node> &node);
+    void generateVariableDeclaration(const std::unique_ptr<pegtl::parse_tree::node> &, llvm::Function *);
 };
 
 }  // namespace ir

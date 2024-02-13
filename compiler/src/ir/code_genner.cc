@@ -38,25 +38,26 @@ std::map<std::string, CodeGenner::ExpressionType> CodeGenner::expressionTypeMap 
 
 void CodeGenner::generate(const std::unique_ptr<pegtl::parse_tree::node>& node) {
     if (!node) return;
-    if (node->type != "ddlbx::parser::Block" && node->type != "ddlbx::parser::Program") return;
+    if (node->type != "ddlbx::parser::Program") return;
     if (node->children.empty()) return;
-
-    if (node->type == "ddlbx::parser::Block")
-        generateBlock();
 
     for (const auto& child : node->children) {
         if (child->type == "ddlbx::parser::Function") {
             generateFunctionDeclaration(child);
         }
-        if (child->type == "ddlbx::parser::Expression") {
-            generateExpression(child);
-        }
     }
 }
 
-void CodeGenner::generateBlock() {
-    llvm::BasicBlock* block = llvm::BasicBlock::Create(context, "entry", parentFunction);
+void CodeGenner::generateBlock(const std::unique_ptr<pegtl::parse_tree::node> &node, llvm::Function *function = nullptr) {
+    if (!node) return;
+    if (node->type != "ddlbx::parser::Block") return;
+
+    llvm::BasicBlock* block = llvm::BasicBlock::Create(context, "entry", function);
     builder.SetInsertPoint(block);
+
+    for (const auto& child : node->children) {
+        generateExpression(child, function);
+    }
 }
 
 void CodeGenner::generateFunctionDeclaration(const std::unique_ptr<pegtl::parse_tree::node>& node) {
@@ -88,32 +89,32 @@ void CodeGenner::generateFunctionDeclaration(const std::unique_ptr<pegtl::parse_
         func->getArg(i)->setName(params->children[i]->children[0]->string());
     }
 
-    CodeGenner codeGenner(context, module, func);
-    codeGenner.generate(body);
+    // Generate function body
+    generateBlock(body, func);
 }
 
-void CodeGenner::generateExpression(const std::unique_ptr<pegtl::parse_tree::node>& node) {
+void CodeGenner::generateExpression(const std::unique_ptr<pegtl::parse_tree::node>& node, llvm::Function* function = nullptr) {
     if (!node) return;
     if (node->type != "ddlbx::parser::Expression") return;
 
     const auto& child = node->children[0];
     switch (expressionTypeMap[std::string{child->type}]) {
         case ExpressionType::VariableDeclaration:
-            generateVariableDeclaration(child);
+            generateVariableDeclaration(child, function);
             break;
         case ExpressionType::FunctionCall:
-            generateFunctionCall(child);
+            generateFunctionCall(child, function);
             break;
         case ExpressionType::Return:
-            builder.CreateRet(generateStatement(child->children[0]));
+            builder.CreateRet(generateStatement(child->children[0], function));
             break;
         case ExpressionType::Statement:
-            generateStatement(child);
+            generateStatement(child, function);
             break;
     }
 }
 
-llvm::Value* CodeGenner::generateStatement(const std::unique_ptr<pegtl::parse_tree::node>& node) {
+llvm::Value* CodeGenner::generateStatement(const std::unique_ptr<pegtl::parse_tree::node>& node, llvm::Function* function = nullptr) {
     if (!node) return nullptr;
     if (node->type != "ddlbx::parser::Statement") return nullptr;
 
@@ -122,16 +123,17 @@ llvm::Value* CodeGenner::generateStatement(const std::unique_ptr<pegtl::parse_tr
 
     for (const auto& child : node->children) {
         if (child->type == "ddlbx::parser::Bracket")
-            valueStack.push(generateStatement(child->children[0]));
+            valueStack.push(generateStatement(child->children[0], function));
         if (child->type == "ddlbx::parser::Value")
             valueStack.push(generateValue(child));
         if (child->type == "ddlbx::parser::FunctionCall")
-            valueStack.push(generateFunctionCall(child));
+            valueStack.push(generateFunctionCall(child, function));
         if (child->type == "ddlbx::parser::Identifier") {
             std::string name = child->string();
             llvm::Value* var = nullptr;
-            if (parentFunction) {
-                for (auto& arg : parentFunction->args()) {
+
+            if (function) {
+                for (auto& arg : function->args()) {
                     if (arg.getName() == name) {
                         var = &arg;
                         break;
@@ -143,9 +145,10 @@ llvm::Value* CodeGenner::generateStatement(const std::unique_ptr<pegtl::parse_tr
                 llvm::Type* type = alloca->getAllocatedType();
                 var = builder.CreateLoad(type, alloca);
             }
-            if (var) {
-                valueStack.push(var);
-            }
+            if (!var)
+                throw std::runtime_error("Variable not found: " + name);
+
+            valueStack.push(var);
         }
         if (child->type == "ddlbx::parser::Operator") {
             std::string op = child->string();
@@ -215,7 +218,7 @@ llvm::Value* CodeGenner::generateValue(const std::unique_ptr<pegtl::parse_tree::
     return result;
 }
 
-llvm::Value* CodeGenner::generateFunctionCall(const std::unique_ptr<pegtl::parse_tree::node>& node) {
+llvm::Value* CodeGenner::generateFunctionCall(const std::unique_ptr<pegtl::parse_tree::node>& node, llvm::Function* function = nullptr) {
     if (!node) return nullptr;
     if (node->type != "ddlbx::parser::FunctionCall") return nullptr;
 
@@ -224,22 +227,22 @@ llvm::Value* CodeGenner::generateFunctionCall(const std::unique_ptr<pegtl::parse
     std::vector<llvm::Value*> argValues;
     for (size_t i = 1; i < node->children.size(); i++) {
         const auto& value = node->children[i];
-        llvm::Value* val = generateStatement(value);
+        llvm::Value* val = generateStatement(value, function);
         argValues.push_back(val);
     }
 
-    llvm::Function* function = module.getFunction(name);
-    return builder.CreateCall(function, argValues);
+    llvm::Function* targetFunction = module.getFunction(name);
+    return builder.CreateCall(targetFunction, argValues);
 }
 
-void CodeGenner::generateVariableDeclaration(const std::unique_ptr<pegtl::parse_tree::node>& node) {
+void CodeGenner::generateVariableDeclaration(const std::unique_ptr<pegtl::parse_tree::node>& node, llvm::Function* function = nullptr) {
     if (!node) return;
     if (node->type != "ddlbx::parser::VariableDeclaration") return;
 
     const auto& name = node->children[0]->string();
     const auto& value = node->children[1];
 
-    llvm::Value* val = generateStatement(value);
+    llvm::Value* val = generateStatement(value, function);
     
     llvm::AllocaInst* alloca = builder.CreateAlloca(val->getType(), nullptr, name);
     builder.CreateStore(val, alloca);
