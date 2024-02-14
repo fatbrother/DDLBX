@@ -154,3 +154,42 @@ TEST_F(CodeGennerTest, GenerateBracketStatement) {
     // Assuming the return value is 6
     EXPECT_EQ(6, llvm::cast<llvm::ConstantInt>(retInst->getReturnValue())->getSExtValue());
 }
+
+TEST_F(CodeGennerTest, GenerateObject) {
+    const std::string input = R"(
+        obj Test {
+            a: Int
+        }
+    )";
+    generate(input);
+
+    // Assuming the test function is declared in the module
+    auto testTypeList = module.getIdentifiedStructTypes();
+    ASSERT_EQ(1, testTypeList.size());
+    auto testType = testTypeList[0];
+    EXPECT_EQ("Test", testType->getName().str());
+    ASSERT_EQ(1, testType->getNumElements());
+    auto aType = testType->getElementType(0);
+    EXPECT_TRUE(aType->isIntegerTy());
+    EXPECT_EQ(32, aType->getIntegerBitWidth());
+}
+
+TEST_F(CodeGennerTest, GenerateObjectWithMethod) {
+    const std::string input = R"(
+        obj Test {}
+
+        fun Test.test(): Int { ret 1! }
+    )";
+    generate(input);
+
+    // Assuming the test function is declared in the module
+    llvm::Function* testFunction = module.getFunction("Test_test");
+
+    ASSERT_NE(nullptr, testFunction);
+    EXPECT_EQ("Test_test", testFunction->getName().str());
+
+    // Assuming the test function has a parameter "this"
+    ASSERT_EQ(1, testFunction->arg_size());
+    auto arg = testFunction->arg_begin();
+    EXPECT_EQ("this", arg->getName().str());
+}

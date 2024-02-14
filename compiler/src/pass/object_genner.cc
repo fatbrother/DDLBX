@@ -35,7 +35,7 @@ void ObjectGenner::generate(llvm::Module& module) {
     module.setDataLayout(targetMachine->createDataLayout());
     module.setTargetTriple(targetTriple);
 
-    auto filename = "output.s";
+    auto filename = "output.o";
     std::error_code ec;
     llvm::raw_fd_ostream dest(filename, ec, llvm::sys::fs::OF_None);
     if (ec) {
@@ -44,7 +44,7 @@ void ObjectGenner::generate(llvm::Module& module) {
     }
 
     llvm::legacy::PassManager pass;
-    auto FileType = llvm::CodeGenFileType::AssemblyFile;
+    auto FileType = llvm::CodeGenFileType::ObjectFile;
 
     if (targetMachine->addPassesToEmitFile(pass, dest, nullptr, FileType)) {
         llvm::errs() << "TheTargetMachine can't emit a file of this type";
