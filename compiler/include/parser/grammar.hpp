@@ -66,19 +66,20 @@ class Operator : public pegtl::sor<
     pegtl::string<'o', 'r'>
 > {};
 
-class Type : public pegtl::sor<
-    pegtl::keyword<'I', 'n', 't'>,
-    pegtl::keyword<'F', 'l', 'o'>,
-    pegtl::keyword<'S', 't', 'r'>,
-    pegtl::keyword<'B', 'o', 'o'>,
-    pegtl::keyword<'N', 'o', 'n'>
-> {};
-
 class Identifier : public pegtl::plus<
     pegtl::sor<
         pegtl::alnum,
         pegtl::one<'_'>
     >
+> {};
+
+class Type : public pegtl::sor<
+    pegtl::keyword<'I', 'n', 't'>,
+    pegtl::keyword<'F', 'l', 'o'>,
+    pegtl::keyword<'S', 't', 'r'>,
+    pegtl::keyword<'B', 'o', 'o'>,
+    pegtl::keyword<'N', 'o', 'n'>,
+    Identifier
 > {};
 
 class FunctionCall;
@@ -224,7 +225,7 @@ class Function : public pegtl::seq<
     pegtl::keyword<'f', 'u', 'n'>,
     pegtl::opt<
         pegtl::pad<
-            Identifier,
+            Type,
             pegtl::space
         >,
         pegtl::pad<
@@ -260,9 +261,8 @@ class Program : public pegtl::pad<
     pegtl::star<
         pegtl::sor<
             Function,
-            Expression,
-            pegtl::space,
-            pegtl::eol
+            Object,
+            pegtl::space
         >
     >,
     pegtl::space

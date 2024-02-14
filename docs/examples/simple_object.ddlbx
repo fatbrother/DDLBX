@@ -1,0 +1,11 @@
+obj Test {
+    a: Int,
+    b: Int
+}
+
+obj Test1 {
+    a: Test,
+    b: Test
+}
+
+fun Test1.foo(): Non {}

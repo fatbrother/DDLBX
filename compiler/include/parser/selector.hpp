@@ -30,6 +30,7 @@ template <> struct Selector<Block> : std::true_type {};
 template <> struct Selector<Parameter> : std::true_type {};
 template <> struct Selector<MultiParameter> : std::true_type {};
 template <> struct Selector<EmptyParameter> : std::true_type {};
+template <> struct Selector<Object> : std::true_type {};
 template <> struct Selector<Function> : std::true_type {};
 template <> struct Selector<Program> : std::true_type {};
 

@@ -123,6 +123,13 @@ private:
      * @param node The node representing the variable declaration.
      */
     void generateVariableDeclaration(const std::unique_ptr<pegtl::parse_tree::node> &, llvm::Function *);
+
+    /**
+     * @brief Generate LLVM IR code for a object declaration.
+     * 
+     * @param node The node representing the object declaration.
+     */
+    void generateObjectDeclaration(const std::unique_ptr<pegtl::parse_tree::node> &);
 };
 
 }  // namespace ir

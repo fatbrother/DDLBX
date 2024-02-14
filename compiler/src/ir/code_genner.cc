@@ -45,6 +45,9 @@ void CodeGenner::generate(const std::unique_ptr<pegtl::parse_tree::node>& node) 
         if (child->type == "ddlbx::parser::Function") {
             generateFunctionDeclaration(child);
         }
+        if (child->type == "ddlbx::parser::Object") {
+            generateObjectDeclaration(child);
+        }
     }
 }
 
@@ -64,14 +67,28 @@ void CodeGenner::generateFunctionDeclaration(const std::unique_ptr<pegtl::parse_
     if (!node) return;
     if (node->type != "ddlbx::parser::Function") return;
 
-    const auto name = node->children[0]->string();
-    const auto& params = node->children[1];
-    const auto& ret = node->children[2];
-    const auto& body = node->children[3];
+    int idx = 0;
+    std::string parentType = "";
+    if (node->children[idx]->type == "ddlbx::parser::Type") {
+        parentType = node->children[idx++]->string();
+    }
+    const auto name = (parentType != "" ? parentType + "_" : "") + node->children[idx++]->string();
+    const auto& params = node->children[idx++];
+    const auto& ret = node->children[idx++];
+    const auto& body = node->children[idx++];
     int param_count = params->children.size();
+
+    llvm::Type* structType = nullptr;
+    if (parentType != "") {
+        structType = typeMap[parentType](context);
+    }
 
     // Get parameter types
     std::vector<llvm::Type*> paramTypes;
+    if (structType) {
+        paramTypes.push_back(structType->getPointerTo());
+        param_count++;
+    }
     for (const auto& param : params->children) {
         std::string type = param->children[1]->string();
         paramTypes.push_back(typeMap[type](context));
@@ -80,12 +97,16 @@ void CodeGenner::generateFunctionDeclaration(const std::unique_ptr<pegtl::parse_
     // Get return type
     auto retType = typeMap[ret->string()](context);
 
-    // Create function
+    // Create function type
     llvm::FunctionType* funcType = llvm::FunctionType::get(retType, paramTypes, false);
-    auto func = llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, name, module);
+    llvm::Function* func = llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, name, &module);
 
     // Set parameter names
     for (int i = 0; i < param_count; i++) {
+        if (i == 0 && structType) {
+            func->getArg(i)->setName("this");
+            continue;
+        }
         func->getArg(i)->setName(params->children[i]->children[0]->string());
     }
 
@@ -247,6 +268,25 @@ void CodeGenner::generateVariableDeclaration(const std::unique_ptr<pegtl::parse_
     llvm::AllocaInst* alloca = builder.CreateAlloca(val->getType(), nullptr, name);
     builder.CreateStore(val, alloca);
     variableMap[name] = alloca;
+}
+
+void CodeGenner::generateObjectDeclaration(const std::unique_ptr<pegtl::parse_tree::node>& node) {
+    if (!node) return;
+    if (node->type != "ddlbx::parser::Object") return;
+
+    std::string name = node->children[0]->string();
+    const auto& members = node->children[1];
+
+    llvm::StructType* structType = llvm::StructType::create(context, name);
+    std::vector<llvm::Type*> memberTypes;
+    for (const auto& member : members->children) {
+        std::string type = member->children[1]->string();
+        memberTypes.push_back(typeMap[type](context));
+    }
+    structType->setBody(memberTypes);
+
+    module.getOrInsertGlobal(name, structType);
+    typeMap[name] = [structType](llvm::LLVMContext& context) { return structType; };
 }
 
 }  // namespace ir
