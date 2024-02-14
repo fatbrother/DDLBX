@@ -17,6 +17,16 @@ TEST(Grammar, parameter) {
     std::string sample6 = "a: Int, b: Int";
     std::string sample7 = "a: Int, b: Int,";
     std::string sample8 = "a: Int, b: Int, c: Int";
+    std::string sample9 = R"(
+a: Int,
+b: Int,
+c: Int
+)";
+    std::string sample10 = R"(
+    a: Int,
+    b: Int,
+    c: Int
+)";
 
     string_input<> in1(sample1, "input");
     string_input<> in2(sample2, "input");
@@ -26,6 +36,8 @@ TEST(Grammar, parameter) {
     string_input<> in6(sample6, "input");
     string_input<> in7(sample7, "input");
     string_input<> in8(sample8, "input");
+    string_input<> in9(sample9, "input");
+    string_input<> in10(sample10, "input");
 
     EXPECT_TRUE(parse<Parameter>(in1));
     EXPECT_TRUE(parse<Parameter>(in2));
@@ -37,4 +49,6 @@ TEST(Grammar, parameter) {
     EXPECT_TRUE(parse<MultiParameter>(in6));
     EXPECT_TRUE(parse<MultiParameter>(in7));
     EXPECT_TRUE(parse<MultiParameter>(in8));
+    EXPECT_TRUE(parse<MultiParameter>(in9));
+    EXPECT_TRUE(parse<MultiParameter>(in10));
 }

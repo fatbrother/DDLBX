@@ -196,15 +196,42 @@ class Parameter : public pegtl::seq<
 > {};
 
 class MultiParameter : public pegtl::list<
-    Parameter,
+    pegtl::pad<
+        Parameter,
+        pegtl::space
+    >,
     pegtl::one<','>,
     pegtl::space
 > {};
 
 class EmptyParameter : public pegtl::success {};
 
+class Object : public pegtl::seq<
+    pegtl::keyword<'o', 'b', 'j'>,
+    pegtl::pad<
+        Identifier,
+        pegtl::space
+    >,
+    pegtl::one<'{'>,
+    pegtl::sor<
+        MultiParameter,
+        EmptyParameter
+    >,
+    pegtl::one<'}'>
+> {};
+
 class Function : public pegtl::seq<
     pegtl::keyword<'f', 'u', 'n'>,
+    pegtl::opt<
+        pegtl::pad<
+            Identifier,
+            pegtl::space
+        >,
+        pegtl::pad<
+            pegtl::one<'.'>,
+            pegtl::space
+        >
+    >,
     pegtl::pad<
         Identifier,
         pegtl::space
@@ -212,7 +239,6 @@ class Function : public pegtl::seq<
     pegtl::one<'('>,
     pegtl::sor<
         MultiParameter,
-        Parameter,
         EmptyParameter
     >,
     pegtl::one<')'>,
