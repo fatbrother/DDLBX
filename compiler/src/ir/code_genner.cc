@@ -165,9 +165,16 @@ llvm::Value* CodeGenner::generateStatement(const std::unique_ptr<pegtl::parse_tr
                 llvm::AllocaInst * alloca = variableMap[name];
                 llvm::Type* type = alloca->getAllocatedType();
                 var = builder.CreateLoad(type, alloca);
+                // check if variable is struct ptr
+                if (var->getType()->isPointerTy()) {
+                    // TODO: support struct ptr
+                    throw std::runtime_error("struct ptr is not supported yet");
+                }
             }
-            if (!var)
-                throw std::runtime_error("Variable not found: " + name);
+            if (!var) {
+                int line = child->begin().line;
+                throw std::runtime_error(std::to_string(line) + ": " + name + " is not defined");
+            }
 
             valueStack.push(var);
         }
@@ -243,7 +250,11 @@ llvm::Value* CodeGenner::generateFunctionCall(const std::unique_ptr<pegtl::parse
     if (!node) return nullptr;
     if (node->type != "ddlbx::parser::FunctionCall") return nullptr;
 
-    const auto& name = node->children[0]->string();
+    auto name = node->children[0]->string();
+
+    if (typeMap.find(name) != typeMap.end()) {
+        name += "_factory";
+    }
 
     std::vector<llvm::Value*> argValues;
     for (size_t i = 1; i < node->children.size(); i++) {
@@ -253,6 +264,13 @@ llvm::Value* CodeGenner::generateFunctionCall(const std::unique_ptr<pegtl::parse
     }
 
     llvm::Function* targetFunction = module.getFunction(name);
+
+    // check if parameter is matching
+    if (targetFunction->arg_size() != argValues.size()) {
+        int line = node->begin().line;
+        throw std::runtime_error(std::to_string(line) + ": " + name + " parameter size is not matching");
+    }
+
     return builder.CreateCall(targetFunction, argValues);
 }
 
@@ -287,6 +305,19 @@ void CodeGenner::generateObjectDeclaration(const std::unique_ptr<pegtl::parse_tr
 
     module.getOrInsertGlobal(name, structType);
     typeMap[name] = [structType](llvm::LLVMContext& context) { return structType; };
+
+    // create constructor
+    llvm::FunctionType* funcType = llvm::FunctionType::get(structType->getPointerTo(), memberTypes, false);
+    llvm::Function* func = llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, name + "_factory", &module);
+    llvm::BasicBlock* block = llvm::BasicBlock::Create(context, "entry", func);
+    builder.SetInsertPoint(block);
+    llvm::Value* thisPtr = builder.CreateAlloca(structType, nullptr, "this");
+    int i = 0;
+    for (auto& arg : func->args()) {
+        llvm::Value* ptr = builder.CreateStructGEP(structType, thisPtr, i++);
+        builder.CreateStore(&arg, ptr);
+    }
+    builder.CreateRet(thisPtr);
 }
 
 }  // namespace ir

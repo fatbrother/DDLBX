@@ -8,4 +8,6 @@ obj Test1 {
     b: Test
 }
 
-fun Test1.foo(): Non {}
+fun main(): Non {
+    var t = Test1(Test(1, 2), Test(3, 4))!
+}

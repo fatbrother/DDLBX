@@ -172,6 +172,12 @@ TEST_F(CodeGennerTest, GenerateObject) {
     auto aType = testType->getElementType(0);
     EXPECT_TRUE(aType->isIntegerTy());
     EXPECT_EQ(32, aType->getIntegerBitWidth());
+
+    // check if factory function is generated
+    llvm::Function* factoryFunction = module.getFunction("Test_factory");
+    ASSERT_NE(nullptr, factoryFunction);
+    EXPECT_EQ("Test_factory", factoryFunction->getName().str());
+    EXPECT_EQ(1, factoryFunction->arg_size());
 }
 
 TEST_F(CodeGennerTest, GenerateObjectWithMethod) {
