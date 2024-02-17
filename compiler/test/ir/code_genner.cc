@@ -69,7 +69,7 @@ TEST_F(CodeGennerTest, GenerateSimpleFunctionCall) {
 
     llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
     ASSERT_NE(nullptr, entryBlock);
-    EXPECT_EQ(1, entryBlock->size());
+    EXPECT_EQ(2, entryBlock->size()); // Auto added return instruction
 
     // Assuming the first instruction is a call instruction
     llvm::CallInst* callInst = llvm::dyn_cast<llvm::CallInst>(&entryBlock->front());
@@ -93,7 +93,7 @@ TEST_F(CodeGennerTest, GenerateSimpleVariableDeclaration) {
 
     llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
     ASSERT_NE(nullptr, entryBlock);
-    EXPECT_EQ(2, entryBlock->size()); // Including alloca instruction and store instruction
+    EXPECT_EQ(3, entryBlock->size()); // Including alloca instruction, store instruction and return instruction
 
     // Assuming the first instruction is an alloca instruction
     llvm::AllocaInst* allocaInst = llvm::dyn_cast<llvm::AllocaInst>(&entryBlock->front());
