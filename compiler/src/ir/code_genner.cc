@@ -1,6 +1,7 @@
 #include "ir/code_genner.hpp"
 
 #include <stack>
+#include <llvm/IR/Verifier.h>
 
 namespace ddlbx {
 namespace ir {
@@ -61,6 +62,16 @@ void CodeGenner::generateBlock(const std::unique_ptr<pegtl::parse_tree::node> &n
     for (const auto& child : node->children) {
         generateExpression(child, function);
     }
+
+    if (block->getTerminator()) return;
+
+    // check if last statement is return
+    if (function && function->getReturnType()->isVoidTy()) {
+        builder.CreateRetVoid();
+    } else {
+        int line = node->begin().line;
+        throw std::runtime_error(std::to_string(line) + ": last statement should be return");
+    }
 }
 
 void CodeGenner::generateFunctionDeclaration(const std::unique_ptr<pegtl::parse_tree::node>& node) {
@@ -112,6 +123,14 @@ void CodeGenner::generateFunctionDeclaration(const std::unique_ptr<pegtl::parse_
 
     // Generate function body
     generateBlock(body, func);
+
+    // Verify function
+    std::string error;
+    llvm::raw_string_ostream errorStream = llvm::raw_string_ostream(error);
+    if (llvm::verifyFunction(*func, &errorStream)) {
+        int line = node->begin().line;
+        throw std::runtime_error(std::to_string(line) + ": " + errorStream.str());
+    }
 }
 
 void CodeGenner::generateExpression(const std::unique_ptr<pegtl::parse_tree::node>& node, llvm::Function* function = nullptr) {
@@ -252,9 +271,9 @@ llvm::Value* CodeGenner::generateFunctionCall(const std::unique_ptr<pegtl::parse
 
     auto name = node->children[0]->string();
 
-    if (typeMap.find(name) != typeMap.end()) {
-        name += "_factory";
-    }
+    bool isConstructor = false;
+    if (typeMap.find(name) != typeMap.end())
+        isConstructor = true;
 
     std::vector<llvm::Value*> argValues;
     for (size_t i = 1; i < node->children.size(); i++) {
@@ -263,6 +282,8 @@ llvm::Value* CodeGenner::generateFunctionCall(const std::unique_ptr<pegtl::parse
         argValues.push_back(val);
     }
 
+    if (isConstructor)
+        name += "_factory";
     llvm::Function* targetFunction = module.getFunction(name);
 
     // check if parameter is matching
@@ -307,7 +328,7 @@ void CodeGenner::generateObjectDeclaration(const std::unique_ptr<pegtl::parse_tr
     typeMap[name] = [structType](llvm::LLVMContext& context) { return structType; };
 
     // create constructor
-    llvm::FunctionType* funcType = llvm::FunctionType::get(structType->getPointerTo(), memberTypes, false);
+    llvm::FunctionType* funcType = llvm::FunctionType::get(structType, memberTypes, false);
     llvm::Function* func = llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, name + "_factory", &module);
     llvm::BasicBlock* block = llvm::BasicBlock::Create(context, "entry", func);
     builder.SetInsertPoint(block);
@@ -317,7 +338,8 @@ void CodeGenner::generateObjectDeclaration(const std::unique_ptr<pegtl::parse_tr
         llvm::Value* ptr = builder.CreateStructGEP(structType, thisPtr, i++);
         builder.CreateStore(&arg, ptr);
     }
-    builder.CreateRet(thisPtr);
+    llvm::Value* ret = builder.CreateLoad(structType, thisPtr);
+    builder.CreateRet(ret);
 }
 
 }  // namespace ir
