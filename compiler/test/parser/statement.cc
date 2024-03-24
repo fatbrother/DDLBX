@@ -7,7 +7,7 @@
 using namespace tao::pegtl;
 using namespace ddlbx::parser;
 
-TEST(Grammar, Expression) {
+TEST(Grammar, Statement) {
     std::string sample1 = "1 = 1";
     std::string sample2 = "1 =1";
     std::string sample3 = "1= 1";
@@ -20,6 +20,7 @@ TEST(Grammar, Expression) {
     std::string sample10 = "(1 + 2) * 3";
     std::string sample11 = "(1 + 2) * (3 + 4)";
     std::string sample12 = "((1 + 2) * (3 + 4))";
+    std::string sample13 = "print(\"Hello, World!\")";
 
     string_input<> in1(sample1, "input");
     string_input<> in2(sample2, "input");
@@ -33,6 +34,7 @@ TEST(Grammar, Expression) {
     string_input<> in10(sample10, "input");
     string_input<> in11(sample11, "input");
     string_input<> in12(sample12, "input");
+    string_input<> in13(sample13, "input");
 
     EXPECT_TRUE(parse<Statement>(in1));
     EXPECT_TRUE(parse<Statement>(in2));
@@ -46,4 +48,5 @@ TEST(Grammar, Expression) {
     EXPECT_TRUE(parse<Statement>(in10));
     EXPECT_TRUE(parse<Statement>(in11));
     EXPECT_TRUE(parse<Statement>(in12));
+    EXPECT_TRUE(parse<Statement>(in13));
 }

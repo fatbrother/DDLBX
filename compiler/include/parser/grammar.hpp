@@ -221,7 +221,7 @@ class Object : public pegtl::seq<
     pegtl::one<'}'>
 > {};
 
-class Function : public pegtl::seq<
+class FunctionDeclaration : public pegtl::seq<
     pegtl::keyword<'f', 'u', 'n'>,
     pegtl::opt<
         pegtl::pad<
@@ -247,27 +247,37 @@ class Function : public pegtl::seq<
         pegtl::one<':'>,
         pegtl::space
     >,
-    Type,
+    Type
+> {};
+
+class ExternalFunction : public pegtl::seq<
+    pegtl::keyword<'e', 'x', 't', 'e', 'r', 'n'>,
+    pegtl::pad<
+        pegtl::space,
+        FunctionDeclaration
+    >
+> {};
+
+class Function : public pegtl::seq<
+    FunctionDeclaration,
     pegtl::pad<
         pegtl::sor<
             ArrowBlock,
-            Block
+            Block,
+            End
         >,
         pegtl::space
     >
 > {};
 
-class Program : public pegtl::pad<
-    pegtl::star<
-        pegtl::sor<
-            Function,
-            Object,
-            pegtl::space
-        >
-    >,
-    pegtl::space
+class Program : public pegtl::star<
+    pegtl::sor<
+        ExternalFunction,
+        Function,
+        Object,
+        pegtl::space
+    >
 > {};
-
 
 } // namespace parser    
 } // namespace ddlbx

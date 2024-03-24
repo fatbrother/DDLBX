@@ -46,6 +46,9 @@ void CodeGenner::generate(const std::unique_ptr<pegtl::parse_tree::node>& node) 
         if (child->type == "ddlbx::parser::Function") {
             generateFunctionDeclaration(child);
         }
+        if (child->type == "ddlbx::parser::ExternalFunction") {
+            generateExternalFunctionDeclaration(child);
+        }
         if (child->type == "ddlbx::parser::Object") {
             generateObjectDeclaration(child);
         }
@@ -131,6 +134,18 @@ void CodeGenner::generateFunctionDeclaration(const std::unique_ptr<pegtl::parse_
         int line = node->begin().line;
         throw std::runtime_error(std::to_string(line) + ": " + errorStream.str());
     }
+}
+
+void CodeGenner::generateExternalFunctionDeclaration(const std::unique_ptr<pegtl::parse_tree::node>& node) {
+    if (!node) return;
+    if (node->type != "ddlbx::parser::ExternalFunction") return;
+
+    auto name = node->children[0]->string();
+    const auto& params = node->children[1];
+    const auto& ret = node->children[2];
+    int param_count = params->children.size();
+
+    auto func = module.getOrInsertFunction(name, typeMap[ret->string()](context));
 }
 
 void CodeGenner::generateExpression(const std::unique_ptr<pegtl::parse_tree::node>& node, llvm::Function* function = nullptr) {

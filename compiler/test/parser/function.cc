@@ -20,6 +20,7 @@ TEST(Grammar, Function) {
     std::string sample4 = "fun add() {}";
     std::string sample5 = "fun add()";
     std::string sample6 = "fun a.b(): Int {}";
+    std::string sample7 = "extern fun print(s: Str): Non";
 
     string_input<> in1(sample1, "input");
     string_input<> in2(sample2, "input");
@@ -27,6 +28,7 @@ TEST(Grammar, Function) {
     string_input<> in4(sample4, "input");
     string_input<> in5(sample5, "input");
     string_input<> in6(sample6, "input");
+    string_input<> in7(sample7, "input");
 
     EXPECT_TRUE(parse<Function>(in1));
     EXPECT_TRUE(parse<Function>(in2));
@@ -34,4 +36,5 @@ TEST(Grammar, Function) {
     EXPECT_FALSE(parse<Function>(in4));
     EXPECT_FALSE(parse<Function>(in5));
     EXPECT_TRUE(parse<Function>(in6));
+    EXPECT_TRUE(parse<ExternalFunction>(in7));
 }

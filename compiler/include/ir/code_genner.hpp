@@ -84,6 +84,13 @@ private:
     void generateFunctionDeclaration(const std::unique_ptr<pegtl::parse_tree::node> &);
 
     /**
+     * @brief Generate LLVM IR code for a external function declaration.
+     * 
+     * @param node The node representing the external function declaration.
+     */
+    void generateExternalFunctionDeclaration(const std::unique_ptr<pegtl::parse_tree::node> &);
+
+    /**
      * @brief Generate LLVM IR code for a expression.
      *
      * @param node The node representing the function declaration.
