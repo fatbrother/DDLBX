@@ -20,3 +20,11 @@ sudo apt install -y libedit-dev
 chmod +x build.sh
 ./build.sh
 ```
+
+## Compile DDLBX
+
+```bash
+./build/ddlbx {source_file}
+clang -c core/build_in.c -o core/build_in.o
+clang source_file.o core/build_in.o -o {output_file}
+```
