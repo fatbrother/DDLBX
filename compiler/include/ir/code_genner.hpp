@@ -56,7 +56,7 @@ private:
     llvm::IRBuilder<> builder;
 
     std::map<std::string, llvm::AllocaInst *> variableMap;
-    std::map<std::string, llvm::Function *> functionMap;
+    std::map<std::string, llvm::FunctionCallee> functionMap;
 
     enum class ExpressionType {
         VariableDeclaration,

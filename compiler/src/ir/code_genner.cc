@@ -3,13 +3,16 @@
 #include <stack>
 #include <llvm/IR/Verifier.h>
 
+#include "ir/build_in.hpp"
+#include <iostream>
+
 namespace ddlbx {
 namespace ir {
 
 std::map<std::string, std::function<llvm::Type*(llvm::LLVMContext&)>> CodeGenner::typeMap = {
     {"Int", [](llvm::LLVMContext& context) { return llvm::Type::getInt32Ty(context); }},
     {"Flo", [](llvm::LLVMContext& context) { return llvm::Type::getFloatTy(context); }},
-    {"Str", [](llvm::LLVMContext& context) { return llvm::Type::getInt8PtrTy(context); }},
+    {"Str", [](llvm::LLVMContext& context) { return llvm::Type::getInt8PtrTy(context)->getPointerTo(); }},
     {"Boo", [](llvm::LLVMContext& context) { return llvm::Type::getInt1Ty(context); }},
     {"Non", [](llvm::LLVMContext& context) { return llvm::Type::getVoidTy(context); }},
 };
@@ -145,7 +148,26 @@ void CodeGenner::generateExternalFunctionDeclaration(const std::unique_ptr<pegtl
     const auto& ret = node->children[2];
     int param_count = params->children.size();
 
-    auto func = module.getOrInsertFunction(name, typeMap[ret->string()](context));
+    // Get parameter types
+    std::vector<llvm::Type*> paramTypes;
+    for (const auto& param : params->children) {
+        std::string type = param->children[1]->string();
+        paramTypes.push_back(typeMap[type](context));
+    }
+
+    // Get return type
+    auto retType = typeMap[ret->string()](context);
+
+    // Create function type
+    llvm::FunctionType* funcType = llvm::FunctionType::get(retType, paramTypes, false);
+
+    try {
+        auto func = module.getOrInsertFunction(name, funcType);
+        functionMap[name] = func;
+    } catch (std::runtime_error& e) {
+        int line = node->begin().line;
+        throw std::runtime_error(std::to_string(line) + ": " + e.what());
+    }
 }
 
 void CodeGenner::generateExpression(const std::unique_ptr<pegtl::parse_tree::node>& node, llvm::Function* function = nullptr) {
@@ -262,8 +284,7 @@ llvm::Value* CodeGenner::generateValue(const std::unique_ptr<pegtl::parse_tree::
         result = llvm::ConstantFP::get(typeMap["Flo"](context), std::stof(value->string()));
     }
     else if (value->type == "ddlbx::parser::String") {
-        std::string str = value->string().substr(1, value->string().size() - 2);  // remove quotes
-        result = llvm::ConstantDataArray::getString(context, str);
+        result = builder.CreateGlobalString(value->string());
     }
     else if (value->type == "ddlbx::parser::Boolean") {
         if (value->string() == "true") {

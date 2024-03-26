@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
     // print module
     codeGenner.getModule().print(llvm::errs(), nullptr);
 
-    // // generate object file
-    // ddlbx::pass::ObjectGenner objectGenner;
-    // objectGenner.generate(codeGenner.getModule());
+    // generate object file
+    ddlbx::pass::ObjectGenner objectGenner;
+    objectGenner.generate(codeGenner.getModule());
 }
