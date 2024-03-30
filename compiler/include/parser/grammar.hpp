@@ -45,23 +45,30 @@ class Value : public pegtl::sor<
 
 class End : public pegtl::one<'!'> {};
 
-class Operator : public pegtl::sor<
+class BinaryOperator : public pegtl::sor<
     pegtl::one<'+'>,
     pegtl::one<'-'>,
     pegtl::one<'*'>,
     pegtl::one<'/'>,
-    pegtl::one<'%'>,
-    pegtl::one<'^'>,
-    pegtl::one<'&'>,
-    pegtl::one<'|'>,
-    pegtl::one<'~'>,
-    pegtl::one<'='>,
-    pegtl::one<'>'>,
-    pegtl::one<'<'>,
+    pegtl::one<'%'>
+> {};
+
+class UnaryOperator : public pegtl::sor<
+    pegtl::one<'!'>,
+    pegtl::string<'-', '-'>,
+    pegtl::string<'+', '+'>
+> {};
+
+class ComparisonOperator : public pegtl::sor<
     pegtl::string<'<', '='>,
     pegtl::string<'>', '='>,
     pegtl::string<'=', '='>,
-    pegtl::string<'n', 'o', 't'>,
+    pegtl::string<'!', '='>,
+    pegtl::one<'>'>,
+    pegtl::one<'<'>
+> {};
+
+class LogicalOperator : public pegtl::sor<
     pegtl::string<'a', 'n', 'd'>,
     pegtl::string<'o', 'r'>
 > {};
@@ -85,24 +92,38 @@ class Type : public pegtl::sor<
 class FunctionCall;
 class Bracket;
 class Statement : public pegtl::seq<
-    pegtl::sor<
-        Bracket,
-        Value,
-        FunctionCall,
-        Identifier
-    >,
-    pegtl::star<
-        pegtl::pad<
-            Operator,
-            pegtl::space
+    pegtl::seq<
+        pegtl::opt<
+            UnaryOperator
         >,
-
-        // Below code can reduce the hight of AST from stmt->stmt->value to stmt->value
         pegtl::sor<
             Bracket,
             Value,
             FunctionCall,
             Identifier
+        >
+    >,
+    pegtl::star<
+        pegtl::pad<
+            pegtl::sor<
+                BinaryOperator,
+                ComparisonOperator,
+                LogicalOperator
+            >,
+            pegtl::space
+        >,
+
+        // Below code can reduce the hight of AST from stmt->stmt->value to stmt->value
+        pegtl::seq<
+            pegtl::opt<
+                UnaryOperator
+            >,
+            pegtl::sor<
+                Bracket,
+                Value,
+                FunctionCall,
+                Identifier
+            >
         >
     >
 > {};
@@ -153,13 +174,17 @@ class Return : public pegtl::seq<
     >
 > {};
 
-class Expression : public pegtl::seq<
-    pegtl::sor<
-        VariableDeclaration,
-        Return,
-        Statement
+class Conditional;
+class Expression : public pegtl::sor< 
+    pegtl::seq<
+        pegtl::sor<
+            VariableDeclaration,
+            Return,
+            Statement
+        >,
+        End
     >,
-    End
+    Conditional
 > {};
 
 class Block : public pegtl::seq<
@@ -179,10 +204,30 @@ class Block : public pegtl::seq<
     >
 > {};
 
+class Conditional : public pegtl::seq<
+    pegtl::keyword<'o', 'p', 't'>,
+    pegtl::pad<
+        pegtl::one<'('>,
+        pegtl::space
+    >,
+    Statement,
+    pegtl::pad<
+        pegtl::one<')'>,
+        pegtl::space
+    >,
+    pegtl::pad<
+        pegtl::sor<
+            Expression,
+            Block
+        >,
+        pegtl::space
+    >
+> {};
+
 class ArrowBlock : public pegtl::seq<
     pegtl::string<'=', '>'>,
     pegtl::pad<
-        Statement,
+        Expression,
         pegtl::space
     >
 > {};
@@ -263,8 +308,7 @@ class Function : public pegtl::seq<
     pegtl::pad<
         pegtl::sor<
             ArrowBlock,
-            Block,
-            End
+            Block
         >,
         pegtl::space
     >

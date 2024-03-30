@@ -17,7 +17,9 @@ template <> struct Selector<Float> : std::true_type {};
 template <> struct Selector<String> : std::true_type {};
 template <> struct Selector<Value> : std::true_type {};
 template <> struct Selector<Boolean> : std::true_type {};
-template <> struct Selector<Operator> : std::true_type {};
+template <> struct Selector<UnaryOperator> : std::true_type {};
+template <> struct Selector<BinaryOperator> : std::true_type {};
+template <> struct Selector<ComparisonOperator> : std::true_type {};
 template <> struct Selector<Type> : std::true_type {};
 template <> struct Selector<Identifier> : std::true_type {};
 template <> struct Selector<Expression> : std::true_type {};
@@ -33,6 +35,7 @@ template <> struct Selector<EmptyParameter> : std::true_type {};
 template <> struct Selector<Object> : std::true_type {};
 template <> struct Selector<Function> : std::true_type {};
 template <> struct Selector<ExternalFunction> : std::true_type {};
+template <> struct Selector<Conditional> : std::true_type {};
 template <> struct Selector<Program> : std::true_type {};
 
 }  // namespace parser

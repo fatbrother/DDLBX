@@ -63,10 +63,11 @@ private:
         FunctionCall,
         Return,
         Statement,
+        Conditional,
     };
     static std::map<std::string, std::function<llvm::Type *(llvm::LLVMContext &)>> typeMap;
     static std::map<std::string, int> opPropertyMap;
-    static std::map<std::string, llvm::Instruction::BinaryOps> opMap;
+    static std::map<std::string, llvm::Instruction::BinaryOps> binaryOpMap;
     static std::map<std::string, ExpressionType> expressionTypeMap;
 
     /**
@@ -74,7 +75,7 @@ private:
      *
      * @param node The node representing the block.
      */
-    void generateBlock(const std::unique_ptr<pegtl::parse_tree::node> &, llvm::Function *);
+    llvm::BasicBlock* generateBlock(const std::unique_ptr<pegtl::parse_tree::node> &, llvm::Function *);
 
     /**
      * @brief Generate LLVM IR code for a function declaration.
@@ -107,6 +108,13 @@ private:
     llvm::Value *generateStatement(const std::unique_ptr<pegtl::parse_tree::node> &, llvm::Function *);
 
     /**
+     * @brief Handle the operation of the statement.
+     * 
+     * @param node The node representing the statement.
+    */
+    llvm::Value *handleOperation(llvm::Value *, llvm::Value *, const std::string&);
+
+    /**
      * @brief Generate LLVM IR code for a value.
      *
      * @param node The node representing the value.
@@ -137,6 +145,13 @@ private:
      * @param node The node representing the object declaration.
      */
     void generateObjectDeclaration(const std::unique_ptr<pegtl::parse_tree::node> &);
+
+    /**
+     * @brief Generate LLVM IR code for conditional statement.
+     * 
+     * @param node The node representing the conditional statement.
+    */
+    void generateConditional(const std::unique_ptr<pegtl::parse_tree::node> &, llvm::Function *);
 };
 
 }  // namespace ir

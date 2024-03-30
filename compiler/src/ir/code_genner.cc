@@ -1,10 +1,9 @@
 #include "ir/code_genner.hpp"
 
-#include <stack>
 #include <llvm/IR/Verifier.h>
 
-#include "ir/build_in.hpp"
 #include <iostream>
+#include <stack>
 
 namespace ddlbx {
 namespace ir {
@@ -23,9 +22,17 @@ std::map<std::string, int> CodeGenner::opPropertyMap = {
     {"*", 2},
     {"/", 2},
     {"%", 2},
+    {"<", 3},
+    {"<=", 3},
+    {">", 3},
+    {">=", 3},
+    {"==", 4},
+    {"!=", 4},
+    {"&&", 5},
+    {"||", 5},
 };
 
-std::map<std::string, llvm::Instruction::BinaryOps> CodeGenner::opMap = {
+std::map<std::string, llvm::Instruction::BinaryOps> CodeGenner::binaryOpMap = {
     {"+", llvm::Instruction::BinaryOps::Add},
     {"-", llvm::Instruction::BinaryOps::Sub},
     {"*", llvm::Instruction::BinaryOps::Mul},
@@ -38,6 +45,7 @@ std::map<std::string, CodeGenner::ExpressionType> CodeGenner::expressionTypeMap 
     {"ddlbx::parser::FunctionCall", CodeGenner::ExpressionType::FunctionCall},
     {"ddlbx::parser::Return", CodeGenner::ExpressionType::Return},
     {"ddlbx::parser::Statement", CodeGenner::ExpressionType::Statement},
+    {"ddlbx::parser::Conditional", CodeGenner::ExpressionType::Conditional},
 };
 
 void CodeGenner::generate(const std::unique_ptr<pegtl::parse_tree::node>& node) {
@@ -58,9 +66,9 @@ void CodeGenner::generate(const std::unique_ptr<pegtl::parse_tree::node>& node) 
     }
 }
 
-void CodeGenner::generateBlock(const std::unique_ptr<pegtl::parse_tree::node> &node, llvm::Function *function = nullptr) {
-    if (!node) return;
-    if (node->type != "ddlbx::parser::Block") return;
+llvm::BasicBlock* CodeGenner::generateBlock(const std::unique_ptr<pegtl::parse_tree::node>& node, llvm::Function* function = nullptr) {
+    if (!node) return nullptr;
+    if (node->type != "ddlbx::parser::Block") return nullptr;
 
     llvm::BasicBlock* block = llvm::BasicBlock::Create(context, "entry", function);
     builder.SetInsertPoint(block);
@@ -69,15 +77,18 @@ void CodeGenner::generateBlock(const std::unique_ptr<pegtl::parse_tree::node> &n
         generateExpression(child, function);
     }
 
-    if (block->getTerminator()) return;
+    if (!function || block->getTerminator()) return block;
 
     // check if last statement is return
     if (function && function->getReturnType()->isVoidTy()) {
         builder.CreateRetVoid();
-    } else {
-        int line = node->begin().line;
-        throw std::runtime_error(std::to_string(line) + ": last statement should be return");
     }
+    else {
+        auto line = node->children.back()->end().line;
+        throw std::runtime_error(std::to_string(line) + ": function must return a value");
+    }
+
+    return block;
 }
 
 void CodeGenner::generateFunctionDeclaration(const std::unique_ptr<pegtl::parse_tree::node>& node) {
@@ -164,7 +175,8 @@ void CodeGenner::generateExternalFunctionDeclaration(const std::unique_ptr<pegtl
     try {
         auto func = module.getOrInsertFunction(name, funcType);
         functionMap[name] = func;
-    } catch (std::runtime_error& e) {
+    }
+    catch (std::runtime_error& e) {
         int line = node->begin().line;
         throw std::runtime_error(std::to_string(line) + ": " + e.what());
     }
@@ -187,6 +199,9 @@ void CodeGenner::generateExpression(const std::unique_ptr<pegtl::parse_tree::nod
             break;
         case ExpressionType::Statement:
             generateStatement(child, function);
+            break;
+        case ExpressionType::Conditional:
+            generateConditional(child, function);
             break;
     }
 }
@@ -218,7 +233,7 @@ llvm::Value* CodeGenner::generateStatement(const std::unique_ptr<pegtl::parse_tr
                 }
             }
             if (!var && variableMap.find(name) != variableMap.end()) {
-                llvm::AllocaInst * alloca = variableMap[name];
+                llvm::AllocaInst* alloca = variableMap[name];
                 llvm::Type* type = alloca->getAllocatedType();
                 var = builder.CreateLoad(type, alloca);
                 // check if variable is struct ptr
@@ -234,22 +249,28 @@ llvm::Value* CodeGenner::generateStatement(const std::unique_ptr<pegtl::parse_tr
 
             valueStack.push(var);
         }
-        if (child->type == "ddlbx::parser::Operator") {
-            std::string op = child->string();
-            if (opStack.empty()) {
-                opStack.push(op);
-                continue;
-            }
-            while (!opStack.empty() && opPropertyMap[opStack.top()] >= opPropertyMap[op]) {
+        if (child->type == "ddlbx::parser::BinaryOperator" || 
+            child->type == "ddlbx::parser::ComparisonOperator" || 
+            child->type == "ddlbx::parser::LogicalOperator") {
+            
+            std::string comingOp = child->string();
+            while (!opStack.empty() && opPropertyMap[opStack.top()] >= opPropertyMap[comingOp]) {
                 llvm::Value* rhs = valueStack.top();
                 valueStack.pop();
                 llvm::Value* lhs = valueStack.top();
                 valueStack.pop();
-                llvm::Instruction::BinaryOps op = opMap[opStack.top()];
-                opStack.pop();
-                valueStack.push(builder.CreateBinOp(op, lhs, rhs));
+                std::string op = opStack.top();
+
+                try {
+                    llvm::Value* result = handleOperation(lhs, rhs, op);
+                    valueStack.push(result);
+                }
+                catch (std::exception& e) {
+                    int line = child->begin().line;
+                    throw std::runtime_error(std::to_string(line) + ": " + e.what());
+                }
             }
-            opStack.push(op);
+            opStack.push(comingOp);
         }
     }
 
@@ -258,14 +279,48 @@ llvm::Value* CodeGenner::generateStatement(const std::unique_ptr<pegtl::parse_tr
         valueStack.pop();
         llvm::Value* lhs = valueStack.top();
         valueStack.pop();
-        llvm::Instruction::BinaryOps op = opMap[opStack.top()];
+        std::string op = opStack.top();
         opStack.pop();
-        valueStack.push(builder.CreateBinOp(op, lhs, rhs));
+
+        try {
+            llvm::Value* result = handleOperation(lhs, rhs, op);
+            valueStack.push(result);
+        }
+        catch (std::exception& e) {
+            int line = node->begin().line;
+            throw std::runtime_error(std::to_string(line) + ": " + e.what());
+        }
     }
 
-    if (!valueStack.empty())
+    if (!valueStack.empty()) {
         return valueStack.top();
+    }
     return nullptr;
+}
+
+llvm::Value* CodeGenner::handleOperation(llvm::Value* lhs, llvm::Value* rhs, const std::string& op) {
+    llvm::Value* result = nullptr;
+    if (op == "==")
+        result = builder.CreateICmpEQ(lhs, rhs);
+    else if (op == "!=")
+        result = builder.CreateICmpNE(lhs, rhs);
+    else if (op == "<")
+        result = builder.CreateICmpSLT(lhs, rhs);
+    else if (op == "<=")
+        result = builder.CreateICmpSLE(lhs, rhs);
+    else if (op == ">")
+        result = builder.CreateICmpSGT(lhs, rhs);
+    else if (op == ">=")
+        result = builder.CreateICmpSGE(lhs, rhs);
+    else if (op == "&&")
+        result = builder.CreateAnd(lhs, rhs);
+    else if (op == "||")
+        result = builder.CreateOr(lhs, rhs);
+    else {
+        llvm::Instruction::BinaryOps binaryOp = binaryOpMap[op];
+        result = builder.CreateBinOp(binaryOp, lhs, rhs);
+    }
+    return result;
 }
 
 llvm::Value* CodeGenner::generateValue(const std::unique_ptr<pegtl::parse_tree::node>& node) {
@@ -339,7 +394,7 @@ void CodeGenner::generateVariableDeclaration(const std::unique_ptr<pegtl::parse_
     const auto& value = node->children[1];
 
     llvm::Value* val = generateStatement(value, function);
-    
+
     llvm::AllocaInst* alloca = builder.CreateAlloca(val->getType(), nullptr, name);
     builder.CreateStore(val, alloca);
     variableMap[name] = alloca;
@@ -376,6 +431,48 @@ void CodeGenner::generateObjectDeclaration(const std::unique_ptr<pegtl::parse_tr
     }
     llvm::Value* ret = builder.CreateLoad(structType, thisPtr);
     builder.CreateRet(ret);
+}
+
+void CodeGenner::generateConditional(const std::unique_ptr<pegtl::parse_tree::node>& node, llvm::Function* function) {
+    if (!node) return;
+    if (node->type != "ddlbx::parser::Conditional") return;
+
+    const auto& condition = node->children[0];
+    const auto& child = node->children[1];
+
+    llvm::Value* cond = generateStatement(condition, function);
+    if (!cond->getType()->isIntegerTy(1)) {
+        cond = builder.CreateICmpNE(cond, llvm::ConstantInt::get(cond->getType(), 0));
+    }
+
+    llvm::BasicBlock* currentBlock = builder.GetInsertBlock();
+
+    llvm::BasicBlock* thenBlock = nullptr;
+    llvm::BasicBlock* elseBlock = llvm::BasicBlock::Create(context, "else", function);
+    llvm::BasicBlock* continueBlock = llvm::BasicBlock::Create(context, "continue", function);
+
+    if (child->type == "ddlbx::parser::Block") {
+        thenBlock = generateBlock(child, function);
+    }
+    else if (child->type == "ddlbx::parser::Expression") {
+        thenBlock = llvm::BasicBlock::Create(context, "then", function);
+        builder.SetInsertPoint(thenBlock);
+        generateExpression(child, function);
+    }
+
+    builder.SetInsertPoint(currentBlock);
+    builder.CreateCondBr(cond, thenBlock, elseBlock);
+
+    builder.SetInsertPoint(elseBlock);
+    // TODO: support else if
+    // builder.CreateRet(llvm::UndefValue::get(function->getReturnType()));
+
+    builder.CreateBr(continueBlock);
+    builder.SetInsertPoint(continueBlock);
+
+    // llvm::PHINode* phi = builder.CreatePHI(llvm::Type::getInt1Ty(context), 2);
+    // phi->addIncoming(llvm::ConstantInt::getTrue(context), thenBlock);
+    // phi->addIncoming(llvm::ConstantInt::getFalse(context), elseBlock);
 }
 
 }  // namespace ir
