@@ -150,33 +150,60 @@ See [Reversing](#reversing) to have an idea why we need `^` and `v`.
 
 ## Conditionals
 
-You can use `case` to declare conditionals.
+You can use `opt` to declare conditionals.
 
 ```ddlbx
 var a = 0!
-case (a == 0) {
-    print("a is 0")!
-} case (a == 1) {
-    print("a is 1")!
-} else {
-    print("a is not 0 or 1")!
+opt (a) {
+    0 => print("a is 0")!
+    1 => print("a is 1")!
+    else => print("a is not 0 or 1")!
 }!
 ```
 
-If the containing code is only one line, you can use `=>` instead of `{}`.
+You can also pass two or more variables to conditionals.
 
 ```ddlbx
 var a = 0!
-case (a == 0) => print("a is 0")
-case (a == 1) => print("a is 1")
-else => print("a is not 0 or 1")!
+var b = 1!
+
+opt (a, b) {
+    a == 0 => print("a is 0")!
+    a == 1 => print("a is 1")!
+    a != 0 => print("a is not 0")!
+    a > b => print("a is greater than b")!
+    a < b => print("a is less than b")!
+    a >= b => print("a is greater than or equal to b")!
+    a <= b => print("a is less than or equal to b")!
+}!
 ```
 
-Use `!` to end your conditionals.
+Else is optional in conditionals.
 
 ```ddlbx
 var a = 0!
-case (a == 0) => print("a is 0")!
+opt (a) {
+    0 => print("a is 0")!
+    1 => print("a is 1")!
+    else => print("a is not 0 or 1")!
+}!
+```
+
+You can also use scope in conditionals.
+
+```ddlbx
+var a = 0!
+opt (a) {
+    0 => {
+        print("a is 0")!
+    }
+    1 => {
+        print("a is 1")!
+    }
+    else => {
+        print("a is not 0 or 1")!
+    }
+}!
 ```
 
 ## Loops
