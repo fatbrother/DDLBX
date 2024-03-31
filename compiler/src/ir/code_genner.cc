@@ -260,6 +260,7 @@ llvm::Value* CodeGenner::generateStatement(const std::unique_ptr<pegtl::parse_tr
                 llvm::Value* lhs = valueStack.top();
                 valueStack.pop();
                 std::string op = opStack.top();
+                opStack.pop();
 
                 try {
                     llvm::Value* result = handleOperation(lhs, rhs, op);
