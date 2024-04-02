@@ -69,8 +69,8 @@ class ComparisonOperator : public pegtl::sor<
 > {};
 
 class LogicalOperator : public pegtl::sor<
-    pegtl::string<'a', 'n', 'd'>,
-    pegtl::string<'o', 'r'>
+    pegtl::keyword<'a', 'n', 'd'>,
+    pegtl::keyword<'o', 'r'>
 > {};
 
 class Identifier : public pegtl::plus<

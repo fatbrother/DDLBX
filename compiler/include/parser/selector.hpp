@@ -20,6 +20,7 @@ template <> struct Selector<Boolean> : std::true_type {};
 template <> struct Selector<UnaryOperator> : std::true_type {};
 template <> struct Selector<BinaryOperator> : std::true_type {};
 template <> struct Selector<ComparisonOperator> : std::true_type {};
+template <> struct Selector<LogicalOperator> : std::true_type {};
 template <> struct Selector<Type> : std::true_type {};
 template <> struct Selector<Identifier> : std::true_type {};
 template <> struct Selector<Expression> : std::true_type {};

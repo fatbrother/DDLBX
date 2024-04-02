@@ -17,19 +17,20 @@ std::map<std::string, std::function<llvm::Type*(llvm::LLVMContext&)>> CodeGenner
 };
 
 std::map<std::string, int> CodeGenner::opPropertyMap = {
-    {"+", 1},
-    {"-", 1},
-    {"*", 2},
-    {"/", 2},
-    {"%", 2},
-    {"<", 3},
-    {"<=", 3},
-    {">", 3},
-    {">=", 3},
-    {"==", 4},
-    {"!=", 4},
-    {"&&", 5},
-    {"||", 5},
+    {"and", 1},
+    {"or", 1},
+    {"==", 2},
+    {"!=", 2},
+    {"<", 2},
+    {"<=", 2},
+    {">", 2},
+    {">=", 2},
+    {"+", 3},
+    {"-", 3},
+    {"*", 4},
+    {"/", 4},
+    {"%", 4},
+    {"!", 5},
 };
 
 std::map<std::string, llvm::Instruction::BinaryOps> CodeGenner::binaryOpMap = {
@@ -313,9 +314,9 @@ llvm::Value* CodeGenner::handleOperation(llvm::Value* lhs, llvm::Value* rhs, con
         result = builder.CreateICmpSGT(lhs, rhs);
     else if (op == ">=")
         result = builder.CreateICmpSGE(lhs, rhs);
-    else if (op == "&&")
+    else if (op == "and")
         result = builder.CreateAnd(lhs, rhs);
-    else if (op == "||")
+    else if (op == "or")
         result = builder.CreateOr(lhs, rhs);
     else {
         llvm::Instruction::BinaryOps binaryOp = binaryOpMap[op];
@@ -470,10 +471,6 @@ void CodeGenner::generateConditional(const std::unique_ptr<pegtl::parse_tree::no
 
     builder.CreateBr(continueBlock);
     builder.SetInsertPoint(continueBlock);
-
-    // llvm::PHINode* phi = builder.CreatePHI(llvm::Type::getInt1Ty(context), 2);
-    // phi->addIncoming(llvm::ConstantInt::getTrue(context), thenBlock);
-    // phi->addIncoming(llvm::ConstantInt::getFalse(context), elseBlock);
 }
 
 }  // namespace ir

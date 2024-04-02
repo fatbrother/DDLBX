@@ -19,8 +19,8 @@ TEST(Grammar, Operator) {
     std::string sample9 = ">";
     std::string sample10 = "<=";
     std::string sample11 = ">=";
-    std::string sample12 = "&&";
-    std::string sample13 = "||";
+    std::string sample12 = "and";
+    std::string sample13 = "or";
     std::string sample14 = "!";
 
     string_input<> in1(sample1, "input");
@@ -49,7 +49,7 @@ TEST(Grammar, Operator) {
     EXPECT_TRUE(parse<ComparisonOperator>(in9));
     EXPECT_TRUE(parse<ComparisonOperator>(in10));
     EXPECT_TRUE(parse<ComparisonOperator>(in11));
-    EXPECT_TRUE(parse<ComparisonOperator>(in12));
-    EXPECT_TRUE(parse<ComparisonOperator>(in13));
+    EXPECT_TRUE(parse<LogicalOperator>(in12));
+    EXPECT_TRUE(parse<LogicalOperator>(in13));
     EXPECT_TRUE(parse<UnaryOperator>(in14));
 }
