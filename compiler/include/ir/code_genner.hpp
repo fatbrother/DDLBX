@@ -64,6 +64,7 @@ private:
         Return,
         Statement,
         Conditional,
+        Loop,
     };
     static std::map<std::string, std::function<llvm::Type *(llvm::LLVMContext &)>> typeMap;
     static std::map<std::string, int> opPropertyMap;
@@ -152,6 +153,13 @@ private:
      * @param node The node representing the conditional statement.
     */
     void generateConditional(const std::unique_ptr<pegtl::parse_tree::node> &, llvm::Function *);
+
+    /**
+     * @brief Generate LLVM IR code for loop statement.
+     * 
+     * @param node The node representing the loop statement.
+     */
+    void generateLoop(const std::unique_ptr<pegtl::parse_tree::node> &, llvm::Function *);
 };
 
 }  // namespace ir

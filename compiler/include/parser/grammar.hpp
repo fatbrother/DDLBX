@@ -175,6 +175,7 @@ class Return : public pegtl::seq<
 > {};
 
 class Conditional;
+class Loop;
 class Expression : public pegtl::sor< 
     pegtl::seq<
         pegtl::sor<
@@ -184,7 +185,10 @@ class Expression : public pegtl::sor<
         >,
         End
     >,
-    Conditional
+    pegtl::sor<
+        Loop,
+        Conditional
+    >
 > {};
 
 class Block : public pegtl::seq<
@@ -211,6 +215,63 @@ class Conditional : public pegtl::seq<
         pegtl::space
     >,
     Statement,
+    pegtl::pad<
+        pegtl::one<')'>,
+        pegtl::space
+    >,
+    pegtl::pad<
+        pegtl::sor<
+            Expression,
+            Block
+        >,
+        pegtl::space
+    >
+> {};
+
+class RangeStart : public pegtl::seq<
+    pegtl::keyword<'f', 'r', 'o', 'm'>,
+    pegtl::pad<
+        Statement,
+        pegtl::space
+    >
+> {};
+
+class RangeEnd : public pegtl::seq<
+    pegtl::keyword<'t', 'o'>,
+    pegtl::pad<
+        Statement,
+        pegtl::space
+    >
+> {};
+
+class RangeStep : public pegtl::seq<
+    pegtl::keyword<'s', 't', 'e', 'p'>,
+    pegtl::pad<
+        Statement,
+        pegtl::space
+    >
+> {};
+
+class LoopRange : public pegtl::seq<
+    pegtl::pad<
+        Identifier,
+        pegtl::space
+    >,
+    pegtl::opt<RangeStart>,
+    RangeEnd,
+    pegtl::opt<RangeStep>
+> {};
+
+class Loop : public pegtl::seq<
+    pegtl::keyword<'f', 'o', 'r'>,
+    pegtl::pad<
+        pegtl::one<'('>,
+        pegtl::space
+    >,
+    pegtl::sor<
+        LoopRange,
+        Statement
+    >,
     pegtl::pad<
         pegtl::one<')'>,
         pegtl::space

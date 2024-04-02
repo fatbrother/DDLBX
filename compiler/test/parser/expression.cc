@@ -17,6 +17,8 @@ TEST(Grammar, Expression) {
     std::string sample7 = "print('Hello, World!')!";
     std::string sample8 = "opt (a == 1) { print(1)! }!";
     std::string sample9 = "opt (a == 1) print(1)!";
+    std::string sample10 = "for (i to 10) { print(i)! }";
+    std::string sample11 = "for (i to 10) print(i)!";
 
     string_input<> in1(sample1, "input");
     string_input<> in2(sample2, "input");
@@ -27,6 +29,8 @@ TEST(Grammar, Expression) {
     string_input<> in7(sample7, "input");
     string_input<> in8(sample8, "input");
     string_input<> in9(sample9, "input");
+    string_input<> in10(sample10, "input");
+    string_input<> in11(sample11, "input");
 
     EXPECT_TRUE(parse<Expression>(in1));
     EXPECT_TRUE(parse<Expression>(in2));
@@ -37,4 +41,6 @@ TEST(Grammar, Expression) {
     EXPECT_TRUE(parse<Expression>(in7));
     EXPECT_TRUE(parse<Expression>(in8));
     EXPECT_TRUE(parse<Expression>(in9));
+    EXPECT_TRUE(parse<Expression>(in10));
+    EXPECT_TRUE(parse<Expression>(in11));
 }

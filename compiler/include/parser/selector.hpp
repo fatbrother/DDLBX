@@ -37,6 +37,11 @@ template <> struct Selector<Object> : std::true_type {};
 template <> struct Selector<Function> : std::true_type {};
 template <> struct Selector<ExternalFunction> : std::true_type {};
 template <> struct Selector<Conditional> : std::true_type {};
+template <> struct Selector<RangeStart> : std::true_type {};
+template <> struct Selector<RangeEnd> : std::true_type {};
+template <> struct Selector<RangeStep> : std::true_type {};
+template <> struct Selector<LoopRange> : std::true_type {};
+template <> struct Selector<Loop> : std::true_type {};
 template <> struct Selector<Program> : std::true_type {};
 
 }  // namespace parser

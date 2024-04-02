@@ -208,7 +208,30 @@ opt (a) {
 
 ## Loops
 
-We don't need loops in DDLBX. We can use functions or reversing(see [Reversing](#reversing)) to implement loops.
+You can use `loop` to declare loops.
+
+```ddlbx
+for (a from 0 to 10) {
+    print(a)!
+}!
+```
+
+You can also use `step` to declare the step of the loop.
+
+```ddlbx
+for (a from 0 to 10 step 2) {
+    print(a)!
+}!
+```
+
+Similar to `while` in other languages, you can also use `for` to declare a loop.
+
+```ddlbx
+for (a < 10) {
+    print(a)!
+    a += 1!
+}!
+```
 
 ## Functions
 
@@ -323,27 +346,6 @@ If you don't want to let anyone use `del` and, you can also delete it.
 ```ddlbx
 del @(undel)!
 del @(del)!
-```
-
-## Reversing
-
-You can Rev the direction of your code in scope.
-
-```ddlbx
-var message = "Hello"!
-print(message)! // Hello world
-message = "world"!
-rev!
-```
-
-Implementing loops with reversing and conditionals.
-
-```ddlbx
-var a = 0!
-// when code direction is reversed, ^ will be false
-case (^) => rev! 
-print(a)!
-case (a++ < 10) => rev!
 ```
 
 ## Import

@@ -157,7 +157,7 @@ TEST_F(CodeGennerTest, GenerateBracketStatement) {
 
 TEST_F(CodeGennerTest, OperatorPriority) {
     const std::string input = R"(
-        fun test6(): Int {
+        fun test6(): Boo {
             ret 1 == 1 and 3 == 4!
         }
     )";
@@ -178,7 +178,7 @@ TEST_F(CodeGennerTest, OperatorPriority) {
     llvm::ReturnInst* retInst = llvm::dyn_cast<llvm::ReturnInst>(&entryBlock->front());
     ASSERT_NE(nullptr, retInst);
 
-    // Assuming the return value is 0
+    // Assuming the return value is false
     EXPECT_EQ(0, llvm::cast<llvm::ConstantInt>(retInst->getReturnValue())->getSExtValue());
 }
 
@@ -223,6 +223,34 @@ TEST_F(CodeGennerTest, GenerateConditional) {
     EXPECT_EQ(1, elseBlock->size());
 }
 
+TEST_F(CodeGennerTest, GenerateLoop) {
+    const std::string input = R"(
+        fun test8(): Non {
+            for (i to 10) { 1 + 1! }
+        }
+    )";
+    generate(input);
+
+    // Assuming the test function is declared in the module
+    llvm::Function* testFunction = module.getFunction("test8");
+
+    ASSERT_NE(nullptr, testFunction);
+    EXPECT_EQ("test8", testFunction->getName().str());
+
+    // Assuming the test function has a single basic block
+    llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
+    ASSERT_NE(nullptr, entryBlock);
+    EXPECT_EQ(3, entryBlock->size());
+
+    // Assuming the last instruction is a branch instruction
+    llvm::BranchInst* branchInst = llvm::dyn_cast<llvm::BranchInst>(&entryBlock->back());
+    ASSERT_NE(nullptr, branchInst);
+
+    // Assuming the first successor is the loop block
+    llvm::BasicBlock* loopBlock = branchInst->getSuccessor(0);
+    ASSERT_NE(nullptr, loopBlock);
+    EXPECT_EQ(3, loopBlock->size());
+}
 
 TEST_F(CodeGennerTest, GenerateObject) {
     const std::string input = R"(
