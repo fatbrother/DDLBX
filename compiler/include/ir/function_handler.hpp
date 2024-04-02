@@ -19,8 +19,7 @@ namespace ir{
 class Function{
 public:
 
-    Function()
-        : function(nullptr) {}
+    Function(std::string exp) : exp(exp), function(nullptr) {}
 
     /**
      * @brief Create a new LLVM Function.
@@ -42,34 +41,71 @@ public:
     /**
      * @brief Insert a new variable alloca into the variable alloca map.
      * 
-     * @param varibleName The name of the variable.
+     * @param variableName The name of the variable.
      * @param alloca The alloca of the variable.
     */
-    void insertVaribleAlloca(std::string varibleName, llvm::AllocaInst* alloca){
-        VaribleAlloca[varibleName] = alloca;
+    void insertVariable(std::string variableName, llvm::AllocaInst* alloca){
+        variableMap[variableName] = alloca;
     }
 
     /**
      * @brief Get the alloca of a variable.
      * 
-     * @param varibleName The name of the variable.
+     * @param variableName The name of the variable.
      * 
      * @return llvm::AllocaInst* The alloca of the variable.
     */
-    llvm::AllocaInst* getVaribleAlloca(std::string varibleName){
-        return VaribleAlloca[varibleName];
+    llvm::AllocaInst* getVariable(std::string variableName){
+        return variableMap[variableName];
     }
 
     /**
      * @brief Delete a alloca from the variable map.
      * 
-     * @param varibleName The name of the variable.
+     * @param variableName The name of the variable.
      * 
      * @return bool True if the variable was deleted, false otherwise.
     */
-    bool deleteVaribleAlloca(std::string varibleName){
-        if(VaribleAlloca.find(varibleName) != VaribleAlloca.end()){
-            VaribleAlloca.erase(varibleName);
+    bool deleteVariable(std::string variableName){
+        if(variableMap.find(variableName) != variableMap.end()){
+            variableMap.erase(variableName);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @brief Insert a new function into the function map.
+     * 
+     * @param functionName The name of the function.
+     * @param function The function.
+     * 
+    */
+    void insertFunction(std::string functionName, Function function){
+        childfuncMap[functionName] = function;
+    }
+
+    /**
+     * @brief Get the function from the function map.
+     * 
+     * @param functionName The name of the function.
+     * 
+     * @return Function The function.
+    */
+    Function getFunction(std::string functionName){
+        return childfuncMap[functionName];
+    }
+
+    /**
+     * @brief Delete a function from the function map.
+     * 
+     * @param functionName The name of the function.
+     * 
+     * @return bool True if the function was deleted, false otherwise.
+    */
+    bool deleteFunction(std::string functionName){
+        if(childfuncMap.find(functionName) != childfuncMap.end()){
+            childfuncMap.erase(functionName);
             return true;
         }
         return false;
@@ -77,18 +113,11 @@ public:
 
 private:
     llvm::Function *function;
-
-    std::map<std::string, llvm::AllocaInst*> VaribleAlloca;
-
-    //not sure if this is the way to store the varibles
-    std::map<std::string, int> intVarible;
-    std::map<std::string, float> floatVarible;
-    std::map<std::string, std::string> stringVarible;
-    std::map<std::string, bool> boolVarible;
-    
-    
+    std::string exp;
 
 
+    std::map<std::string, llvm::AllocaInst*> variableMap;
+    std::map<std::string, Function> childfuncMap;
 };
 }
 }
