@@ -182,6 +182,48 @@ TEST_F(CodeGennerTest, OperatorPriority) {
     EXPECT_EQ(0, llvm::cast<llvm::ConstantInt>(retInst->getReturnValue())->getSExtValue());
 }
 
+TEST_F(CodeGennerTest, GenerateConditional) {
+    const std::string input = R"(
+        fun test7(): Int {
+            opt (1) ret 1!
+
+            ret 0!
+        }
+    )";
+    generate(input);
+
+    // Assuming the test function is declared in the module
+    llvm::Function* testFunction = module.getFunction("test7");
+
+    ASSERT_NE(nullptr, testFunction);
+    EXPECT_EQ("test7", testFunction->getName().str());
+
+    // Assuming the test function has a single basic block
+    llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
+    ASSERT_NE(nullptr, entryBlock);
+    EXPECT_EQ(1, entryBlock->size());
+
+    // Assuming the fist instruction is a branch instruction
+    llvm::BranchInst* branchInst = llvm::dyn_cast<llvm::BranchInst>(&entryBlock->front());
+    ASSERT_NE(nullptr, branchInst);
+
+    // Assuming the first successor is the then block
+    llvm::BasicBlock* thenBlock = branchInst->getSuccessor(0);
+    ASSERT_NE(nullptr, thenBlock);
+    EXPECT_EQ(2, thenBlock->size());
+
+    // Assuming the first instruction in the then block is a return instruction
+    llvm::ReturnInst* retInst = llvm::dyn_cast<llvm::ReturnInst>(&thenBlock->front());
+    ASSERT_NE(nullptr, retInst);
+    EXPECT_EQ(1, llvm::cast<llvm::ConstantInt>(retInst->getReturnValue())->getSExtValue());
+
+    // Assuming the second successor is the else block
+    llvm::BasicBlock* elseBlock = branchInst->getSuccessor(1);
+    ASSERT_NE(nullptr, elseBlock);
+    EXPECT_EQ(1, elseBlock->size());
+}
+
+
 TEST_F(CodeGennerTest, GenerateObject) {
     const std::string input = R"(
         obj Test {

@@ -461,6 +461,7 @@ void CodeGenner::generateConditional(const std::unique_ptr<pegtl::parse_tree::no
         builder.SetInsertPoint(thenBlock);
         generateExpression(child, function);
     }
+    builder.CreateBr(continueBlock);
 
     builder.SetInsertPoint(currentBlock);
     builder.CreateCondBr(cond, thenBlock, elseBlock);
