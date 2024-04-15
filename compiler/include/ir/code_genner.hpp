@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ir/function_handler.hpp"
+
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
@@ -76,7 +78,7 @@ private:
      *
      * @param node The node representing the block.
      */
-    llvm::BasicBlock* generateBlock(const std::unique_ptr<pegtl::parse_tree::node> &, llvm::Function *);
+    llvm::BasicBlock* generateBlock(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler *);
 
     /**
      * @brief Generate LLVM IR code for a function declaration.
@@ -97,7 +99,7 @@ private:
      *
      * @param node The node representing the function declaration.
      */
-    void generateExpression(const std::unique_ptr<pegtl::parse_tree::node> &, llvm::Function *);
+    void generateExpression(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler *);
 
     /**
      * @brief Generate LLVM IR code for a statement.
@@ -106,7 +108,7 @@ private:
      *
      * @return llvm::Value* The LLVM value.
      */
-    llvm::Value *generateStatement(const std::unique_ptr<pegtl::parse_tree::node> &, llvm::Function *);
+    llvm::Value *generateStatement(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler *);
 
     /**
      * @brief Handle the operation of the statement.
@@ -131,14 +133,14 @@ private:
      *
      * @return llvm::Value* The LLVM value.
      */
-    llvm::Value *generateFunctionCall(const std::unique_ptr<pegtl::parse_tree::node> &, llvm::Function *);
+    llvm::Value *generateFunctionCall(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler *);
 
     /**
      * @brief Generate LLVM IR code for a variable declaration.
      *
      * @param node The node representing the variable declaration.
      */
-    void generateVariableDeclaration(const std::unique_ptr<pegtl::parse_tree::node> &, llvm::Function *);
+    void generateVariableDeclaration(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler *);
 
     /**
      * @brief Generate LLVM IR code for a object declaration.
@@ -152,14 +154,14 @@ private:
      * 
      * @param node The node representing the conditional statement.
     */
-    void generateConditional(const std::unique_ptr<pegtl::parse_tree::node> &, llvm::Function *);
+    void generateConditional(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler *);
 
     /**
      * @brief Generate LLVM IR code for loop statement.
      * 
      * @param node The node representing the loop statement.
      */
-    void generateLoop(const std::unique_ptr<pegtl::parse_tree::node> &, llvm::Function *);
+    void generateLoop(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler *);
 };
 
 }  // namespace ir

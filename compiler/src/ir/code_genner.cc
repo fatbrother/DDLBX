@@ -68,19 +68,23 @@ void CodeGenner::generate(const std::unique_ptr<pegtl::parse_tree::node>& node) 
     }
 }
 
-llvm::BasicBlock* CodeGenner::generateBlock(const std::unique_ptr<pegtl::parse_tree::node>& node, llvm::Function* function = nullptr) {
+llvm::BasicBlock* CodeGenner::generateBlock(const std::unique_ptr<pegtl::parse_tree::node>& node, FunctionHandler* funcHandler = nullptr) {
     if (!node) return nullptr;
     if (node->type != "ddlbx::parser::Block") return nullptr;
-
-    llvm::BasicBlock* block = llvm::BasicBlock::Create(context, "entry", function);
+    
+    llvm::Function* func = nullptr;    //for new class
+    if(funcHandler)
+        func = funcHandler->getFunction();    //for new class
+    
+    llvm::BasicBlock* block = llvm::BasicBlock::Create(context, "entry", func);
     builder.SetInsertPoint(block);
 
     for (const auto& child : node->children) {
-        generateExpression(child, function);
+        generateExpression(child, funcHandler);        //for new class
     }
 
     return block;
-}
+}   //Updated
 
 void CodeGenner::generateFunctionDeclaration(const std::unique_ptr<pegtl::parse_tree::node>& node) {
     if (!node) return;
@@ -118,7 +122,9 @@ void CodeGenner::generateFunctionDeclaration(const std::unique_ptr<pegtl::parse_
 
     // Create function type
     llvm::FunctionType* funcType = llvm::FunctionType::get(retType, paramTypes, false);
-    llvm::Function* func = llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, name, &module);
+    FunctionHandler* funcHandler = new FunctionHandler();      //for new class
+    llvm::Function* func = funcHandler->createFunction(funcType, name, module);     //for new class
+    //llvm::Function* func = llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, name, &module);
 
     // Set parameter names
     for (int i = 0; i < param_count; i++) {
@@ -130,7 +136,7 @@ void CodeGenner::generateFunctionDeclaration(const std::unique_ptr<pegtl::parse_
     }
 
     // Generate function body
-    generateBlock(body, func);
+    generateBlock(body, funcHandler);      //for new class
 
     // Check if last block has terminator
     llvm::BasicBlock* lastBlock = builder.GetInsertBlock();
@@ -145,7 +151,7 @@ void CodeGenner::generateFunctionDeclaration(const std::unique_ptr<pegtl::parse_
     //     int line = node->begin().line;
     //     throw std::runtime_error(std::to_string(line) + ": " + errorStream.str());
     // }
-}
+}   //Updated
 
 void CodeGenner::generateExternalFunctionDeclaration(const std::unique_ptr<pegtl::parse_tree::node>& node) {
     if (!node) return;
@@ -179,34 +185,34 @@ void CodeGenner::generateExternalFunctionDeclaration(const std::unique_ptr<pegtl
     }
 }
 
-void CodeGenner::generateExpression(const std::unique_ptr<pegtl::parse_tree::node>& node, llvm::Function* function = nullptr) {
+void CodeGenner::generateExpression(const std::unique_ptr<pegtl::parse_tree::node>& node, FunctionHandler* funcHandler = nullptr) {
     if (!node) return;
     if (node->type != "ddlbx::parser::Expression") return;
 
     const auto& child = node->children[0];
     switch (expressionTypeMap[std::string{child->type}]) {
         case ExpressionType::VariableDeclaration:
-            generateVariableDeclaration(child, function);
+            generateVariableDeclaration(child, funcHandler);
             break;
         case ExpressionType::FunctionCall:
-            generateFunctionCall(child, function);
+            generateFunctionCall(child, funcHandler);
             break;
         case ExpressionType::Return:
-            builder.CreateRet(generateStatement(child->children[0], function));
+            builder.CreateRet(generateStatement(child->children[0], funcHandler));
             break;
         case ExpressionType::Statement:
-            generateStatement(child, function);
+            generateStatement(child, funcHandler);
             break;
         case ExpressionType::Conditional:
-            generateConditional(child, function);
+            generateConditional(child, funcHandler);
             break;
         case ExpressionType::Loop:
-            generateLoop(child, function);
+            generateLoop(child, funcHandler);
             break;
     }
-}
+}   //UPDATED
 
-llvm::Value* CodeGenner::generateStatement(const std::unique_ptr<pegtl::parse_tree::node>& node, llvm::Function* function = nullptr) {
+llvm::Value* CodeGenner::generateStatement(const std::unique_ptr<pegtl::parse_tree::node>& node, FunctionHandler* funcHandler = nullptr) {
     if (!node) return nullptr;
     if (node->type != "ddlbx::parser::Statement") return nullptr;
 
@@ -215,17 +221,18 @@ llvm::Value* CodeGenner::generateStatement(const std::unique_ptr<pegtl::parse_tr
 
     for (const auto& child : node->children) {
         if (child->type == "ddlbx::parser::Bracket")
-            valueStack.push(generateStatement(child->children[0], function));
+            valueStack.push(generateStatement(child->children[0], funcHandler));
         if (child->type == "ddlbx::parser::Value")
             valueStack.push(generateValue(child));
         if (child->type == "ddlbx::parser::FunctionCall")
-            valueStack.push(generateFunctionCall(child, function));
+            valueStack.push(generateFunctionCall(child, funcHandler));
         if (child->type == "ddlbx::parser::Identifier") {
             std::string name = child->string();
+            llvm::Function* func = (funcHandler)? funcHandler->getFunction(): nullptr;
             llvm::Value* var = nullptr;
 
-            if (function) {
-                for (auto& arg : function->args()) {
+            if (func) {
+                for (auto& arg : func->args()) {
                     if (arg.getName() == name) {
                         var = &arg;
                         break;
@@ -297,7 +304,7 @@ llvm::Value* CodeGenner::generateStatement(const std::unique_ptr<pegtl::parse_tr
         return valueStack.top();
     }
     return nullptr;
-}
+}   //Updated variableMap used here
 
 llvm::Value* CodeGenner::handleOperation(llvm::Value* lhs, llvm::Value* rhs, const std::string& op) {
     llvm::Value* result = nullptr;
@@ -357,7 +364,7 @@ llvm::Value* CodeGenner::generateValue(const std::unique_ptr<pegtl::parse_tree::
     return result;
 }
 
-llvm::Value* CodeGenner::generateFunctionCall(const std::unique_ptr<pegtl::parse_tree::node>& node, llvm::Function* function = nullptr) {
+llvm::Value* CodeGenner::generateFunctionCall(const std::unique_ptr<pegtl::parse_tree::node>& node, FunctionHandler* funcHandler = nullptr) {
     if (!node) return nullptr;
     if (node->type != "ddlbx::parser::FunctionCall") return nullptr;
 
@@ -370,7 +377,7 @@ llvm::Value* CodeGenner::generateFunctionCall(const std::unique_ptr<pegtl::parse
     std::vector<llvm::Value*> argValues;
     for (size_t i = 1; i < node->children.size(); i++) {
         const auto& value = node->children[i];
-        llvm::Value* val = generateStatement(value, function);
+        llvm::Value* val = generateStatement(value, funcHandler);
         argValues.push_back(val);
     }
 
@@ -385,21 +392,21 @@ llvm::Value* CodeGenner::generateFunctionCall(const std::unique_ptr<pegtl::parse
     }
 
     return builder.CreateCall(targetFunction, argValues);
-}
+}   //UPDATED
 
-void CodeGenner::generateVariableDeclaration(const std::unique_ptr<pegtl::parse_tree::node>& node, llvm::Function* function = nullptr) {
+void CodeGenner::generateVariableDeclaration(const std::unique_ptr<pegtl::parse_tree::node>& node, FunctionHandler* funcHandler = nullptr) {
     if (!node) return;
     if (node->type != "ddlbx::parser::VariableDeclaration") return;
 
     const auto& name = node->children[0]->string();
     const auto& value = node->children[1];
 
-    llvm::Value* val = generateStatement(value, function);
+    llvm::Value* val = generateStatement(value, funcHandler);
 
     llvm::AllocaInst* alloca = builder.CreateAlloca(val->getType(), nullptr, name);
     builder.CreateStore(val, alloca);
     variableMap[name] = alloca;
-}
+}   //UPDATED variableMap used here
 
 void CodeGenner::generateObjectDeclaration(const std::unique_ptr<pegtl::parse_tree::node>& node) {
     if (!node) return;
@@ -434,31 +441,33 @@ void CodeGenner::generateObjectDeclaration(const std::unique_ptr<pegtl::parse_tr
     builder.CreateRet(ret);
 }
 
-void CodeGenner::generateConditional(const std::unique_ptr<pegtl::parse_tree::node>& node, llvm::Function* function) {
+void CodeGenner::generateConditional(const std::unique_ptr<pegtl::parse_tree::node>& node, FunctionHandler* funcHandler) {
     if (!node) return;
     if (node->type != "ddlbx::parser::Conditional") return;
 
     const auto& condition = node->children[0];
     const auto& child = node->children[1];
 
-    llvm::Value* cond = generateStatement(condition, function);
+    llvm::Value* cond = generateStatement(condition, funcHandler);
     if (!cond->getType()->isIntegerTy(1)) {
         cond = builder.CreateICmpNE(cond, llvm::ConstantInt::get(cond->getType(), 0));
     }
 
+    llvm::Function* func = funcHandler->getFunction();
+
     llvm::BasicBlock* currentBlock = builder.GetInsertBlock();
 
     llvm::BasicBlock* thenBlock = nullptr;
-    llvm::BasicBlock* elseBlock = llvm::BasicBlock::Create(context, "else", function);
-    llvm::BasicBlock* continueBlock = llvm::BasicBlock::Create(context, "continue", function);
+    llvm::BasicBlock* elseBlock = llvm::BasicBlock::Create(context, "else", func);
+    llvm::BasicBlock* continueBlock = llvm::BasicBlock::Create(context, "continue", func);
 
     if (child->type == "ddlbx::parser::Block") {
-        thenBlock = generateBlock(child, function);
+        thenBlock = generateBlock(child, funcHandler);
     }
     else if (child->type == "ddlbx::parser::Expression") {
-        thenBlock = llvm::BasicBlock::Create(context, "then", function);
+        thenBlock = llvm::BasicBlock::Create(context, "then", func);
         builder.SetInsertPoint(thenBlock);
-        generateExpression(child, function);
+        generateExpression(child, funcHandler);
     }
     builder.CreateBr(continueBlock);
 
@@ -471,19 +480,21 @@ void CodeGenner::generateConditional(const std::unique_ptr<pegtl::parse_tree::no
 
     builder.CreateBr(continueBlock);
     builder.SetInsertPoint(continueBlock);
-}
+}   //UPDATED
 
-void CodeGenner::generateLoop(const std::unique_ptr<pegtl::parse_tree::node>& node, llvm::Function* function) {
+void CodeGenner::generateLoop(const std::unique_ptr<pegtl::parse_tree::node>& node, FunctionHandler* funcHandler) {
     if (!node) return;
     if (node->type != "ddlbx::parser::Loop") return;
 
     const auto& condition = node->children[0];
     const auto& child = node->children[1];
 
+    llvm::Function* func = funcHandler->getFunction();
+
     llvm::BasicBlock* currentBlock = builder.GetInsertBlock();
     llvm::BasicBlock* loopBlock = nullptr;
-    llvm::BasicBlock* conditionBlock = llvm::BasicBlock::Create(context, "condition", function);
-    llvm::BasicBlock* continueBlock = llvm::BasicBlock::Create(context, "continue", function);
+    llvm::BasicBlock* conditionBlock = llvm::BasicBlock::Create(context, "condition", func);
+    llvm::BasicBlock* continueBlock = llvm::BasicBlock::Create(context, "continue", func);
     if (condition->type == "ddlbx::parser::LoopRange") {
         std::string idxName = condition->children[0]->string();
         llvm::Value* start = llvm::ConstantInt::get(typeMap["Int"](context), 0);
@@ -492,18 +503,18 @@ void CodeGenner::generateLoop(const std::unique_ptr<pegtl::parse_tree::node>& no
 
         for (const auto& child : condition->children) {
             if (child->type == "ddlbx::parser::RangeStart")
-                start = generateStatement(child->children[0], function);
+                start = generateStatement(child->children[0], funcHandler);
             if (child->type == "ddlbx::parser::RangeEnd")
-                end = generateStatement(child->children[0], function);
+                end = generateStatement(child->children[0], funcHandler);
             if (child->type == "ddlbx::parser::RangeStep")
-                increment = generateStatement(child->children[0], function);
+                increment = generateStatement(child->children[0], funcHandler);
         }
 
         llvm::AllocaInst* idx = builder.CreateAlloca(typeMap["Int"](context), nullptr, idxName);
         builder.CreateStore(start, idx);
         variableMap[idxName] = idx;
 
-        loopBlock = generateBlock(child, function);
+        loopBlock = generateBlock(child, funcHandler);
         builder.SetInsertPoint(loopBlock);
         llvm::Value* currentIdx = builder.CreateLoad(typeMap["Int"](context), idx);
         llvm::Value* nextIdx = builder.CreateAdd(currentIdx, increment);
@@ -520,12 +531,12 @@ void CodeGenner::generateLoop(const std::unique_ptr<pegtl::parse_tree::node>& no
         builder.CreateBr(conditionBlock);
         builder.SetInsertPoint(conditionBlock);
 
-        llvm::Value* cond = generateStatement(condition, function);
+        llvm::Value* cond = generateStatement(condition, funcHandler);
         if (!cond->getType()->isIntegerTy(1)) {
             cond = builder.CreateICmpNE(cond, llvm::ConstantInt::get(cond->getType(), 0));
         }
 
-        loopBlock = generateBlock(child, function);
+        loopBlock = generateBlock(child, funcHandler);
         builder.CreateCondBr(cond, loopBlock, continueBlock);
 
         builder.SetInsertPoint(continueBlock);
@@ -534,7 +545,7 @@ void CodeGenner::generateLoop(const std::unique_ptr<pegtl::parse_tree::node>& no
     }
 
     builder.SetInsertPoint(continueBlock);
-}
+}   //UPDATED
 
 }  // namespace ir
 }  // namespace ddlbx
