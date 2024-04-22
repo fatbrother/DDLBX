@@ -4,6 +4,10 @@ project(ddlbx)
 
 set(CMAKE_CXX_STANDARD 17)
 
+# set output directory
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/lib)
+
 # if llvm-project has not been built, build it with CMakeLists.txt in llvm-project/llvm
 if(NOT EXISTS ${CMAKE_SOURCE_DIR}/lib/llvm-project/llvm/build)
     message(STATUS "Building llvm-project")
