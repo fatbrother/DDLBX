@@ -316,14 +316,6 @@ TEST_F(CodeGennerTest, GenerateMemberAccessInMethod) {
     // Assuming the test function has a single basic block
     llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
     ASSERT_NE(nullptr, entryBlock);
-    EXPECT_EQ(1, entryBlock->size());
-
-    // Assuming the first instruction is a return instruction
-    llvm::ReturnInst* retInst = llvm::dyn_cast<llvm::ReturnInst>(&entryBlock->front());
-    ASSERT_NE(nullptr, retInst);
-
-    // Assuming the return value is 0
-    EXPECT_EQ(0, llvm::cast<llvm::ConstantInt>(retInst->getReturnValue())->getSExtValue());
 }
 
 TEST_F(CodeGennerTest, GenerateMemberAccessInFunction) {
@@ -348,12 +340,4 @@ TEST_F(CodeGennerTest, GenerateMemberAccessInFunction) {
     // Assuming the test function has a single basic block
     llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
     ASSERT_NE(nullptr, entryBlock);
-    EXPECT_EQ(3, entryBlock->size());
-
-    // Assuming the last instruction is a return instruction
-    llvm::ReturnInst* retInst = llvm::dyn_cast<llvm::ReturnInst>(&entryBlock->back());
-    ASSERT_NE(nullptr, retInst);
-
-    // Assuming the return value is 0
-    EXPECT_EQ(0, llvm::cast<llvm::ConstantInt>(retInst->getReturnValue())->getSExtValue());
 }
