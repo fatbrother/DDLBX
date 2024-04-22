@@ -1,4 +1,4 @@
-#pragma once
+
 
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/LLVMContext.h>
@@ -16,18 +16,19 @@ namespace pegtl = tao::pegtl;
 namespace ddlbx{
 namespace ir{
 
-class Function{
+class FunctionHandler{
 public:
 
-    Function(std::string exp) : exp(exp), function(nullptr) {}
+    FunctionHandler() : exp(""), function(nullptr) {}
 
     /**
      * @brief Create a new LLVM Function.
      * 
      * @param funcType The type of the function.
     */
-    void createFunction(llvm::FunctionType* funcType, std::string name, llvm::Module &module){
+    llvm::Function* createFunction(llvm::FunctionType* funcType, std::string name, llvm::Module &module){
         function = llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, name, &module);
+        return function;
     }
     
     /**
@@ -81,7 +82,7 @@ public:
      * @param function The function.
      * 
     */
-    void insertFunction(std::string functionName, Function function){
+    void insertFunction(std::string functionName, FunctionHandler function){
         childfuncMap[functionName] = function;
     }
 
@@ -92,7 +93,7 @@ public:
      * 
      * @return Function The function.
     */
-    Function getFunction(std::string functionName){
+    FunctionHandler getChlidFunc(std::string functionName){
         return childfuncMap[functionName];
     }
 
@@ -103,7 +104,7 @@ public:
      * 
      * @return bool True if the function was deleted, false otherwise.
     */
-    bool deleteFunction(std::string functionName){
+    bool deleteChildFunc(std::string functionName){
         if(childfuncMap.find(functionName) != childfuncMap.end()){
             childfuncMap.erase(functionName);
             return true;
@@ -117,7 +118,7 @@ private:
 
 
     std::map<std::string, llvm::AllocaInst*> variableMap;
-    std::map<std::string, Function> childfuncMap;
+    std::map<std::string, FunctionHandler> childfuncMap;
 };
 }
 }
