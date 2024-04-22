@@ -1,5 +1,10 @@
-fun fib(a: Int): Int => fib(a - 1) + fib(a - 2)!
-fun fib(a: 0): Int => 0!
-fun fib(a: 1): Int => 1!
+extern fun println(a: Int)
 
-print(fib(10))!
+fun fib(a: Int): Int {
+    opt (a <= 1) ret 1!
+    ret fib(a - 1) + fib(a - 2)!
+}
+
+fun main(): Non {
+    println(fib(10))!
+}
