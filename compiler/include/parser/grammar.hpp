@@ -80,16 +80,28 @@ class Identifier : public pegtl::plus<
     >
 > {};
 
+class MemberAccess : public pegtl::seq<
+    Identifier,
+    pegtl::plus<
+        pegtl::seq<
+            pegtl::one<'.'>,
+            Identifier
+        >
+    >
+> {};
+
 class Type : public pegtl::sor<
     pegtl::keyword<'I', 'n', 't'>,
-    pegtl::keyword<'F', 'l', 'o'>,
+    pegtl::keyword<'F', 'l', 't'>,
     pegtl::keyword<'S', 't', 'r'>,
     pegtl::keyword<'B', 'o', 'o'>,
     pegtl::keyword<'N', 'o', 'n'>,
+    pegtl::keyword<'P', 't', 'r'>,
     Identifier
 > {};
 
 class FunctionCall;
+class MethodCall;
 class Bracket;
 class Statement : public pegtl::seq<
     pegtl::seq<
@@ -99,7 +111,9 @@ class Statement : public pegtl::seq<
         pegtl::sor<
             Bracket,
             Value,
+            MethodCall,
             FunctionCall,
+            MemberAccess,
             Identifier
         >
     >,
@@ -121,7 +135,9 @@ class Statement : public pegtl::seq<
             pegtl::sor<
                 Bracket,
                 Value,
+                MethodCall,
                 FunctionCall,
+                MemberAccess,
                 Identifier
             >
         >
@@ -139,6 +155,20 @@ class Bracket : public pegtl::seq<
 
 class FunctionCall : public pegtl::seq<
     Identifier,
+    pegtl::one<'('>,
+    pegtl::opt<
+        pegtl::list<
+            Statement,
+            pegtl::one<','>,
+            pegtl::space
+        >,
+        pegtl::success
+    >,
+    pegtl::one<')'>
+> {};
+
+class MethodCall : public pegtl::seq<
+    MemberAccess,
     pegtl::one<'('>,
     pegtl::opt<
         pegtl::list<
@@ -318,6 +348,23 @@ class Object : public pegtl::seq<
     pegtl::pad<
         Identifier,
         pegtl::space
+    >,
+    pegtl::opt<
+        pegtl::seq<
+            pegtl::pad<
+                pegtl::one<'<'>,
+                pegtl::space
+            >,
+            pegtl::list<
+                Identifier,
+                pegtl::one<','>,
+                pegtl::space
+            >,
+            pegtl::pad<
+                pegtl::one<'>'>,
+                pegtl::space
+            >
+        >
     >,
     pegtl::one<'{'>,
     pegtl::sor<

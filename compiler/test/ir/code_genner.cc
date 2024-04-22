@@ -210,7 +210,7 @@ TEST_F(CodeGennerTest, GenerateConditional) {
     // Assuming the first successor is the then block
     llvm::BasicBlock* thenBlock = branchInst->getSuccessor(0);
     ASSERT_NE(nullptr, thenBlock);
-    EXPECT_EQ(2, thenBlock->size());
+    EXPECT_EQ(1, thenBlock->size());
 
     // Assuming the first instruction in the then block is a return instruction
     llvm::ReturnInst* retInst = llvm::dyn_cast<llvm::ReturnInst>(&thenBlock->front());
@@ -295,4 +295,65 @@ TEST_F(CodeGennerTest, GenerateObjectWithMethod) {
     ASSERT_EQ(1, testFunction->arg_size());
     auto arg = testFunction->arg_begin();
     EXPECT_EQ("this", arg->getName().str());
+}
+
+TEST_F(CodeGennerTest, GenerateMemberAccessInMethod) {
+    const std::string input = R"(
+        obj Test {
+            a: Int
+        }
+
+        fun Test.test(): Int { ret this.a! }
+    )";
+    generate(input);
+
+    // Assuming the test function is declared in the module
+    llvm::Function* testFunction = module.getFunction("Test_test");
+
+    ASSERT_NE(nullptr, testFunction);
+    EXPECT_EQ("Test_test", testFunction->getName().str());
+
+    // Assuming the test function has a single basic block
+    llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
+    ASSERT_NE(nullptr, entryBlock);
+    EXPECT_EQ(1, entryBlock->size());
+
+    // Assuming the first instruction is a return instruction
+    llvm::ReturnInst* retInst = llvm::dyn_cast<llvm::ReturnInst>(&entryBlock->front());
+    ASSERT_NE(nullptr, retInst);
+
+    // Assuming the return value is 0
+    EXPECT_EQ(0, llvm::cast<llvm::ConstantInt>(retInst->getReturnValue())->getSExtValue());
+}
+
+TEST_F(CodeGennerTest, GenerateMemberAccessInFunction) {
+    const std::string input = R"(
+        obj Test {
+            a: Int
+        }
+
+        fun test(): Int {
+            var t = Test(0)!
+            ret t.a!
+        }
+    )";
+    generate(input);
+
+    // Assuming the test function is declared in the module
+    llvm::Function* testFunction = module.getFunction("test");
+
+    ASSERT_NE(nullptr, testFunction);
+    EXPECT_EQ("test", testFunction->getName().str());
+
+    // Assuming the test function has a single basic block
+    llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
+    ASSERT_NE(nullptr, entryBlock);
+    EXPECT_EQ(3, entryBlock->size());
+
+    // Assuming the last instruction is a return instruction
+    llvm::ReturnInst* retInst = llvm::dyn_cast<llvm::ReturnInst>(&entryBlock->back());
+    ASSERT_NE(nullptr, retInst);
+
+    // Assuming the return value is 0
+    EXPECT_EQ(0, llvm::cast<llvm::ConstantInt>(retInst->getReturnValue())->getSExtValue());
 }

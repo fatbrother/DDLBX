@@ -17,6 +17,9 @@ TEST (Grammar, Identifier) {
     std::string sample7 = "hello_";
     std::string sample8 = "_";
     std::string sample9 = "";
+    std::string sample10 = "a.b";
+    std::string sample11 = "a.b.c";
+    std::string sample12 = "a.";
 
     string_input<> in1(sample1, "input");
     string_input<> in2(sample2, "input");
@@ -27,6 +30,9 @@ TEST (Grammar, Identifier) {
     string_input<> in7(sample7, "input");
     string_input<> in8(sample8, "input");
     string_input<> in9(sample9, "input");
+    string_input<> in10(sample10, "input");
+    string_input<> in11(sample11, "input");
+    string_input<> in12(sample12, "input");
 
     EXPECT_TRUE(parse<Identifier>(in1));
     EXPECT_TRUE(parse<Identifier>(in2));
@@ -37,4 +43,7 @@ TEST (Grammar, Identifier) {
     EXPECT_TRUE(parse<Identifier>(in7));
     EXPECT_TRUE(parse<Identifier>(in8));
     EXPECT_FALSE(parse<Identifier>(in9));
+    EXPECT_TRUE(parse<MemberAccess>(in10));
+    EXPECT_TRUE(parse<MemberAccess>(in11));
+    EXPECT_FALSE(parse<MemberAccess>(in12));
 }

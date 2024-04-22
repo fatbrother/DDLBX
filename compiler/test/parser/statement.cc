@@ -21,6 +21,8 @@ TEST(Grammar, Statement) {
     std::string sample11 = "(1 + 2) * (3 + 4)";
     std::string sample12 = "((1 + 2) * (3 + 4))";
     std::string sample13 = "print(\"Hello, World!\")";
+    std::string sample14 = "a.b";
+    std::string sample15 = "a.b + a.b";
 
     string_input<> in1(sample1, "input");
     string_input<> in2(sample2, "input");
@@ -35,6 +37,8 @@ TEST(Grammar, Statement) {
     string_input<> in11(sample11, "input");
     string_input<> in12(sample12, "input");
     string_input<> in13(sample13, "input");
+    string_input<> in14(sample14, "input");
+    string_input<> in15(sample15, "input");
 
     EXPECT_TRUE(parse<Statement>(in1));
     EXPECT_TRUE(parse<Statement>(in2));
@@ -49,4 +53,6 @@ TEST(Grammar, Statement) {
     EXPECT_TRUE(parse<Statement>(in11));
     EXPECT_TRUE(parse<Statement>(in12));
     EXPECT_TRUE(parse<Statement>(in13));
+    EXPECT_TRUE(parse<Statement>(in14));
+    EXPECT_TRUE(parse<Statement>(in15));
 }
