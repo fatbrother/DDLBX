@@ -223,6 +223,8 @@ llvm::Value* CodeGenner::generateStatement(const std::unique_ptr<pegtl::parse_tr
             valueStack.push(generateValue(child));
         if (child->type == "ddlbx::parser::FunctionCall")
             valueStack.push(generateFunctionCall(child, funcHandler));
+        if (child->type == "ddlbx::parser::MethodCall")
+            valueStack.push(generateMethodCall(child, funcHandler));
         if (child->type == "ddlbx::parser::MemberAccess") {
             int childSize = child->children.size();
             std::vector<std::string> accessors;
@@ -330,7 +332,7 @@ llvm::Value* CodeGenner::generateMemberAccess(std::vector<std::string>& accessor
 
     llvm::Value* memberValue = nullptr;
     for (int i = 1; i < accessors.size(); i++) {
-        if (objectMap.find(accessors[i - 1]) == objectMap.end()) {
+        if (i < accessors.size() - 1 && objectMap.find(accessors[i - 1]) == objectMap.end()) {
             std::string currentName = "";
             for (int j = 0; j <= i; j++) {
                 currentName += accessors[j];
@@ -453,6 +455,46 @@ llvm::Value* CodeGenner::generateFunctionCall(const std::unique_ptr<pegtl::parse
 
     return builder.CreateCall(targetFunction, argValues);
 }   //UPDATED
+
+llvm::Value* CodeGenner::generateMethodCall(const std::unique_ptr<pegtl::parse_tree::node>& node, FunctionHandler* funcHandler = nullptr) {
+    if (!node) return nullptr;
+    if (node->type != "ddlbx::parser::MethodCall") return nullptr;
+
+    std::string functionName = node->children[0]->children.back()->string();
+
+    std::vector<std::string> accessors;
+    for (int i = 0; i < node->children[0]->children.size() - 1; i++) {
+        accessors.push_back(node->children[0]->children[i]->string());
+    }
+
+    // generate member access
+    llvm::Value* parentValue = nullptr;
+    if (accessors.size() == 1)
+        parentValue = generateIdentifier(accessors[0], funcHandler);
+    else
+        parentValue = generateMemberAccess(accessors, funcHandler);
+    // get struct type
+    llvm::StructType* structType = llvm::cast<llvm::StructType>(parentValue->getType());
+    std::string name = structType->getName().str() + "_" + functionName;
+
+    std::vector<llvm::Value*> argValues;
+    argValues.push_back(parentValue);
+    for (size_t i = 1; i < node->children.size(); i++) {
+        const auto& value = node->children[i];
+        llvm::Value* val = generateStatement(value, funcHandler);
+        argValues.push_back(val);
+    }
+
+    llvm::Function* targetFunction = module.getFunction(name);
+
+    // check if parameter is matching
+    if (targetFunction->arg_size() != argValues.size()) {
+        int line = node->begin().line;
+        throw std::runtime_error(std::to_string(line) + ": " + name + " parameter size is not matching");
+    }
+
+    return builder.CreateCall(targetFunction, argValues);
+}
 
 void CodeGenner::generateVariableDeclaration(const std::unique_ptr<pegtl::parse_tree::node>& node, FunctionHandler* funcHandler = nullptr) {
     if (!node) return;

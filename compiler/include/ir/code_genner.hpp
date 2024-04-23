@@ -156,6 +156,15 @@ private:
     llvm::Value *generateFunctionCall(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler *);
 
     /**
+     * @brief Generate LLVM IR code for a method call.
+     * 
+     * @param node The node representing the method call.
+     * 
+     * @return llvm::Value* The LLVM value.
+     */
+    llvm::Value *generateMethodCall(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler *);
+
+    /**
      * @brief Generate LLVM IR code for a variable declaration.
      *
      * @param node The node representing the variable declaration.

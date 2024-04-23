@@ -341,3 +341,36 @@ TEST_F(CodeGennerTest, GenerateMemberAccessInFunction) {
     llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
     ASSERT_NE(nullptr, entryBlock);
 }
+
+TEST_F(CodeGennerTest, GenerateMethodCall) {
+    const std::string input = R"(
+        obj Test {
+            a: Int
+        }
+        
+        fun Test.test(): Int { ret this.a! }
+
+        fun test(): Non {
+            var t = Test(0)!
+            t.test()!
+        }
+    )";
+    generate(input);
+
+    // Assuming the test function is declared in the module
+    llvm::Function* testFunction = module.getFunction("test");
+
+    ASSERT_NE(nullptr, testFunction);
+    EXPECT_EQ("test", testFunction->getName().str());
+
+    // Assuming the test function has a single basic block
+    llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
+    ASSERT_NE(nullptr, entryBlock);
+    
+    // Assuming the last second instruction is a call instruction
+    llvm::CallInst* callInst = llvm::dyn_cast<llvm::CallInst>((++entryBlock->rbegin()).operator->());
+    ASSERT_NE(nullptr, callInst);
+
+    // Assuming the called function is Test_test
+    EXPECT_EQ("Test_test", callInst->getCalledFunction()->getName().str());
+}
