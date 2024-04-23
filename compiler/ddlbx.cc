@@ -31,7 +31,15 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    // for every line in the file, find "//" and remove the rest of the line
+    std::string content;
+    for (std::string line; std::getline(file, line);) {
+        auto pos = line.find("//");
+        if (pos != std::string::npos) {
+            line = line.substr(0, pos);
+        }
+        content += line + "\n";
+    }
 
     pegtl::string_input<> in(content, "input"); 
     const auto root = pegtl::parse_tree::parse<ddlbx::parser::Program, ddlbx::parser::Selector>(in);
