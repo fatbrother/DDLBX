@@ -119,7 +119,7 @@ private:
      * @param parent The parent of the member access.
      * @param member The member of the member access.
      */
-    llvm::Value *generateMemberAccess(const std::string &, const std::string &, FunctionHandler *);
+    llvm::Value *generateMemberAccess(std::vector<std::string> &, FunctionHandler *);
 
     /**
      * @brief Generate LLVM IR code for a statement.

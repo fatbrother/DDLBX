@@ -224,10 +224,15 @@ llvm::Value* CodeGenner::generateStatement(const std::unique_ptr<pegtl::parse_tr
         if (child->type == "ddlbx::parser::FunctionCall")
             valueStack.push(generateFunctionCall(child, funcHandler));
         if (child->type == "ddlbx::parser::MemberAccess") {
-            std::string parentName = child->children[0]->string();
-            std::string memberName = child->children[1]->string();
+            int childSize = child->children.size();
+            std::vector<std::string> accessors;
+            for (int i = 0; i < childSize; i++) {
+                if (child->children[i]->type == "ddlbx::parser::Identifier") {
+                    accessors.push_back(child->children[i]->string());
+                }
+            }
             try {
-                valueStack.push(generateMemberAccess(parentName, memberName, funcHandler));
+                valueStack.push(generateMemberAccess(accessors, funcHandler));
             } catch (std::exception& e) {
                 int line = child->begin().line;
                 throw std::runtime_error(std::to_string(line) + ": " + e.what());
@@ -314,33 +319,48 @@ llvm::Value* CodeGenner::generateIdentifier(const std::string& name, FunctionHan
     return var;
 }
 
-llvm::Value* CodeGenner::generateMemberAccess(const std::string &parent, const std::string &member, FunctionHandler* function) {
+llvm::Value* CodeGenner::generateMemberAccess(std::vector<std::string>& accessors, FunctionHandler* function) {
     llvm::Value* parentValue = nullptr;
 
     try {
-        parentValue = generateIdentifier(parent, function);
+        parentValue = generateIdentifier(accessors[0], function);
     } catch (std::exception& e) {
         throw std::runtime_error(e.what());
     }
 
     llvm::Value* memberValue = nullptr;
-    // get member index
-    llvm::StructType* structType = llvm::cast<llvm::StructType>(parentValue->getType());
-    int memberIndex = -1;
-    Object object = objectMap[structType->getName().str()];
-    for (int i = 0; i < object.members.size(); i++) {
-        if (object.members[i] == member) {
-            memberIndex = i;
-            break;
+    for (int i = 1; i < accessors.size(); i++) {
+        if (objectMap.find(accessors[i - 1]) == objectMap.end()) {
+            std::string currentName = "";
+            for (int j = 0; j <= i; j++) {
+                currentName += accessors[j];
+                if (j != i) {
+                    currentName += ".";
+                }
+            }
+            throw std::runtime_error(currentName + " is not an object");
         }
-    }
 
-    if (memberIndex == -1) {
-        throw std::runtime_error(member + " is not a member of " + parent);
-    }
-    memberValue = builder.CreateExtractValue(parentValue, memberIndex);
-    if (!memberValue) {
-        throw std::runtime_error(member + " is not defined");
+        // get member index
+        llvm::StructType* structType = llvm::cast<llvm::StructType>(parentValue->getType());
+        int memberIndex = -1;
+        Object object = objectMap[structType->getName().str()];
+        for (int j = 0; j < object.members.size(); j++) {
+            if (object.members[j] == accessors[i]) {
+                memberIndex = j;
+                break;
+            }
+        }
+
+        if (memberIndex == -1) {
+            throw std::runtime_error(accessors[i] + " is not a member of " + accessors[i - 1]);
+        }
+        memberValue = builder.CreateExtractValue(parentValue, memberIndex);
+        if (!memberValue) {
+            throw std::runtime_error(accessors[i] + " is not defined");
+        }
+
+        parentValue = memberValue;
     }
 
     return memberValue;
