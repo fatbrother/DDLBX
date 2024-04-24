@@ -80,16 +80,6 @@ class Identifier : public pegtl::plus<
     >
 > {};
 
-class MemberAccess : public pegtl::seq<
-    Identifier,
-    pegtl::plus<
-        pegtl::seq<
-            pegtl::one<'.'>,
-            Identifier
-        >
-    >
-> {};
-
 class Type : public pegtl::sor<
     pegtl::keyword<'I', 'n', 't'>,
     pegtl::keyword<'F', 'l', 't'>,
@@ -101,8 +91,24 @@ class Type : public pegtl::sor<
 > {};
 
 class FunctionCall;
-class MethodCall;
 class Bracket;
+
+class MemberAccess : public pegtl::seq<
+    pegtl::sor<
+        FunctionCall,
+        Identifier
+    >,
+    pegtl::plus<
+        pegtl::seq<
+            pegtl::one<'.'>,
+            pegtl::sor<
+                FunctionCall,
+                Identifier
+            >
+        >
+    >
+> {};
+
 class Statement : public pegtl::seq<
     pegtl::seq<
         pegtl::opt<
@@ -111,7 +117,6 @@ class Statement : public pegtl::seq<
         pegtl::sor<
             Bracket,
             Value,
-            MethodCall,
             FunctionCall,
             MemberAccess,
             Identifier
@@ -135,7 +140,6 @@ class Statement : public pegtl::seq<
             pegtl::sor<
                 Bracket,
                 Value,
-                MethodCall,
                 FunctionCall,
                 MemberAccess,
                 Identifier
@@ -155,20 +159,6 @@ class Bracket : public pegtl::seq<
 
 class FunctionCall : public pegtl::seq<
     Identifier,
-    pegtl::one<'('>,
-    pegtl::opt<
-        pegtl::list<
-            Statement,
-            pegtl::one<','>,
-            pegtl::space
-        >,
-        pegtl::success
-    >,
-    pegtl::one<')'>
-> {};
-
-class MethodCall : public pegtl::seq<
-    MemberAccess,
     pegtl::one<'('>,
     pegtl::opt<
         pegtl::list<

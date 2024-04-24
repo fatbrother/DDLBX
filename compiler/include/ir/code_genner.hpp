@@ -119,7 +119,7 @@ private:
      * @param parent The parent of the member access.
      * @param member The member of the member access.
      */
-    llvm::Value *generateMemberAccess(std::vector<std::string> &, FunctionHandler *);
+    llvm::Value *generateMemberAccess(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler *);
 
     /**
      * @brief Generate LLVM IR code for a statement.
@@ -154,15 +154,6 @@ private:
      * @return llvm::Value* The LLVM value.
      */
     llvm::Value *generateFunctionCall(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler *);
-
-    /**
-     * @brief Generate LLVM IR code for a method call.
-     * 
-     * @param node The node representing the method call.
-     * 
-     * @return llvm::Value* The LLVM value.
-     */
-    llvm::Value *generateMethodCall(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler *);
 
     /**
      * @brief Generate LLVM IR code for a variable declaration.
