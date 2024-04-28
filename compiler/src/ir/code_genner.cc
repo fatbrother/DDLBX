@@ -48,6 +48,7 @@ std::map<std::string, CodeGenner::ExpressionType> CodeGenner::expressionTypeMap 
     {"ddlbx::parser::Statement", CodeGenner::ExpressionType::Statement},
     {"ddlbx::parser::Conditional", CodeGenner::ExpressionType::Conditional},
     {"ddlbx::parser::Loop", CodeGenner::ExpressionType::Loop},
+    {"ddlbx::parser::Assignment", CodeGenner::ExpressionType::Assignment},
 };
 
 void CodeGenner::generate(const std::unique_ptr<pegtl::parse_tree::node>& node) {
@@ -205,6 +206,9 @@ void CodeGenner::generateExpression(const std::unique_ptr<pegtl::parse_tree::nod
         case ExpressionType::Loop:
             generateLoop(child, funcHandler);
             break;
+        case ExpressionType::Assignment:
+            generateAssignment(child, funcHandler);
+            break;
     }
 }
 
@@ -227,7 +231,13 @@ llvm::Value* CodeGenner::generateStatement(const std::unique_ptr<pegtl::parse_tr
         if (child->type == "ddlbx::parser::Identifier") {
             std::string name = child->string();
             try {
-                valueStack.push(generateIdentifier(name, funcHandler));
+                auto var = funcHandler.getVariableValue(name);
+                if (!var) {
+                    auto alloca = funcHandler.getVariableAlloca(name);
+                    if (!alloca) throw std::runtime_error(name + " is not defined");
+                    var = builder.CreateLoad(alloca->getAllocatedType(), alloca);
+                }
+                valueStack.push(var);
             } catch (std::exception& e) {
                 int line = child->begin().line;
                 throw std::runtime_error(std::to_string(line) + ": " + e.what());
@@ -282,21 +292,25 @@ llvm::Value* CodeGenner::generateStatement(const std::unique_ptr<pegtl::parse_tr
     return nullptr;
 }
 
-llvm::Value* CodeGenner::generateIdentifier(const std::string& name, FunctionHandler& funcHandler) {
-    llvm::Value* var = nullptr;
+llvm::Value* CodeGenner::generateAssignment(const std::unique_ptr<pegtl::parse_tree::node>& node, FunctionHandler& funcHandler) {
+    if (!node) return nullptr;
+    if (node->type != "ddlbx::parser::Assignment") return nullptr;
 
-    var = funcHandler.getVariableValue(name);
-    
-    if (!var) {
-        llvm::AllocaInst* alloca = funcHandler.getVariableAlloca(name);
-        llvm::Type* type = alloca->getAllocatedType();
-        var = builder.CreateLoad(type, alloca);
-    }
-    if (!var) {
-        throw std::runtime_error(name + " is not defined");
+    const auto& lhs = node->children[0];
+    const auto& rhs = node->children[1];
+
+    llvm::Value* lhsValue = nullptr;
+    if (lhs->type == "ddlbx::parser::Identifier") {
+        std::string name = lhs->string();
+        lhsValue = funcHandler.getVariableValue(name);
+        if (!lhsValue) {
+            lhsValue = funcHandler.getVariableAlloca(name);
+        }
     }
 
-    return var;
+    llvm::Value* rhsValue = generateStatement(rhs, funcHandler);
+
+    return builder.CreateStore(rhsValue, lhsValue);
 }
 
 llvm::Value* CodeGenner::generateMemberAccess(const std::unique_ptr<pegtl::parse_tree::node>& node, FunctionHandler& function) {
@@ -305,9 +319,17 @@ llvm::Value* CodeGenner::generateMemberAccess(const std::unique_ptr<pegtl::parse
     for (auto &child : node->children) {
         if (child->type == "ddlbx::parser::Identifier") {
             std::string name = child->string();
-            if (!parentValue)
-                parentValue = generateIdentifier(name, function);
-            else {
+            if (!parentValue) {
+                parentValue = function.getVariableValue(name);
+                if (!parentValue) {
+                    llvm::AllocaInst* alloca = function.getVariableAlloca(name);
+                    if (!alloca) {
+                        int line = child->begin().line;
+                        throw std::runtime_error(std::to_string(line) + ": " + name + " is not defined");
+                    }
+                    parentValue = builder.CreateLoad(alloca->getAllocatedType(), alloca);
+                }
+            } else {
                 llvm::StructType* structType = llvm::cast<llvm::StructType>(parentValue->getType());
                 int memberIndex = -1;
                 Object object = objectMap[structType->getName().str()];
@@ -399,7 +421,8 @@ llvm::Value* CodeGenner::generateValue(const std::unique_ptr<pegtl::parse_tree::
             result = llvm::ConstantInt::getFalse(context);
         }
         else if (value->string() == "maybe") {
-            result = llvm::UndefValue::get(typeMap["Boo"](context));
+            bool random = rand() % 2;
+            result = llvm::ConstantInt::get(context, llvm::APInt(1, random));
         }
     }
 

@@ -53,6 +53,15 @@ class BinaryOperator : public pegtl::sor<
     pegtl::one<'%'>
 > {};
 
+class AssignmentOperator : public pegtl::sor<
+    pegtl::string<'='>,
+    pegtl::string<'+', '='>,
+    pegtl::string<'-', '='>,
+    pegtl::string<'*', '='>,
+    pegtl::string<'/', '='>,
+    pegtl::string<'%', '='>
+> {};
+
 class UnaryOperator : public pegtl::sor<
     pegtl::one<'!'>,
     pegtl::string<'-', '-'>,
@@ -148,6 +157,15 @@ class Statement : public pegtl::seq<
     >
 > {};
 
+class Assignment : public pegtl::seq<
+    Identifier,
+    pegtl::pad<
+        AssignmentOperator,
+        pegtl::space
+    >,
+    Statement
+> {};
+
 class Bracket : public pegtl::seq<
     pegtl::one<'('>,
     pegtl::pad<
@@ -199,6 +217,7 @@ class Loop;
 class Expression : public pegtl::sor< 
     pegtl::seq<
         pegtl::sor<
+            Assignment,
             VariableDeclaration,
             Return,
             Statement

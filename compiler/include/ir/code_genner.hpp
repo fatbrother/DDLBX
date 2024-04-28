@@ -66,6 +66,7 @@ private:
         Statement,
         Conditional,
         Loop,
+        Assignment,
     };
     static std::map<std::string, std::function<llvm::Type *(llvm::LLVMContext &)>> typeMap;
     static std::map<std::string, int> opPropertyMap;
@@ -107,13 +108,6 @@ private:
     void generateExpression(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler &);
 
     /**
-     * @brief Generate LLVM IR code for a identifier.
-     *
-     * @param name The name of the identifier.
-     */
-    llvm::Value *generateIdentifier(const std::string &, FunctionHandler &);
-
-    /**
      * @brief Generate LLVM IR code for a member access.
      *
      * @param parent The parent of the member access.
@@ -129,6 +123,13 @@ private:
      * @return llvm::Value* The LLVM value.
      */
     llvm::Value *generateStatement(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler &);
+
+    /**
+     * @brief Generate LLVM IR code for a return statement.
+     *
+     * @param node The node representing the return statement.
+     */
+    llvm::Value *generateAssignment(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler &);
 
     /**
      * @brief Handle the operation of the statement.
