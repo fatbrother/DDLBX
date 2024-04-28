@@ -125,7 +125,7 @@ llvm::BasicBlock* CodeGenner::generateBlock(const std::unique_ptr<pegtl::parse_t
     }
 
     return block;
-}   //Updated
+}
 
 void CodeGenner::generateFunctionDeclaration(std::string& name, std::string& parentType, std::vector<std::pair<std::string, std::string>>& paramNamesAndTypeNames, std::string& retTypeName, const std::unique_ptr<pegtl::parse_tree::node>& body) {
     llvm::Type* structType = nullptr;
@@ -143,7 +143,7 @@ void CodeGenner::generateFunctionDeclaration(std::string& name, std::string& par
 
     // Create function type
     llvm::FunctionType* funcType = llvm::FunctionType::get(retType, paramTypes, false);
-    FunctionHandler funcHandler;      //for new class
+    FunctionHandler funcHandler;
     llvm::Function* func = funcHandler.createFunction(funcType, name, module);     //for new class
     //llvm::Function* func = llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, name, &module);
 
@@ -153,7 +153,7 @@ void CodeGenner::generateFunctionDeclaration(std::string& name, std::string& par
     }
 
     // Generate function body
-    generateBlock(body, funcHandler);      //for new class
+    generateBlock(body, funcHandler);
 
     // Check if last block has terminator
     llvm::BasicBlock* lastBlock = builder.GetInsertBlock();
@@ -206,7 +206,7 @@ void CodeGenner::generateExpression(const std::unique_ptr<pegtl::parse_tree::nod
             generateLoop(child, funcHandler);
             break;
     }
-}   //UPDATED
+}
 
 llvm::Value* CodeGenner::generateStatement(const std::unique_ptr<pegtl::parse_tree::node>& node, FunctionHandler &funcHandler) {
     if (!node) return nullptr;
@@ -293,22 +293,15 @@ llvm::Value* CodeGenner::generateStatement(const std::unique_ptr<pegtl::parse_tr
         return valueStack.top();
     }
     return nullptr;
-}   //Updated variableMap used here
+}
 
 llvm::Value* CodeGenner::generateIdentifier(const std::string& name, FunctionHandler& funcHandler) {
     llvm::Value* var = nullptr;
 
-    llvm::Function* func = funcHandler.getFunction();
-    if (func) {
-        for (auto& arg : func->args()) {
-            if (arg.getName() == name) {
-                var = &arg;
-                break;
-            }
-        }
-    }
-    if (!var && variableMap.find(name) != variableMap.end()) {
-        llvm::AllocaInst* alloca = variableMap[name];
+    var = funcHandler.getVariableValue(name);
+    
+    if (!var) {
+        llvm::AllocaInst* alloca = funcHandler.getVariableAlloca(name);
         llvm::Type* type = alloca->getAllocatedType();
         var = builder.CreateLoad(type, alloca);
     }
@@ -452,7 +445,7 @@ llvm::Value* CodeGenner::generateFunctionCall(const std::unique_ptr<pegtl::parse
     }
 
     return builder.CreateCall(targetFunction, argValues);
-}   //UPDATED
+}
 
 void CodeGenner::generateVariableDeclaration(const std::unique_ptr<pegtl::parse_tree::node>& node, FunctionHandler& funcHandler) {
     if (!node) return;
@@ -465,8 +458,8 @@ void CodeGenner::generateVariableDeclaration(const std::unique_ptr<pegtl::parse_
 
     llvm::AllocaInst* alloca = builder.CreateAlloca(val->getType(), nullptr, name);
     builder.CreateStore(val, alloca);
-    variableMap[name] = alloca;
-}   //UPDATED variableMap used here
+    funcHandler.insertVariable(name, alloca);
+}
 
 void CodeGenner::generateObjectDeclaration(std::string& name, std::vector<std::string>& memberTypeNames, std::vector<std::string>& memberNames) {
     llvm::StructType* structType = llvm::StructType::create(context, name);
@@ -542,7 +535,7 @@ void CodeGenner::generateConditional(const std::unique_ptr<pegtl::parse_tree::no
 
     builder.CreateBr(continueBlock);
     builder.SetInsertPoint(continueBlock);
-}   //UPDATED
+}
 
 void CodeGenner::generateLoop(const std::unique_ptr<pegtl::parse_tree::node>& node, FunctionHandler& funcHandler) {
     if (!node) return;
@@ -612,7 +605,7 @@ void CodeGenner::generateLoop(const std::unique_ptr<pegtl::parse_tree::node>& no
     }
 
     builder.SetInsertPoint(continueBlock);
-}   //UPDATED
+}
 
 }  // namespace ir
 }  // namespace ddlbx
