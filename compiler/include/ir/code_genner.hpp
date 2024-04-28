@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ir/function_handler.hpp"
+#include "ir/object_handler.hpp"
 
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/LLVMContext.h>
@@ -73,11 +74,7 @@ private:
     static std::map<std::string, llvm::Instruction::BinaryOps> binaryOpMap;
     static std::map<std::string, ExpressionType> expressionTypeMap;
 
-    struct Object {
-        std::string name;
-        std::vector<std::string> members;
-    };
-    std::map<std::string, Object> objectMap;
+    std::map<std::string, ObjectHandler> objectMap;
 
     /**
      * @brief Generate LLVM IR code for a block.
@@ -162,13 +159,6 @@ private:
      * @param node The node representing the variable declaration.
      */
     void generateVariableDeclaration(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler &);
-
-    /**
-     * @brief Generate LLVM IR code for a object declaration.
-     *
-     * @param node The node representing the object declaration.
-     */
-    void generateObjectDeclaration(std::string &, std::vector<std::string> &, std::vector<std::string> &);
 
     /**
      * @brief Generate LLVM IR code for conditional statement.

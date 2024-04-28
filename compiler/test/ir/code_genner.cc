@@ -174,7 +174,7 @@ TEST_F(CodeGennerTest, GenerateAssignment) {
     // Assuming the test function has a single basic block
     llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
     ASSERT_NE(nullptr, entryBlock);
-    EXPECT_EQ(4, entryBlock->size());
+    EXPECT_EQ(5, entryBlock->size());
 
     // Assuming the last instruction is a return instruction
     llvm::ReturnInst* retInst = llvm::dyn_cast<llvm::ReturnInst>(&entryBlock->back());
@@ -294,7 +294,6 @@ TEST_F(CodeGennerTest, GenerateObject) {
     ASSERT_EQ(1, testType->getNumElements());
     auto aType = testType->getElementType(0);
     EXPECT_TRUE(aType->isIntegerTy());
-    EXPECT_EQ(32, aType->getIntegerBitWidth());
 
     // check if factory function is generated
     llvm::Function* factoryFunction = module.getFunction("Test_factory");

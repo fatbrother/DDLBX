@@ -94,19 +94,17 @@ void CodeGenner::generate(const std::unique_ptr<pegtl::parse_tree::node>& node) 
             generateExternalFunctionDeclaration(name, paramTypeNames, retTypeName);
         }
         if (child->type == "ddlbx::parser::Object") {
-            std::string name = child->children[0]->string();
-            const auto& members = child->children.back();
-            std::vector<std::string> memberTypeNames;
-            std::vector<std::string> memberNames;
-
-            for (const auto& member : members->children) {
-                std::string typeName = member->children[1]->string();
-                std::string memberName = member->children[0]->string();
-                memberNames.push_back(memberName);
-                memberTypeNames.push_back(typeName);
+            ObjectHandler objectHandler(child);
+            objectMap[objectHandler.getName()] = objectHandler;
+            std::map<std::string, llvm::Type*> memberTypeMap;
+            std::map<std::string, std::string> templateMap;
+            for (const auto& [memberName, typeName] : objectHandler.getMemberNameType()) {
+                memberTypeMap[typeName] = typeMap[typeName](context);
             }
-
-            generateObjectDeclaration(name, memberTypeNames, memberNames);
+            llvm::StructType* structType = objectHandler.createObject(context, module, memberTypeMap, templateMap);
+            typeMap[objectHandler.getName()] = [structType](llvm::LLVMContext& context) {
+                return structType;
+            };
         }
     }
 }
@@ -145,8 +143,7 @@ void CodeGenner::generateFunctionDeclaration(std::string& name, std::string& par
     // Create function type
     llvm::FunctionType* funcType = llvm::FunctionType::get(retType, paramTypes, false);
     FunctionHandler funcHandler;
-    llvm::Function* func = funcHandler.createFunction(funcType, name, module);     //for new class
-    //llvm::Function* func = llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, name, &module);
+    llvm::Function* func = funcHandler.createFunction(funcType, name, module);
 
     // Set parameter names
     for (int i = 0; i < func->arg_size(); i++) {
@@ -331,14 +328,8 @@ llvm::Value* CodeGenner::generateMemberAccess(const std::unique_ptr<pegtl::parse
                 }
             } else {
                 llvm::StructType* structType = llvm::cast<llvm::StructType>(parentValue->getType());
-                int memberIndex = -1;
-                Object object = objectMap[structType->getName().str()];
-                for (int i = 0; i < object.members.size(); i++) {
-                    if (object.members[i] == name) {
-                        memberIndex = i;
-                        break;
-                    }
-                }
+                ObjectHandler object = objectMap[structType->getName().str()];
+                int memberIndex = object.getMemberIndex(name);
                 if (memberIndex == -1) {
                     throw std::runtime_error(name + " is not a member of " + structType->getName().str());
                 }
@@ -471,37 +462,6 @@ void CodeGenner::generateVariableDeclaration(const std::unique_ptr<pegtl::parse_
     llvm::AllocaInst* alloca = builder.CreateAlloca(val->getType(), nullptr, name);
     builder.CreateStore(val, alloca);
     funcHandler.insertVariable(name, alloca);
-}
-
-void CodeGenner::generateObjectDeclaration(std::string& name, std::vector<std::string>& memberTypeNames, std::vector<std::string>& memberNames) {
-    llvm::StructType* structType = llvm::StructType::create(context, name);
-
-    Object object;
-    object.name = name;
-    object.members = memberNames; 
-    objectMap[name] = object;
-
-    std::vector<llvm::Type*> memberTypes;
-    for (const auto& typeName : memberTypeNames) {
-        memberTypes.push_back(typeMap[typeName](context));
-    }
-    structType->setBody(memberTypes);
-    module.getOrInsertGlobal(name, structType);
-    typeMap[name] = [structType](llvm::LLVMContext& context) { return structType; };
-
-    // create constructor
-    llvm::FunctionType* funcType = llvm::FunctionType::get(structType, memberTypes, false);
-    llvm::Function* func = llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, name + "_factory", &module);
-    llvm::BasicBlock* block = llvm::BasicBlock::Create(context, "entry", func);
-    builder.SetInsertPoint(block);
-    llvm::Value* thisPtr = builder.CreateAlloca(structType, nullptr, "this");
-    int i = 0;
-    for (auto& arg : func->args()) {
-        llvm::Value* ptr = builder.CreateStructGEP(structType, thisPtr, i++);
-        builder.CreateStore(&arg, ptr);
-    }
-    llvm::Value* ret = builder.CreateLoad(structType, thisPtr);
-    builder.CreateRet(ret);
 }
 
 void CodeGenner::generateConditional(const std::unique_ptr<pegtl::parse_tree::node>& node, FunctionHandler& funcHandler) {
