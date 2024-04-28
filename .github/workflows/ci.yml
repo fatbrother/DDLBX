@@ -22,4 +22,4 @@ jobs:
 
       - name: Test
         run:
-          compiler/build/ddlbx_test
+          compiler/build/bin/ddlbx_test
