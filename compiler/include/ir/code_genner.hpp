@@ -83,7 +83,7 @@ private:
      *
      * @param node The node representing the block.
      */
-    llvm::BasicBlock* generateBlock(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler *);
+    llvm::BasicBlock* generateBlock(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler &);
 
     /**
      * @brief Generate LLVM IR code for a function declaration.
@@ -104,14 +104,14 @@ private:
      *
      * @param node The node representing the function declaration.
      */
-    void generateExpression(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler *);
+    void generateExpression(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler &);
 
     /**
      * @brief Generate LLVM IR code for a identifier.
      *
      * @param name The name of the identifier.
      */
-    llvm::Value *generateIdentifier(const std::string &, FunctionHandler *);
+    llvm::Value *generateIdentifier(const std::string &, FunctionHandler &);
 
     /**
      * @brief Generate LLVM IR code for a member access.
@@ -119,7 +119,7 @@ private:
      * @param parent The parent of the member access.
      * @param member The member of the member access.
      */
-    llvm::Value *generateMemberAccess(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler *);
+    llvm::Value *generateMemberAccess(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler &);
 
     /**
      * @brief Generate LLVM IR code for a statement.
@@ -128,7 +128,7 @@ private:
      *
      * @return llvm::Value* The LLVM value.
      */
-    llvm::Value *generateStatement(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler *);
+    llvm::Value *generateStatement(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler &);
 
     /**
      * @brief Handle the operation of the statement.
@@ -153,14 +153,14 @@ private:
      *
      * @return llvm::Value* The LLVM value.
      */
-    llvm::Value *generateFunctionCall(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler *);
+    llvm::Value *generateFunctionCall(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler &);
 
     /**
      * @brief Generate LLVM IR code for a variable declaration.
      *
      * @param node The node representing the variable declaration.
      */
-    void generateVariableDeclaration(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler *);
+    void generateVariableDeclaration(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler &);
 
     /**
      * @brief Generate LLVM IR code for a object declaration.
@@ -174,14 +174,14 @@ private:
      *
      * @param node The node representing the conditional statement.
     */
-    void generateConditional(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler *);
+    void generateConditional(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler &);
 
     /**
      * @brief Generate LLVM IR code for loop statement.
      *
      * @param node The node representing the loop statement.
      */
-    void generateLoop(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler *);
+    void generateLoop(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler &);
 };
 
 }  // namespace ir

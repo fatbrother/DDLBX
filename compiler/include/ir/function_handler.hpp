@@ -54,10 +54,34 @@ public:
      * 
      * @param variableName The name of the variable.
      * 
-     * @return llvm::AllocaInst* The alloca of the variable.
+     * @return llvm::Value* The alloca of the variable.
     */
-    llvm::AllocaInst* getVariable(std::string variableName){
-        return variableMap[variableName];
+    llvm::AllocaInst* getVariableAlloca(std::string variableName){
+        llvm::AllocaInst* alloca = nullptr;
+        if(variableMap.find(variableName) != variableMap.end()){
+            alloca = variableMap[variableName];
+        }
+        return alloca;
+    }
+
+    /**
+     * @brief Get the llvm::Value of a variable in llvm::function
+     * 
+     * @param variableName The name of the variable.
+     * 
+     * @return llvm::Value* The llvm::Value of the variable.
+    */
+    llvm::Value* getVariableValue(std::string variableName){
+        llvm::Value* var = nullptr;
+        if(function){
+            for(auto& arg : function->args()){
+                if(arg.getName() == variableName){
+                    var = &arg;
+                    return var;
+                }
+            }
+        }
+        return var;
     }
 
     /**
