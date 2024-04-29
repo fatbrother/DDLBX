@@ -1,4 +1,4 @@
-
+#pragma once
 
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/LLVMContext.h>
@@ -26,10 +26,7 @@ public:
      * 
      * @param funcType The type of the function.
     */
-    llvm::Function* createFunction(llvm::FunctionType* funcType, std::string name, llvm::Module &module){
-        function = llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, name, &module);
-        return function;
-    }
+    llvm::Function* createFunction(llvm::FunctionType*, std::string, llvm::Module&);
     
     /**
      * @brief Get the LLVM Function.
@@ -45,9 +42,7 @@ public:
      * @param variableName The name of the variable.
      * @param alloca The alloca of the variable.
     */
-    void insertVariable(std::string variableName, llvm::AllocaInst* alloca){
-        variableMap[variableName] = alloca;
-    }
+    void insertVariable(std::string , llvm::AllocaInst*);
 
     /**
      * @brief Get the alloca of a variable.
@@ -56,13 +51,7 @@ public:
      * 
      * @return llvm::Value* The alloca of the variable.
     */
-    llvm::AllocaInst* getVariableAlloca(std::string variableName){
-        llvm::AllocaInst* alloca = nullptr;
-        if(variableMap.find(variableName) != variableMap.end()){
-            alloca = variableMap[variableName];
-        }
-        return alloca;
-    }
+    llvm::AllocaInst* getVariableAlloca(std::string);
 
     /**
      * @brief Get the llvm::Value of a variable in llvm::function
@@ -71,18 +60,7 @@ public:
      * 
      * @return llvm::Value* The llvm::Value of the variable.
     */
-    llvm::Value* getVariableValue(std::string variableName){
-        llvm::Value* var = nullptr;
-        if(function){
-            for(auto& arg : function->args()){
-                if(arg.getName() == variableName){
-                    var = &arg;
-                    return var;
-                }
-            }
-        }
-        return var;
-    }
+    llvm::Value* getVariableValue(std::string);
 
     /**
      * @brief Delete a alloca from the variable map.
@@ -91,13 +69,7 @@ public:
      * 
      * @return bool True if the variable was deleted, false otherwise.
     */
-    bool deleteVariable(std::string variableName){
-        if(variableMap.find(variableName) != variableMap.end()){
-            variableMap.erase(variableName);
-            return true;
-        }
-        return false;
-    }
+    bool deleteVariable(std::string);
 
     /**
      * @brief Insert a new function into the function map.
