@@ -175,8 +175,25 @@ class Bracket : public pegtl::seq<
     pegtl::one<')'>
 > {};
 
+class Template : public pegtl::seq<
+    pegtl::pad<
+        pegtl::one<'<'>,
+        pegtl::space
+    >,
+    pegtl::list<
+        Identifier,
+        pegtl::one<','>,
+        pegtl::space
+    >,
+    pegtl::pad<
+        pegtl::one<'>'>,
+        pegtl::space
+    >
+> {};
+
 class FunctionCall : public pegtl::seq<
     Identifier,
+    pegtl::opt<Template>,
     pegtl::one<'('>,
     pegtl::opt<
         pegtl::list<
@@ -358,23 +375,7 @@ class Object : public pegtl::seq<
         Identifier,
         pegtl::space
     >,
-    pegtl::opt<
-        pegtl::seq<
-            pegtl::pad<
-                pegtl::one<'<'>,
-                pegtl::space
-            >,
-            pegtl::list<
-                Identifier,
-                pegtl::one<','>,
-                pegtl::space
-            >,
-            pegtl::pad<
-                pegtl::one<'>'>,
-                pegtl::space
-            >
-        >
-    >,
+    pegtl::opt<Template>,
     pegtl::one<'{'>,
     pegtl::sor<
         MultiParameter,
@@ -399,6 +400,7 @@ class FunctionDeclaration : public pegtl::seq<
         Identifier,
         pegtl::space
     >,
+    pegtl::opt<Template>,
     pegtl::one<'('>,
     pegtl::sor<
         MultiParameter,
