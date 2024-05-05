@@ -34,8 +34,7 @@ public:
      * @param module The LLVM module.
      * @param variableMap The map from variable name to LLVM alloca instruction.
      */
-    CodeGenner(llvm::LLVMContext &context, llvm::Module &module)
-        : context(context), module(module), builder(context) {}
+    CodeGenner(llvm::LLVMContext &context, llvm::Module &module);
 
     /**
      * @brief Generate LLVM IR code from the parse tree.
@@ -58,9 +57,6 @@ private:
     llvm::Module &module;
     llvm::IRBuilder<> builder;
 
-    std::map<std::string, llvm::AllocaInst *> variableMap;
-    std::map<std::string, llvm::FunctionCallee> functionMap;
-
     enum class ExpressionType {
         VariableDeclaration,
         Return,
@@ -69,7 +65,7 @@ private:
         Loop,
         Assignment,
     };
-    static std::map<std::string, std::function<llvm::Type *(llvm::LLVMContext &)>> typeMap;
+    std::map<std::string, llvm::Type *> typeMap;
     static std::map<std::string, int> opPropertyMap;
     static std::map<std::string, llvm::Instruction::BinaryOps> binaryOpMap;
     static std::map<std::string, ExpressionType> expressionTypeMap;
@@ -88,7 +84,7 @@ private:
      *
      * @param node The node representing the function declaration.
      */
-    void generateFunctionDeclaration(std::string &, std::string &, std::vector<std::pair<std::string, std::string>> &, std::string &, const std::unique_ptr<pegtl::parse_tree::node> &);
+    void generateFunctionDeclaration(FunctionHandler &);
 
     /**
      * @brief Generate LLVM IR code for a external function declaration.

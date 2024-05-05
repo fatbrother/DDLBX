@@ -7,6 +7,12 @@ ObjectHandler::ObjectHandler(const std::unique_ptr<pegtl::parse_tree::node>& nod
     name = node->children[0]->string();
     const auto& members = node->children.back();
 
+    if (node->children.size() > 2) {
+        for (const auto& templateNode : node->children[1]->children) {
+            templateList.push_back(templateNode->string());
+        }
+    }
+
     for (const auto& member : members->children) {
         std::string typeName = member->children[1]->string();
         std::string memberName = member->children[0]->string();
@@ -15,7 +21,12 @@ ObjectHandler::ObjectHandler(const std::unique_ptr<pegtl::parse_tree::node>& nod
 }
 
 llvm::StructType* ObjectHandler::createObject(llvm::LLVMContext& context, llvm::Module& module, std::map<std::string, llvm::Type*>& typeMap, std::map<std::string, std::string>& templateMap) {
-    llvm::StructType* structType = llvm::StructType::create(context, name);
+    std::string realName = name;
+    for (const auto& templateName : templateList) {
+        realName += "_" + templateName;
+    }
+    
+    llvm::StructType* structType = llvm::StructType::create(context, realName);
     std::vector<llvm::Type*> memberTypes;
     for (const auto& [memberName, typeName] : memberNameType) {
         std::string templateName = typeName;
@@ -25,8 +36,7 @@ llvm::StructType* ObjectHandler::createObject(llvm::LLVMContext& context, llvm::
 
         llvm::Type* memberType = typeMap[templateName];
         if (!memberType) {
-            std::cerr << "Type " << templateName << " not found" << std::endl;
-            exit(1);
+            throw std::runtime_error("Type " + typeName + " not found");
         }
         memberTypes.push_back(memberType);
     }
@@ -35,7 +45,7 @@ llvm::StructType* ObjectHandler::createObject(llvm::LLVMContext& context, llvm::
     // create constructor
     llvm::IRBuilder<> builder(context);
     llvm::FunctionType* funcType = llvm::FunctionType::get(structType, memberTypes, false);
-    llvm::Function* func = llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, name + "_factory", &module);
+    llvm::Function* func = llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, realName + "_factory", &module);
     llvm::BasicBlock* block = llvm::BasicBlock::Create(context, "entry", func);
     builder.SetInsertPoint(block);
     llvm::Value* thisPtr = builder.CreateAlloca(structType, nullptr, "this");

@@ -283,6 +283,10 @@ TEST_F(CodeGennerTest, GenerateObject) {
         obj Test {
             a: Int
         }
+
+        fun main(): Non {
+            var t = Test(0)!
+        }
     )";
     generate(input);
 
@@ -307,6 +311,11 @@ TEST_F(CodeGennerTest, GenerateObjectWithMethod) {
         obj Test {}
 
         fun Test.test(): Int { ret 1! }
+
+        fun main(): Non {
+            var t = Test()!
+            t.test()!
+        }
     )";
     generate(input);
 
@@ -329,6 +338,11 @@ TEST_F(CodeGennerTest, GenerateMemberAccessInMethod) {
         }
 
         fun Test.test(): Int { ret this.a! }
+
+        fun main(): Non {
+            var t = Test(0)!
+            t.test()!
+        }
     )";
     generate(input);
 
