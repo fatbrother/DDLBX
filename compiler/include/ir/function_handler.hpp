@@ -77,10 +77,8 @@ public:
      *
      * @param variableName The name of the variable.
      * @param alloca The alloca of the variable.
-     */
-    void insertVariable(std::string variableName, llvm::AllocaInst* alloca) {
-        variableMap[variableName] = alloca;
-    }
+    */
+    void insertVariable(std::string , llvm::AllocaInst*);
 
     /**
      * @brief Get the alloca of a variable.
@@ -88,14 +86,8 @@ public:
      * @param variableName The name of the variable.
      *
      * @return llvm::Value* The alloca of the variable.
-     */
-    llvm::AllocaInst* getVariableAlloca(std::string variableName) {
-        llvm::AllocaInst* alloca = nullptr;
-        if (variableMap.find(variableName) != variableMap.end()) {
-            alloca = variableMap[variableName];
-        }
-        return alloca;
-    }
+    */
+    llvm::AllocaInst* getVariableAlloca(std::string);
 
     /**
      * @brief Get the llvm::Value of a variable in llvm::function
@@ -103,19 +95,8 @@ public:
      * @param variableName The name of the variable.
      *
      * @return llvm::Value* The llvm::Value of the variable.
-     */
-    llvm::Value* getVariableValue(std::string variableName) {
-        llvm::Value* var = nullptr;
-        if (function) {
-            for (auto& arg : function->args()) {
-                if (arg.getName() == variableName) {
-                    var = &arg;
-                    return var;
-                }
-            }
-        }
-        return var;
-    }
+    */
+    llvm::Value* getVariableValue(std::string);
 
     /**
      * @brief Delete a alloca from the variable map.
@@ -123,14 +104,8 @@ public:
      * @param variableName The name of the variable.
      *
      * @return bool True if the variable was deleted, false otherwise.
-     */
-    bool deleteVariable(std::string variableName) {
-        if (variableMap.find(variableName) != variableMap.end()) {
-            variableMap.erase(variableName);
-            return true;
-        }
-        return false;
-    }
+    */
+    bool deleteVariable(std::string);
 
 private:
     std::string name;

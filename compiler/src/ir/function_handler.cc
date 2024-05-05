@@ -46,7 +46,38 @@ llvm::Function* FunctionHandler::createFunction(llvm::Module& module, std::map<s
     return function;
 }
 
+void FunctionHandler::insertVariable(std::string variableName, llvm::AllocaInst* alloca){
+    variableMap[variableName] = alloca;
+}
 
+llvm::AllocaInst* FunctionHandler::getVariableAlloca(std::string variableName){
+    llvm::AllocaInst* alloca = nullptr;
+    if(variableMap.find(variableName) != variableMap.end()){
+        alloca = variableMap[variableName];
+    }
+    return alloca;
+}
+
+llvm::Value* FunctionHandler::getVariableValue(std::string variableName){
+    llvm::Value* value = nullptr;
+    if (function) {
+        for (auto& arg : function->args()) {
+            if (arg.getName() == variableName) {
+                value = &arg;
+                return value;
+            }
+        }
+    }
+    return value;
+}
+
+bool FunctionHandler::deleteVariable(std::string variableName){
+    if(variableMap.find(variableName) != variableMap.end()){
+        variableMap.erase(variableName);
+        return true;
+    }
+    return false;
+}
 
 } // namespace ir
 } // namespace ddlbx
