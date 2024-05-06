@@ -23,7 +23,7 @@ ObjectHandler::ObjectHandler(const std::unique_ptr<pegtl::parse_tree::node>& nod
 llvm::StructType* ObjectHandler::createObject(llvm::LLVMContext& context, llvm::Module& module, std::map<std::string, llvm::Type*>& typeMap, std::map<std::string, std::string>& templateMap) {
     std::string realName = name;
     for (const auto& templateName : templateList) {
-        realName += "_" + templateName;
+        realName += "_" + templateMap[templateName];
     }
     
     llvm::StructType* structType = llvm::StructType::create(context, realName);

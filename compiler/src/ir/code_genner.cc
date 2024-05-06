@@ -45,7 +45,7 @@ std::map<std::string, CodeGenner::ExpressionType> CodeGenner::expressionTypeMap 
 CodeGenner::CodeGenner(llvm::LLVMContext& context, llvm::Module& module)
     : context(context), module(module), builder(context) {
     typeMap["Int"] = llvm::Type::getInt32Ty(context);
-    typeMap["Flo"] = llvm::Type::getFloatTy(context);
+    typeMap["Flt"] = llvm::Type::getFloatTy(context);
     typeMap["Str"] = llvm::Type::getInt8PtrTy(context);
     typeMap["Boo"] = llvm::Type::getInt1Ty(context);
     typeMap["Ptr"] = llvm::Type::getInt8PtrTy(context);
@@ -392,14 +392,12 @@ llvm::Value* CodeGenner::generateFunctionCall(const std::unique_ptr<pegtl::parse
 
     std::vector<std::string> templateNames;
     if (node->children.size() > 1 && node->children[1]->type == "ddlbx::parser::Template") {
-        for (const auto& templateNode : node->children[1]->children) {
+        for (const auto& templateNode : node->children[1]->children)
             templateNames.push_back(templateNode->string());
-            name += "_" + templateNode->string();
-        }
     }
 
     std::vector<llvm::Value*> argValues;
-    for (size_t i = 1; i < node->children.size(); i++) {
+    for (size_t i = templateNames.size() > 0 ? 2 : 1; i < node->children.size(); i++) {
         const auto& value = node->children[i];
         llvm::Value* val = generateStatement(value, funcHandler);
         argValues.push_back(val);
@@ -417,6 +415,7 @@ llvm::Value* CodeGenner::generateFunctionCall(const std::unique_ptr<pegtl::parse
         if (module.getFunction(constructorName) == nullptr) {
             ObjectHandler& objectHandler = objectMap[name];
             std::vector<std::string> templateList = objectHandler.getTemplateList();
+
             if (templateList.size() != templateNames.size()) {
                 int line = node->begin().line;
                 throw std::runtime_error(std::to_string(line) + ": " + name + " template size is not matching");
