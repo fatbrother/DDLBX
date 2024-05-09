@@ -48,7 +48,7 @@ CodeGenner::CodeGenner(llvm::LLVMContext& context, llvm::Module& module)
     typeMap["Flt"] = llvm::Type::getFloatTy(context);
     typeMap["Str"] = llvm::Type::getInt8PtrTy(context);
     typeMap["Boo"] = llvm::Type::getInt1Ty(context);
-    typeMap["Ptr"] = llvm::Type::getInt8PtrTy(context);
+    // typeMap["Ptr"] = llvm::Type::getInt8PtrTy(context);
     typeMap["Non"] = llvm::Type::getVoidTy(context);
 }
 
@@ -68,11 +68,17 @@ void CodeGenner::generate(const std::unique_ptr<pegtl::parse_tree::node>& node) 
             }
         }
         if (child->type == "ddlbx::parser::ExternalFunction") {
-            auto name = child->children[0]->string();
-            const auto& params = child->children[1];
-            std::string retTypeName = child->children[2]->string();
+            int idx = 0;
+            std::string parentType = "";
+            if (child->children[idx]->type == "ddlbx::parser::Type") {
+                parentType = child->children[idx++]->string();
+            }
+            std::string name = (parentType != "" ? parentType + "_" : "") + child->children[idx++]->string();
+            const auto& params = child->children[idx++];
+            std::string retTypeName = child->children[idx++]->string();
 
             std::vector<std::string> paramTypeNames;
+            if (parentType != "") paramTypeNames.push_back(parentType);
             for (const auto& param : params->children) {
                 std::string typeName = param->children[1]->string();
                 paramTypeNames.push_back(typeName);
@@ -298,17 +304,34 @@ llvm::Value* CodeGenner::generateMemberAccess(const std::unique_ptr<pegtl::parse
             }
         }
         if (child->type == "ddlbx::parser::FunctionCall") {
-            std::string name = parentValue == nullptr ? 
+            std::string parrntTypeName = "";
+            if (parentValue) {
+                for (const auto& [typeName, type] : typeMap) {
+                    if (type == parentValue->getType()) {
+                        parrntTypeName = typeName;
+                        break;
+                    }
+                }
+            }
+            std::string name = parrntTypeName == "" ? 
                 child->children[0]->string() : 
-                parentValue->getType()->getStructName().str() + "_" + child->children[0]->string();
+                parrntTypeName + "_" + child->children[0]->string();
             std::vector<llvm::Value*> argValues;
             for (size_t i = 1; i < child->children.size(); i++) {
                 const auto& value = child->children[i];
                 llvm::Value* val = generateStatement(value, function);
                 argValues.push_back(val);
             }
-            argValues.push_back(parentValue);
+
+            if (parentValue != nullptr) {
+                argValues.push_back(parentValue);
+            }
             llvm::Function* targetFunction = module.getFunction(name);
+            if (!targetFunction) {
+                int line = child->begin().line;
+                throw std::runtime_error(std::to_string(line) + ": " + name + " is not defined");
+            }
+
             if (targetFunction->arg_size() != argValues.size()) {
                 int line = child->begin().line;
                 throw std::runtime_error(std::to_string(line) + ": " + name + " parameter size is not matching");
@@ -360,10 +383,14 @@ llvm::Value* CodeGenner::generateValue(const std::unique_ptr<pegtl::parse_tree::
         result = llvm::ConstantInt::get(typeMap["Int"], std::stoi(value->string()));
     }
     else if (value->type == "ddlbx::parser::Float") {
-        result = llvm::ConstantFP::get(typeMap["Flo"], std::stof(value->string()));
+        result = llvm::ConstantFP::get(typeMap["Flt"], std::stof(value->string()));
     }
     else if (value->type == "ddlbx::parser::String") {
-        result = builder.CreateGlobalString(value->string());
+        std::string str = value->string();
+        str = str.substr(1, str.size() - 2);
+        llvm::Constant *strConstant = llvm::ConstantDataArray::getString(context, str);
+        llvm::GlobalVariable *strGlobal = new llvm::GlobalVariable(module, strConstant->getType(), true, llvm::GlobalValue::PrivateLinkage, strConstant);
+        result = builder.CreatePointerCast(strGlobal, typeMap["Str"]);
     }
     else if (value->type == "ddlbx::parser::Boolean") {
         if (value->string() == "true") {

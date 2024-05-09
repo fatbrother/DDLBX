@@ -9,4 +9,3 @@ add_library(ddlbx_core STATIC ${SRC_FILES})
 # include directories
 target_include_directories(ddlbx_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(ddlbx_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../lib/bdwgc/include)
-

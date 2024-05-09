@@ -22,13 +22,6 @@ if(NOT EXISTS ${CMAKE_SOURCE_DIR}/lib/PEGTL/build)
     execute_process(COMMAND ${CMAKE_COMMAND} --build ${CMAKE_SOURCE_DIR}/lib/PEGTL/build)
 endif()
 
-# if bdwgc has not been built, build it with CMakeLists.txt in bdwgc
-if(NOT EXISTS ${CMAKE_SOURCE_DIR}/lib/bdwgc/build)
-    message(STATUS "Building bdwgc")
-    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" -S ${CMAKE_SOURCE_DIR}/lib/bdwgc -B ${CMAKE_SOURCE_DIR}/lib/bdwgc/build -D CMAKE_BUILD_TYPE=Release)
-    execute_process(COMMAND ${CMAKE_COMMAND} --build ${CMAKE_SOURCE_DIR}/lib/bdwgc/build)
-endif()
-
 # if gtest has not been built, build it with CMakeLists.txt in googletest
 if(NOT EXISTS ${CMAKE_SOURCE_DIR}/lib/googletest/build)
     message(STATUS "Building googletest")

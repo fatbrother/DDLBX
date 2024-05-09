@@ -7,6 +7,3 @@
 [submodule "compiler/lib/llvm-project"]
 	path = compiler/lib/llvm-project
 	url = https://github.com/llvm/llvm-project.git
-[submodule "compiler/lib/bdwgc"]
-	path = compiler/lib/bdwgc
-	url = https://github.com/ivmai/bdwgc.git

@@ -126,8 +126,8 @@ class Statement : public pegtl::seq<
         pegtl::sor<
             Bracket,
             Value,
-            FunctionCall,
             MemberAccess,
+            FunctionCall,
             Identifier
         >
     >,
@@ -149,8 +149,8 @@ class Statement : public pegtl::seq<
             pegtl::sor<
                 Bracket,
                 Value,
-                FunctionCall,
                 MemberAccess,
+                FunctionCall,
                 Identifier
             >
         >

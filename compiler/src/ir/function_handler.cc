@@ -37,7 +37,7 @@ llvm::Function* FunctionHandler::createFunction(llvm::Module& module, std::map<s
 
     llvm::FunctionType* funcType = llvm::FunctionType::get(retType, argTypes, false);
     function = llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, name, &module);
-    
+    function->setGC("coreclr");
     // Set parameter names
     for (int i = 0; i < function->arg_size(); i++) {
         function->getArg(i)->setName(paramNamesAndTypeNames[i].first);

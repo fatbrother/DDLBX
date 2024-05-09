@@ -35,7 +35,7 @@ fi
 # compile input file
 ./build/bin/ddlbx $input_file
 
-lib_paths="./lib/bdwgc/build/libgc.so ./build/core/libddlbx_core.a"
+lib_paths="./build/core/libddlbx_core.a"
 
 # link output file
 clang output.o $lib_paths -o $output_file
