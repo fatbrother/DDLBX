@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ir/object_handler.hpp"
+
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
@@ -16,9 +18,13 @@ namespace pegtl = tao::pegtl;
 namespace ddlbx {
 namespace ir {
 
+class ObjectHandler;
 class FunctionHandler {
 public:
     FunctionHandler() = delete;
+
+    FunctionHandler(const std::string& name, const std::string& parentTypeName, const std::string& retTypeName)
+        : name(name), parentTypeName(parentTypeName), retTypeName(retTypeName), body(body) {}
 
     FunctionHandler(const std::unique_ptr<pegtl::parse_tree::node>& node);
 
@@ -27,7 +33,7 @@ public:
      *
      * @param funcType The type of the function.
      */
-    llvm::Function* createFunction(llvm::Module& module, std::map<std::string, llvm::Type*>& typeMap);
+    llvm::Function* createFunction(llvm::Module& module, std::map<std::string, std::shared_ptr<ObjectHandler>>& objectMap);
 
     /**
      * @brief Insert Parameter into the function.

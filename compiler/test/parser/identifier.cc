@@ -39,9 +39,9 @@ TEST (Grammar, Identifier) {
     string_input<> in14(sample14, "input");
 
     EXPECT_TRUE(parse<Identifier>(in1));
-    EXPECT_TRUE(parse<Identifier>(in2));
+    EXPECT_FALSE(parse<Identifier>(in2));
     EXPECT_TRUE(parse<Identifier>(in3));
-    EXPECT_TRUE(parse<Identifier>(in4));
+    EXPECT_FALSE(parse<Identifier>(in4));
     EXPECT_TRUE(parse<Identifier>(in5));
     EXPECT_TRUE(parse<Identifier>(in6));
     EXPECT_TRUE(parse<Identifier>(in7));

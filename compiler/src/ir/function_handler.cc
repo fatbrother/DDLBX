@@ -1,5 +1,7 @@
 #include "ir/function_handler.hpp"
 
+#include "ir/object_handler.hpp"
+
 namespace ddlbx {
 namespace ir {
 
@@ -18,17 +20,21 @@ FunctionHandler::FunctionHandler(const std::unique_ptr<pegtl::parse_tree::node>&
         std::string typeName = param->children[1]->string();
         paramNamesAndTypeNames.push_back({paramName, typeName});
     }
+
+    if (parentTypeName != "") {
+        paramNamesAndTypeNames.push_back({"this", parentTypeName});
+    }
 }
 
-llvm::Function* FunctionHandler::createFunction(llvm::Module& module, std::map<std::string, llvm::Type*>& typeMap) {
-    llvm::Type* retType = typeMap[retTypeName];
+llvm::Function* FunctionHandler::createFunction(llvm::Module& module, std::map<std::string, std::shared_ptr<ObjectHandler>>& objectMap) {
+    llvm::Type* retType = objectMap[retTypeName]->getType();
     if (!retType) {
         throw std::runtime_error("Type " + retTypeName + " not found");
     }
 
     std::vector<llvm::Type*> argTypes;
     for (const auto& [paramName, typeName] : paramNamesAndTypeNames) {
-        llvm::Type* argType = typeMap[typeName];
+        llvm::Type* argType = objectMap[typeName]->getType();
         if (!argType) {
             throw std::runtime_error("Type " + typeName + " not found");
         }

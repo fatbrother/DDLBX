@@ -26,6 +26,7 @@ template <> struct Selector<Identifier> : std::true_type {};
 template <> struct Selector<MemberAccess> : std::true_type {};
 template <> struct Selector<Expression> : std::true_type {};
 template <> struct Selector<Template> : std::true_type {};
+template <> struct Selector<Argument> : std::true_type {};
 template <> struct Selector<FunctionCall> : std::true_type {};
 template <> struct Selector<VariableDeclaration> : std::true_type {};
 template <> struct Selector<Statement> : std::true_type {};

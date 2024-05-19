@@ -65,12 +65,11 @@ private:
         Loop,
         Assignment,
     };
-    std::map<std::string, llvm::Type *> typeMap;
     static std::map<std::string, int> opPropertyMap;
     static std::map<std::string, llvm::Instruction::BinaryOps> binaryOpMap;
     static std::map<std::string, ExpressionType> expressionTypeMap;
 
-    std::map<std::string, ObjectHandler> objectMap;
+    std::map<std::string, std::shared_ptr<ObjectHandler>> objectMap;
 
     /**
      * @brief Generate LLVM IR code for a block.
@@ -147,7 +146,7 @@ private:
      *
      * @return llvm::Value* The LLVM value.
      */
-    llvm::Value *generateFunctionCall(const std::unique_ptr<pegtl::parse_tree::node> &, FunctionHandler &);
+    llvm::Value *generateFunctionCall(std::string &, std::vector<std::string> &, std::vector<std::unique_ptr<pegtl::parse_tree::node>> &, FunctionHandler &);
 
     /**
      * @brief Generate LLVM IR code for a variable declaration.

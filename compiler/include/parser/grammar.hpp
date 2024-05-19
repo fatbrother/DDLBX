@@ -82,11 +82,19 @@ class LogicalOperator : public pegtl::sor<
     pegtl::keyword<'o', 'r'>
 > {};
 
-class Identifier : public pegtl::plus<
+class Identifier : public pegtl::seq<
+    pegtl::not_at<
     pegtl::sor<
-        pegtl::alnum,
-        pegtl::one<'_'>
+            pegtl::keyword<'v', 'a', 'r'>,
+            pegtl::keyword<'f', 'u', 'n'>,
+            pegtl::keyword<'r', 'e', 't'>,
+            pegtl::keyword<'o', 'p', 't'>,
+            pegtl::keyword<'f', 'o', 'r'>,
+            pegtl::keyword<'o', 'b', 'j'>,
+            pegtl::keyword<'e', 'x', 't', 'e', 'r', 'n'>
     >
+    >,
+    pegtl::identifier
 > {};
 
 class Type : public pegtl::sor<
@@ -191,18 +199,20 @@ class Template : public pegtl::seq<
     >
 > {};
 
+class Argument : public pegtl::opt<
+    pegtl::list<
+        Statement,
+        pegtl::one<','>,
+        pegtl::space
+    >,
+    pegtl::success
+> {};
+
 class FunctionCall : public pegtl::seq<
     Identifier,
     pegtl::opt<Template>,
     pegtl::one<'('>,
-    pegtl::opt<
-        pegtl::list<
-            Statement,
-            pegtl::one<','>,
-            pegtl::space
-        >,
-        pegtl::success
-    >,
+    Argument,
     pegtl::one<')'>
 > {};
 

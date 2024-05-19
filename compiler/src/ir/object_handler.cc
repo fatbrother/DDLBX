@@ -20,7 +20,7 @@ ObjectHandler::ObjectHandler(const std::unique_ptr<pegtl::parse_tree::node>& nod
     }
 }
 
-llvm::StructType* ObjectHandler::createObject(llvm::LLVMContext& context, llvm::Module& module, std::map<std::string, llvm::Type*>& typeMap, std::map<std::string, std::string>& templateMap) {
+llvm::StructType* ObjectHandler::createObject(llvm::LLVMContext& context, llvm::Module& module, std::map<std::string, std::shared_ptr<ObjectHandler>>& objectMap, std::map<std::string, std::string>& templateMap) {
     std::string realName = name;
     for (const auto& templateName : templateList) {
         realName += "_" + templateMap[templateName];
@@ -34,10 +34,11 @@ llvm::StructType* ObjectHandler::createObject(llvm::LLVMContext& context, llvm::
             templateName = templateMap[typeName];
         }
 
-        llvm::Type* memberType = typeMap[templateName];
-        if (!memberType) {
-            throw std::runtime_error("Type " + typeName + " not found");
+        if (!objectMap[templateName]->isCreated()) {
+            objectMap[templateName]->createObject(context, module, objectMap, templateMap);
         }
+
+        llvm::Type* memberType = objectMap[templateName]->getType();
         memberTypes.push_back(memberType);
     }
     structType->setBody(memberTypes);
@@ -56,6 +57,12 @@ llvm::StructType* ObjectHandler::createObject(llvm::LLVMContext& context, llvm::
     }
     llvm::Value* ret = builder.CreateLoad(structType, thisPtr);
     builder.CreateRet(ret);
+
+    this->type = structType;
+
+    for (const auto& method : methodList) {
+        method->createFunction(module, objectMap);
+    }
 
     return structType;
 }
