@@ -34,14 +34,16 @@ protected:
 };
 
 TEST_F(CodeGennerTest, GenerateSimpleReturn) {
-    const std::string input = "fun test1(): Int { ret 0! }";
+    const std::string input = R"(
+        fun main(): Int { 
+            ret 0!
+        }
+    )";
     generate(input);
 
     // Assuming the test function is declared in the module
-    llvm::Function* testFunction = module.getFunction("test1");
-
+    llvm::Function* testFunction = module.getFunction("main");
     ASSERT_NE(nullptr, testFunction);
-    EXPECT_EQ("test1", testFunction->getName().str());
 
     llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
     ASSERT_NE(nullptr, entryBlock);
@@ -57,15 +59,13 @@ TEST_F(CodeGennerTest, GenerateSimpleReturn) {
 TEST_F(CodeGennerTest, GenerateSimpleFunctionCall) {
     const std::string input = R"(
         fun foo(): Int { ret 0! }
-        fun test2(): Non { foo()! }
+        fun main(): Non { foo()! }
     )";
     generate(input);
 
     // Assuming the test function is declared in the module
-    llvm::Function* testFunction = module.getFunction("test2");
-
+    llvm::Function* testFunction = module.getFunction("main");
     ASSERT_NE(nullptr, testFunction);
-    EXPECT_EQ("test2", testFunction->getName().str());
 
     llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
     ASSERT_NE(nullptr, entryBlock);
@@ -79,17 +79,15 @@ TEST_F(CodeGennerTest, GenerateSimpleFunctionCall) {
 
 TEST_F(CodeGennerTest, GenerateSimpleVariableDeclaration) {
     const std::string input = R"(
-        fun test3(): Non {
+        fun main(): Non {
             var x = 0!
         }
     )";
     generate(input);
 
     // Assuming the test function is declared in the module
-    llvm::Function* testFunction = module.getFunction("test3");
-
+    llvm::Function* testFunction = module.getFunction("main");
     ASSERT_NE(nullptr, testFunction);
-    EXPECT_EQ("test3", testFunction->getName().str());
 
     llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
     ASSERT_NE(nullptr, entryBlock);
@@ -103,17 +101,15 @@ TEST_F(CodeGennerTest, GenerateSimpleVariableDeclaration) {
 
 TEST_F(CodeGennerTest, GenerateSimpleStatement) {
     const std::string input = R"(
-        fun test4(): Int {
+        fun main(): Int {
             ret 1 * 2 + 3!
         }
     )";
     generate(input);
 
     // Assuming the test function is declared in the module
-    llvm::Function* testFunction = module.getFunction("test4");
-
+    llvm::Function* testFunction = module.getFunction("main");
     ASSERT_NE(nullptr, testFunction);
-    EXPECT_EQ("test4", testFunction->getName().str());
 
     // Assuming the test function has a single basic block
     llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
@@ -130,17 +126,15 @@ TEST_F(CodeGennerTest, GenerateSimpleStatement) {
 
 TEST_F(CodeGennerTest, GenerateBracketStatement) {
     const std::string input = R"(
-        fun test5(): Int {
+        fun main(): Int {
             ret (1 + 2) * 2!
         }
     )";
     generate(input);
 
     // Assuming the test function is declared in the module
-    llvm::Function* testFunction = module.getFunction("test5");
-
+    llvm::Function* testFunction = module.getFunction("main");
     ASSERT_NE(nullptr, testFunction);
-    EXPECT_EQ("test5", testFunction->getName().str());
 
     // Assuming the test function has a single basic block
     llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
@@ -157,7 +151,7 @@ TEST_F(CodeGennerTest, GenerateBracketStatement) {
 
 TEST_F(CodeGennerTest, GenerateAssignment) {
     const std::string input = R"(
-        fun test6(): Int {
+        fun main(): Int {
             var x = 1!
             x = 2!
             ret x!
@@ -166,10 +160,8 @@ TEST_F(CodeGennerTest, GenerateAssignment) {
     generate(input);
 
     // Assuming the test function is declared in the module
-    llvm::Function* testFunction = module.getFunction("test6");
-
+    llvm::Function* testFunction = module.getFunction("main");
     ASSERT_NE(nullptr, testFunction);
-    EXPECT_EQ("test6", testFunction->getName().str());
 
     // Assuming the test function has a single basic block
     llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
@@ -183,17 +175,16 @@ TEST_F(CodeGennerTest, GenerateAssignment) {
 
 TEST_F(CodeGennerTest, OperatorPriority) {
     const std::string input = R"(
-        fun test6(): Boo {
+        fun main(): Boo {
             ret 1 == 1 and 3 == 4!
         }
     )";
     generate(input);
 
     // Assuming the test function is declared in the module
-    llvm::Function* testFunction = module.getFunction("test6");
+    llvm::Function* testFunction = module.getFunction("main");
 
     ASSERT_NE(nullptr, testFunction);
-    EXPECT_EQ("test6", testFunction->getName().str());
 
     // Assuming the test function has a single basic block
     llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
@@ -210,7 +201,7 @@ TEST_F(CodeGennerTest, OperatorPriority) {
 
 TEST_F(CodeGennerTest, GenerateConditional) {
     const std::string input = R"(
-        fun test7(): Int {
+        fun main(): Int {
             opt (1) ret 1!
 
             ret 0!
@@ -219,10 +210,9 @@ TEST_F(CodeGennerTest, GenerateConditional) {
     generate(input);
 
     // Assuming the test function is declared in the module
-    llvm::Function* testFunction = module.getFunction("test7");
+    llvm::Function* testFunction = module.getFunction("main");
 
     ASSERT_NE(nullptr, testFunction);
-    EXPECT_EQ("test7", testFunction->getName().str());
 
     // Assuming the test function has a single basic block
     llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
@@ -251,17 +241,16 @@ TEST_F(CodeGennerTest, GenerateConditional) {
 
 TEST_F(CodeGennerTest, GenerateLoop) {
     const std::string input = R"(
-        fun test8(): Non {
+        fun main(): Non {
             for (i to 10) { 1 + 1! }
         }
     )";
     generate(input);
 
     // Assuming the test function is declared in the module
-    llvm::Function* testFunction = module.getFunction("test8");
+    llvm::Function* testFunction = module.getFunction("main");
 
     ASSERT_NE(nullptr, testFunction);
-    EXPECT_EQ("test8", testFunction->getName().str());
 
     // Assuming the test function has a single basic block
     llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
@@ -323,7 +312,6 @@ TEST_F(CodeGennerTest, GenerateObjectWithMethod) {
     llvm::Function* testFunction = module.getFunction("Test_test");
 
     ASSERT_NE(nullptr, testFunction);
-    EXPECT_EQ("Test_test", testFunction->getName().str());
 
     // Assuming the test function has a parameter "this"
     ASSERT_EQ(1, testFunction->arg_size());
@@ -348,9 +336,7 @@ TEST_F(CodeGennerTest, GenerateMemberAccessInMethod) {
 
     // Assuming the test function is declared in the module
     llvm::Function* testFunction = module.getFunction("Test_test");
-
     ASSERT_NE(nullptr, testFunction);
-    EXPECT_EQ("Test_test", testFunction->getName().str());
 
     // Assuming the test function has a single basic block
     llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
@@ -363,18 +349,15 @@ TEST_F(CodeGennerTest, GenerateMemberAccessInFunction) {
             a: Int
         }
 
-        fun test(): Int {
+        fun main(): Int {
             var t = Test(0)!
             ret t.a!
         }
     )";
     generate(input);
 
-    // Assuming the test function is declared in the module
-    llvm::Function* testFunction = module.getFunction("test");
-
+    llvm::Function* testFunction = module.getFunction("main");
     ASSERT_NE(nullptr, testFunction);
-    EXPECT_EQ("test", testFunction->getName().str());
 
     // Assuming the test function has a single basic block
     llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
@@ -389,18 +372,15 @@ TEST_F(CodeGennerTest, GenerateMethodCall) {
         
         fun Test.test(): Int { ret this.a! }
 
-        fun test(): Non {
+        fun main(): Non {
             var t = Test(0)!
             t.test()!
         }
     )";
     generate(input);
 
-    // Assuming the test function is declared in the module
-    llvm::Function* testFunction = module.getFunction("test");
-
+    llvm::Function* testFunction = module.getFunction("main");
     ASSERT_NE(nullptr, testFunction);
-    EXPECT_EQ("test", testFunction->getName().str());
 
     // Assuming the test function has a single basic block
     llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();

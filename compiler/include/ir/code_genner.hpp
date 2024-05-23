@@ -70,6 +70,7 @@ private:
     static std::map<std::string, ExpressionType> expressionTypeMap;
 
     std::map<std::string, std::shared_ptr<ObjectHandler>> objectMap;
+    std::map<std::string, std::shared_ptr<FunctionHandler>> functionMap;
 
     /**
      * @brief Generate LLVM IR code for a block.
@@ -146,7 +147,7 @@ private:
      *
      * @return llvm::Value* The LLVM value.
      */
-    llvm::Value *generateFunctionCall(std::string &, std::vector<std::string> &, std::vector<std::unique_ptr<pegtl::parse_tree::node>> &, FunctionHandler &);
+    llvm::Value *generateFunctionCall(const std::string &, const std::vector<std::string> &, std::vector<std::unique_ptr<pegtl::parse_tree::node>> &, FunctionHandler &, llvm::Value* = nullptr);
 
     /**
      * @brief Generate LLVM IR code for a variable declaration.

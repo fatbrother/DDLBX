@@ -70,10 +70,8 @@ void CodeGenner::generate(const std::unique_ptr<pegtl::parse_tree::node>& node) 
     for (auto& child : node->children) {
         if (child->type == "ddlbx::parser::Function") {
             std::shared_ptr<FunctionHandler> funcHandler = std::make_shared<FunctionHandler>(child);
-            if (funcHandler->getParentTypeName() != "") {
-                std::string parentType = funcHandler->getParentTypeName();
-                objectMap[parentType]->insertMethod(funcHandler);
-            } else {
+            functionMap[funcHandler->getName()] = funcHandler;
+            if (funcHandler->getName() == "main") {
                 generateFunctionDeclaration(*funcHandler);
             }
         }
@@ -108,7 +106,7 @@ llvm::BasicBlock* CodeGenner::generateBlock(const std::unique_ptr<pegtl::parse_t
     if (node->type != "ddlbx::parser::Block") return nullptr;
 
     llvm::Function* func = funcHandler.getFunction();
-    
+
     llvm::BasicBlock* block = llvm::BasicBlock::Create(context, "entry", func);
     builder.SetInsertPoint(block);
 
@@ -124,6 +122,8 @@ void CodeGenner::generateFunctionDeclaration(FunctionHandler& funcHandler) {
 
     auto& body = funcHandler.getBody();
 
+    llvm::BasicBlock* currentBlock = builder.GetInsertBlock();
+
     generateBlock(body, funcHandler);
 
     auto lastBlock = builder.GetInsertBlock();
@@ -136,6 +136,8 @@ void CodeGenner::generateFunctionDeclaration(FunctionHandler& funcHandler) {
             throw std::runtime_error(std::to_string(line) + ": Function must return a value");
         }
     }
+
+    builder.SetInsertPoint(currentBlock);
 
     // Verify function
     std::string error;
@@ -356,40 +358,13 @@ llvm::Value* CodeGenner::generateMemberAccess(const std::unique_ptr<pegtl::parse
                     }
                 }
             }
-            std::string name = parrntObjectName == "" ? 
-                child->children[0]->string() : 
+            std::string name = parrntObjectName == "" ?
+                child->children[0]->string() :
                 parrntObjectName + "_" + child->children[0]->string();
 
-            if (name == "sizeof") {
-                if (child->children[1]->children.size() != 1) {
-                    int line = child->begin().line;
-                    throw std::runtime_error(std::to_string(line) + ": sizeof function must have one argument");
-                }
-                llvm::Type* type = objectMap[child->children[1]->children[0]->string()]->getType();
-                parentValue = llvm::ConstantInt::get(objectMap["Int"]->getType(), type->getPrimitiveSizeInBits().getFixedValue() / 8);
-                continue;
-            }
+            auto& args = child->children[1]->children;
 
-            std::vector<llvm::Value*> argValues;
-            for (const auto& arg : child->children[1]->children) {
-                llvm::Value* val = generateStatement(arg, function);
-                argValues.push_back(val);
-            }
-
-            if (parentValue != nullptr) {
-                argValues.push_back(parentValue);
-            }
-            llvm::Function* targetFunction = module.getFunction(name);
-            if (!targetFunction) {
-                int line = child->begin().line;
-                throw std::runtime_error(std::to_string(line) + ": " + name + " is not defined");
-            }
-
-            if (targetFunction->arg_size() != argValues.size()) {
-                int line = child->begin().line;
-                throw std::runtime_error(std::to_string(line) + ": " + name + " parameter size is not matching");
-            }
-            parentValue = builder.CreateCall(targetFunction, argValues);
+            parentValue = generateFunctionCall(name, {}, args, function, parentValue);
         }
     }
 
@@ -415,7 +390,7 @@ llvm::Value* CodeGenner::handleOperation(llvm::Value* lhs, llvm::Value* rhs, con
     else if (op == "or")
         result = builder.CreateOr(lhs, rhs);
     else if (op == "=")
-        result = builder.CreateStore(rhs, lhs); 
+        result = builder.CreateStore(rhs, lhs);
     else {
         llvm::Instruction::BinaryOps binaryOp = binaryOpMap[op];
         result = builder.CreateBinOp(binaryOp, lhs, rhs);
@@ -461,7 +436,7 @@ llvm::Value* CodeGenner::generateValue(const std::unique_ptr<pegtl::parse_tree::
     return result;
 }
 
-llvm::Value* CodeGenner::generateFunctionCall(std::string &name, std::vector<std::string> &templateNames, std::vector<std::unique_ptr<pegtl::parse_tree::node>> &args, FunctionHandler& funcHandler) {        
+llvm::Value* CodeGenner::generateFunctionCall(const std::string &name, const std::vector<std::string> &templateNames, std::vector<std::unique_ptr<pegtl::parse_tree::node>> &args, FunctionHandler& funcHandler, llvm::Value* parentValue) {
     if (name == "sizeof") {
         if (args.size() != 1) {
             int line = funcHandler.getBody()->begin().line;
@@ -471,15 +446,26 @@ llvm::Value* CodeGenner::generateFunctionCall(std::string &name, std::vector<std
         return llvm::ConstantInt::get(objectMap["Int"]->getType(), type->getPrimitiveSizeInBits().getFixedValue() / 8);
     }
 
+    llvm::Function* targetFunction = module.getFunction(name);
+    if (!targetFunction) {
+        // check if it is in function map
+        if (functionMap.find(name) != functionMap.end()) {
+            FunctionHandler& targetFuncHandler = *functionMap[name];
+            generateFunctionDeclaration(targetFuncHandler);
+            targetFunction = module.getFunction(name);
+        } else {
+            throw std::runtime_error(name + " is not defined");
+        }
+    }
+
     std::vector<llvm::Value*> argValues;
     for (const auto& arg : args) {
         llvm::Value* val = generateStatement(arg, funcHandler);
         argValues.push_back(val);
     }
 
-    llvm::Function* targetFunction = module.getFunction(name);
-    if (!targetFunction) {
-        throw std::runtime_error(name + " function is not defined");
+    if (parentValue) {
+        argValues.push_back(parentValue);
     }
 
     if (targetFunction->arg_size() != argValues.size()) {

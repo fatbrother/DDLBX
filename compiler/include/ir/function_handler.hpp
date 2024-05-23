@@ -23,9 +23,6 @@ class FunctionHandler {
 public:
     FunctionHandler() = delete;
 
-    FunctionHandler(const std::string& name, const std::string& parentTypeName, const std::string& retTypeName)
-        : name(name), parentTypeName(parentTypeName), retTypeName(retTypeName), body(body) {}
-
     FunctionHandler(const std::unique_ptr<pegtl::parse_tree::node>& node);
 
     /**
@@ -55,7 +52,9 @@ public:
      *
      * @return std::string The name of the function.
      */
-    std::string getName() { return name; }
+    std::string getName() { 
+        return name;
+    }
 
     /**
      * @brief Get the parent type name.

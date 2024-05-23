@@ -56,10 +56,6 @@ llvm::StructType* ObjectHandler::createObject(llvm::LLVMContext& context, llvm::
 
     this->type = structType;
 
-    for (const auto& method : methodList) {
-        method->createFunction(module, objectMap);
-    }
-
     return structType;
 }
 

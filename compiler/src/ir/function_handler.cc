@@ -11,7 +11,7 @@ FunctionHandler::FunctionHandler(const std::unique_ptr<pegtl::parse_tree::node>&
         parentTypeName = node->children[idx++]->string();
     }
 
-    name = (parentTypeName != "" ? parentTypeName + "_" : "") + node->children[idx++]->string();
+    name = (parentTypeName != "" ? parentTypeName + "_" : "") + node->children[idx++]->string(); // TODO: support template object
     const auto& params = node->children[idx++];
     retTypeName = node->children[idx++]->string();
     
