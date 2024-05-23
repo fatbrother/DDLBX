@@ -1,4 +1,4 @@
 fun main(): Int {
-    print('Hello, World!')!
+    println('Hello, World!')!
     ret 0!
 }

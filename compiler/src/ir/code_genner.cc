@@ -47,7 +47,6 @@ CodeGenner::CodeGenner(llvm::LLVMContext& context, llvm::Module& module)
     objectMap["Int"] = std::make_shared<ObjectHandler>("Int", std::map<std::string, std::string>(), llvm::Type::getInt32Ty(context));
     objectMap["Flt"] = std::make_shared<ObjectHandler>("Flt", std::map<std::string, std::string>(), llvm::Type::getFloatTy(context));
     objectMap["Str"] = std::make_shared<ObjectHandler>("Str", std::map<std::string, std::string>(), llvm::Type::getInt8PtrTy(context));
-    objectMap["Ptr"] = std::make_shared<ObjectHandler>("Ptr", std::map<std::string, std::string>(), llvm::Type::getInt8PtrTy(context));
     objectMap["Boo"] = std::make_shared<ObjectHandler>("Boo", std::map<std::string, std::string>(), llvm::Type::getInt1Ty(context));
     objectMap["Non"] = std::make_shared<ObjectHandler>("Non", std::map<std::string, std::string>(), llvm::Type::getVoidTy(context));
 

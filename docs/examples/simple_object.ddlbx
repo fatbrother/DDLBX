@@ -9,5 +9,9 @@ obj Test1 {
 }
 
 fun main(): Non {
-    var t = Test1(Test(1, 2), Test(3, 4))!
+    var a = Test(1, 2)!
+    var b = Test(3, 4)!
+    var t = Test1(a, b)!
+    var sum = t.a.a + t.a.b + t.b.a + t.b.b!
+    println(sum.toString())!
 }

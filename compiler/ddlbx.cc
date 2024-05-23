@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
     passManager.run(module);
 
     // print module
-    codeGenner.getModule().print(llvm::errs(), nullptr);
+    // codeGenner.getModule().print(llvm::errs(), nullptr);
 
     // generate object file
     ddlbx::pass::ObjectGenner objectGenner;
