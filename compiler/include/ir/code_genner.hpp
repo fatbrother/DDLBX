@@ -84,7 +84,7 @@ private:
      *
      * @param node The node representing the function declaration.
      */
-    void generateFunctionDeclaration(FunctionHandler &);
+    void generateFunctionDeclaration(FunctionHandler &, const std::string & = "");
 
     /**
      * @brief Generate LLVM IR code for a external function declaration.
@@ -147,7 +147,7 @@ private:
      *
      * @return llvm::Value* The LLVM value.
      */
-    llvm::Value *generateFunctionCall(const std::string &, const std::vector<std::string> &, std::vector<std::unique_ptr<pegtl::parse_tree::node>> &, FunctionHandler &, llvm::Value* = nullptr);
+    llvm::Value *generateFunctionCall(const std::string &, const std::vector<std::string> &, std::vector<std::unique_ptr<pegtl::parse_tree::node>> &, FunctionHandler &, const std::string& = "", llvm::Value* = nullptr);
 
     /**
      * @brief Generate LLVM IR code for a variable declaration.

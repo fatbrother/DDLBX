@@ -393,3 +393,26 @@ TEST_F(CodeGennerTest, GenerateMethodCall) {
     // Assuming the called function is Test_test
     EXPECT_EQ("Test_test", callInst->getCalledFunction()->getName().str());
 }
+
+TEST_F(CodeGennerTest, GenerateTraitFunction) {
+    const std::string input = R"(
+        obj Test {
+            a: Int
+        }
+
+        fun {a: Int}.test(): Int { ret this.a! }
+
+        fun main(): Non {
+            var t = Test(0)!
+            t.test()!
+        }
+    )";
+    generate(input);
+
+    llvm::Function* testFunction = module.getFunction("Test_test");
+    ASSERT_NE(nullptr, testFunction);
+
+    // Assuming the test function has a single basic block
+    llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
+    ASSERT_NE(nullptr, entryBlock);
+}

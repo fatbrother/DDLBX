@@ -17,8 +17,6 @@ namespace pegtl = tao::pegtl;
 
 namespace ddlbx {
 namespace ir {
-
-class ObjectHandler;
 class FunctionHandler {
 public:
     FunctionHandler() = delete;
@@ -30,7 +28,7 @@ public:
      *
      * @param funcType The type of the function.
      */
-    llvm::Function* createFunction(llvm::Module& module, std::map<std::string, std::shared_ptr<ObjectHandler>>& objectMap);
+    llvm::Function* createFunction(llvm::Module& module, std::map<std::string, std::shared_ptr<ObjectHandler>>& objectMap, const std::string& traitParent = "");
 
     /**
      * @brief Insert Parameter into the function.
@@ -120,6 +118,7 @@ private:
     std::unique_ptr<pegtl::parse_tree::node>& body;
     llvm::Function* function;
     std::map<std::string, llvm::AllocaInst*> variableMap;
+    std::map<std::string, std::string> parentTrait;
 };
 
 }  // namespace ir

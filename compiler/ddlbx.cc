@@ -57,13 +57,13 @@ int main(int argc, char** argv) {
     codeGenner.generate(root->children[0]);
 
     // optimize module
-    // llvm::legacy::PassManager passManager;
-    // passManager.add(llvm::createPromoteMemoryToRegisterPass());
-    // passManager.add(llvm::createInstructionCombiningPass());
-    // passManager.add(llvm::createReassociatePass());
-    // passManager.add(llvm::createGVNPass());
-    // passManager.add(llvm::createCFGSimplificationPass());
-    // passManager.run(module);
+    llvm::legacy::PassManager passManager;
+    passManager.add(llvm::createPromoteMemoryToRegisterPass());
+    passManager.add(llvm::createInstructionCombiningPass());
+    passManager.add(llvm::createReassociatePass());
+    passManager.add(llvm::createGVNPass());
+    passManager.add(llvm::createCFGSimplificationPass());
+    passManager.run(module);
 
     // print module
     codeGenner.getModule().print(llvm::errs(), nullptr);

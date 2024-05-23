@@ -273,6 +273,27 @@ obj a {
 }!
 ```
 
+You can add methods to objects "everywhere" in the code.
+
+```ddlbx
+obj a {
+    var b: Int,
+    var c: Int
+}!
+
+fun a.d(): Int {
+    ret b + c!
+}!
+```
+
+You can choose some obj with specific variables.
+
+```ddlbx
+fun {a: Int, b: Int}.getAplusB(): Int {
+    ret a + b!
+}!
+```
+
 ## Import
 
 In DDLBX, every file is a namespace. You can use `get` to import a file.

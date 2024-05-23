@@ -38,6 +38,7 @@ template <> struct Selector<Parameter> : std::true_type {};
 template <> struct Selector<MultiParameter> : std::true_type {};
 template <> struct Selector<EmptyParameter> : std::true_type {};
 template <> struct Selector<Object> : std::true_type {};
+template <> struct Selector<Trait> : std::true_type {};
 template <> struct Selector<Function> : std::true_type {};
 template <> struct Selector<ExternalFunction> : std::true_type {};
 template <> struct Selector<Conditional> : std::true_type {};
