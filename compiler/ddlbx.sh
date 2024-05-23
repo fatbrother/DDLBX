@@ -3,6 +3,9 @@
 #   -i: input file
 #   -o: output file
 
+# exit on error
+set -e
+
 # default values
 input_file=""
 output_file_name="a.out"

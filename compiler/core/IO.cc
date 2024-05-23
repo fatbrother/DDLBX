@@ -18,4 +18,11 @@ char* read() {
     return buffer;
 }
 
+char* readln() {
+    char* buffer = (char*)malloc(sizeof(char) * 128);
+    fgets(buffer, 128, stdin);
+    buffer[strcspn(buffer, "\n")] = 0;
+    return buffer;
+}
+
 }

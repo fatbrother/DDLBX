@@ -90,7 +90,7 @@ private:
      *
      * @param node The node representing the external function declaration.
      */
-    void generateExternalFunctionDeclaration(std::string &, std::vector<std::string> &, std::string &);
+    void generateExternalFunctionDeclaration(const std::string &, const std::vector<std::string> &, const std::string &);
 
     /**
      * @brief Generate LLVM IR code for a expression.

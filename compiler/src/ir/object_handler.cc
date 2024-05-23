@@ -33,11 +33,7 @@ llvm::StructType* ObjectHandler::createObject(llvm::LLVMContext& context, llvm::
         if (templateMap.find(typeName) != templateMap.end()) {
             templateName = templateMap[typeName];
         }
-
-        if (!objectMap[templateName]->isCreated()) {
-            objectMap[templateName]->createObject(context, module, objectMap, templateMap);
-        }
-
+        
         llvm::Type* memberType = objectMap[templateName]->getType();
         memberTypes.push_back(memberType);
     }

@@ -50,6 +50,16 @@ CodeGenner::CodeGenner(llvm::LLVMContext& context, llvm::Module& module)
     objectMap["Ptr"] = std::make_shared<ObjectHandler>("Ptr", std::map<std::string, std::string>(), llvm::Type::getInt8PtrTy(context));
     objectMap["Boo"] = std::make_shared<ObjectHandler>("Boo", std::map<std::string, std::string>(), llvm::Type::getInt1Ty(context));
     objectMap["Non"] = std::make_shared<ObjectHandler>("Non", std::map<std::string, std::string>(), llvm::Type::getVoidTy(context));
+
+    generateExternalFunctionDeclaration("print", {"Str"}, "Non");
+    generateExternalFunctionDeclaration("println", {"Str"}, "Non");
+    generateExternalFunctionDeclaration("read", {}, "Str");
+    generateExternalFunctionDeclaration("readln", {}, "Str");
+    generateExternalFunctionDeclaration("Int_toString", {"Int"}, "Str");
+    generateExternalFunctionDeclaration("Flt_toString", {"Flt"}, "Str");
+    generateExternalFunctionDeclaration("Str_toInt", {"Str"}, "Int");
+    generateExternalFunctionDeclaration("Str_toFlt", {"Str"}, "Flt");
+    generateExternalFunctionDeclaration("Str_substring", {"Str", "Int", "Int"}, "Str");
 }
 
 void CodeGenner::generate(const std::unique_ptr<pegtl::parse_tree::node>& node) {
@@ -135,7 +145,7 @@ void CodeGenner::generateFunctionDeclaration(FunctionHandler& funcHandler) {
     }
 }
 
-void CodeGenner::generateExternalFunctionDeclaration(std::string& name, std::vector<std::string>& paramTypeNames, std::string& retTypeName) {
+void CodeGenner::generateExternalFunctionDeclaration(const std::string& name, const std::vector<std::string>& paramTypeNames, const std::string& retTypeName) {
     // Get parameter types
     std::vector<llvm::Type*> paramTypes;
     for (const auto& paramTypeName : paramTypeNames)
