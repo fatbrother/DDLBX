@@ -31,6 +31,7 @@ public:
     std::map<std::string, std::string> getMemberNameType() const { return memberNameType; }
     std::vector<std::string> getTemplateList() const { return templateList; }
     int getMemberIndex(const std::string& memberName);
+    std::string getMemberType(const std::string& memberName) { return memberNameType[memberName]; }
     llvm::Type* getType() const { 
         if (!type) {
             throw std::runtime_error(name + " type has not been created");

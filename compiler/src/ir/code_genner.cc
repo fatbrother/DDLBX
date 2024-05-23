@@ -117,8 +117,8 @@ llvm::BasicBlock* CodeGenner::generateBlock(const std::unique_ptr<pegtl::parse_t
     return block;
 }
 
-void CodeGenner::generateFunctionDeclaration(FunctionHandler& funcHandler) {
-    llvm::Function* func = funcHandler.createFunction(module, objectMap);
+void CodeGenner::generateFunctionDeclaration(FunctionHandler& funcHandler, const std::string& traitParent) {
+    llvm::Function* func = funcHandler.createFunction(module, objectMap, traitParent);
 
     auto& body = funcHandler.getBody();
 
@@ -349,6 +349,7 @@ llvm::Value* CodeGenner::generateMemberAccess(const std::unique_ptr<pegtl::parse
             }
         }
         if (child->type == "ddlbx::parser::FunctionCall") {
+            std::string name = child->children[0]->string();
             std::string parrntObjectName = "";
             if (parentValue) {
                 for (const auto& [typeName, object] : objectMap) {
@@ -358,13 +359,9 @@ llvm::Value* CodeGenner::generateMemberAccess(const std::unique_ptr<pegtl::parse
                     }
                 }
             }
-            std::string name = parrntObjectName == "" ?
-                child->children[0]->string() :
-                parrntObjectName + "_" + child->children[0]->string();
 
             auto& args = child->children[1]->children;
-
-            parentValue = generateFunctionCall(name, {}, args, function, parentValue);
+            parentValue = generateFunctionCall(name, {}, args, function, parrntObjectName, parentValue);
         }
     }
 
@@ -436,7 +433,7 @@ llvm::Value* CodeGenner::generateValue(const std::unique_ptr<pegtl::parse_tree::
     return result;
 }
 
-llvm::Value* CodeGenner::generateFunctionCall(const std::string &name, const std::vector<std::string> &templateNames, std::vector<std::unique_ptr<pegtl::parse_tree::node>> &args, FunctionHandler& funcHandler, llvm::Value* parentValue) {
+llvm::Value* CodeGenner::generateFunctionCall(const std::string &name, const std::vector<std::string> &templateNames, std::vector<std::unique_ptr<pegtl::parse_tree::node>> &args, FunctionHandler& funcHandler, const std::string& parentTypeName, llvm::Value* parentValue) {    
     if (name == "sizeof") {
         if (args.size() != 1) {
             int line = funcHandler.getBody()->begin().line;
@@ -446,15 +443,17 @@ llvm::Value* CodeGenner::generateFunctionCall(const std::string &name, const std
         return llvm::ConstantInt::get(objectMap["Int"]->getType(), type->getPrimitiveSizeInBits().getFixedValue() / 8);
     }
 
-    llvm::Function* targetFunction = module.getFunction(name);
+    std::string fullName = parentTypeName == "" ? name : parentTypeName + "_" + name;
+
+    llvm::Function* targetFunction = module.getFunction(fullName);
     if (!targetFunction) {
         // check if it is in function map
         if (functionMap.find(name) != functionMap.end()) {
             FunctionHandler& targetFuncHandler = *functionMap[name];
-            generateFunctionDeclaration(targetFuncHandler);
-            targetFunction = module.getFunction(name);
+            generateFunctionDeclaration(targetFuncHandler, parentTypeName);
+            targetFunction = module.getFunction(fullName);
         } else {
-            throw std::runtime_error(name + " is not defined");
+            throw std::runtime_error(fullName + " is not defined");
         }
     }
 

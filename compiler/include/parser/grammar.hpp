@@ -394,11 +394,23 @@ class Object : public pegtl::seq<
     pegtl::one<'}'>
 > {};
 
+class Trait : public pegtl::seq<
+    pegtl::one<'{'>,
+    pegtl::sor<
+        MultiParameter,
+        EmptyParameter
+    >,
+    pegtl::one<'}'>
+> {};
+
 class FunctionDeclaration : public pegtl::seq<
     pegtl::keyword<'f', 'u', 'n'>,
     pegtl::opt<
         pegtl::pad<
-            Type,
+            pegtl::sor<
+                Type,
+                Trait
+            >,
             pegtl::space
         >,
         pegtl::pad<
