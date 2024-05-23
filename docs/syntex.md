@@ -72,14 +72,6 @@ var b = false!
 var c = maybe! // will be true or false by random!
 ```
 
-### Regex
-
-Regex is a variable type that can be used to match strings.
-
-```ddlbx
-var a = @([a-z]+)!
-```
-
 It can also use with [Delete and undelete](#delete-and-undelete).
 
 ## Naming
@@ -134,19 +126,6 @@ There is a thing you need to know about `~=`. It's used to check if two values a
 5 ~= 5! // true!
 3 ~= 5! // true!
 ```
-
-### Special operators
-
-| Operator | Description |
-| -------- | ----------- |
-| `^` | Return `true` if code direction is up, else return `false` |
-| `v` | Return `true` if code direction is down, else return `false` |
-
-As you see, the down arrow is a little bit bigger than the up arrow. It's because we are still recommending you to write code from top to bottom.
-
-Also, we use char v as operator, but you can still use it as a variable name because [Naming](#naming).
-
-See [Reversing](#reversing) to have an idea why we need `^` and `v`.
 
 ## Conditionals
 
@@ -235,10 +214,10 @@ for (a < 10) {
 
 ## Functions
 
-To declare a function, you can use any letters from the word `func`:
+To declare a function, you can use any letters from the word `fun`:
 
 ```ddlbx
-fun a(): Null {
+fun a(): Non {
    print("Hello world")!
 }!
 ```
@@ -246,7 +225,7 @@ fun a(): Null {
 You can also pass arguments to functions.
 
 ```ddlbx
-fun a(b: Int): Null {
+fun a(b: Int): Non {
    print(b)!
 }!
 ```
@@ -265,16 +244,6 @@ You can also use `=>` to declare a function.
 fun add(a: Int, b: Int ): Int => ret a + b!
 ```
 
-If there are some spcific parameters with it's own return value, you can specify it.
-
-See [Fibonacci](examples/fibonacci.ddlbx) for complete example.
-
-```ddlbx
-fun fib(a: Int): Int => fib(a - 1) + fib(a - 2)!
-fun fib(0) => 0!
-fun fib(1) => 1!
-```
-
 ## Objects
 
 You can use `obj` to declare an object.
@@ -290,7 +259,7 @@ In DDLBX, obj only brings variables in the scope of the object. If you want to u
 ```ddlbx
 obj a {}!
 
-fun a.b(): Null {
+fun a.b(): Non {
     print("Hello world")!
 }!
 ```
@@ -299,53 +268,9 @@ You can also use `obj` to declare an object with variables.
 
 ```ddlbx
 obj a {
-    var b = 1!
+    var b: Int,
+    var c: Int
 }!
-```
-
-You should give every variable a value when you declare it.
-
-```ddlbx
-obj a {
-    var b: Int! // Error: b has no value
-}!
-```
-
-## Delete and undelete
-
-You can use it to prevent some developers from using some words in compile time.
-
-```ddlbx
-// In this FP project, we don't want developers to use obj
-del @(fun)!
-
-======= other code =======
-fun obj(): Null! // Error: fun has been deleted
-```
-
-```ddlbx
-// In this project, the naming rule is camelCase and we don't want developers to use snake_case, delete the regex
-
-```ddlbx
-del @([a-z]+_[a-z]+)!
-
-======= other code =======
-var a_b = 1! // Error: [a-z]+_[a-z]+ has been deleted
-```
-
-If you don't want to delete a variable, you can use `undel`.
-
-```ddlbx
-del @(fun)!
-undel @(fun)!
-fun obj(): Null! // OK
-```
-
-If you don't want to let anyone use `del` and, you can also delete it.
-
-```ddlbx
-del @(undel)!
-del @(del)!
 ```
 
 ## Import
@@ -355,34 +280,3 @@ In DDLBX, every file is a namespace. You can use `get` to import a file.
 ```ddlbx
 get "path/to/file.ddlbx"!
 ```
-
-## Export
-
-But every object, function, variable in the file will default to private. If you want to use them, you can use `pub` to make them public.
-
-```ddlbx
-// file.ddlbx
-pub obj a {}!
-pub fun b(): Null => print("Hello world")!
-obj c {}!
-
-// main.ddlbx
-get "file.ddlbx"!
-var obj_a = a! // OK
-b()! // OK
-var obj_c = c! // Error: c is not found
-```
-
-If there are some variables in obj and you want to make them private, you can just declare them in other objects.
-
-```ddlbx
-pub obj a {
-    var b = 1! // public
-}!
-
-obj a {
-    var c = 2! // private
-}!
-```
-
-These two objects will be merged into one object in the compile time.
