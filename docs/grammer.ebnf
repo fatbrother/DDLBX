@@ -1,0 +1,90 @@
+<program> ::= <function>* <statement>* <function>*
+
+<end> ::= "!"
+
+<block> ::= ("{" <statement>* "}" <end>) | ("=>" <statement> <end>)
+
+<function> ::= "fun" <identifier> "(" <parameter>* ")" ":" <type> <block>
+
+<parameter> ::= <identifier> ":" <type>
+
+<argument> ::= var <identifier> ":" <type> [ "=" <expression> ]
+
+<statement> ::= <expression>
+              | <case-state>
+              | <format-state>
+              | <return-state>
+
+<case-state> ::= <case> <case>* <end>
+
+<case> ::= "case" "(" <expression> ")" <block>
+
+<format-state> ::= "del" | "undel" <regex> <end>
+
+<return-state> ::= "ret" <expression> <end>
+
+<type> ::= "Int"
+         | "Str"
+         | "Flt"
+         | "Boo"
+         | "Reg"
+
+<expression> ::= (
+                | <function-call>
+                | <expression> <operator> <expression>
+                | "(" <expression> ")"
+                | <regex>)
+                | <reversing>
+
+<list> ::= "[" <literal> ( "," <literal> )* "]"
+
+<function-call> ::= <identifier> "(" <zero-or-more-parameters> ")"
+
+<zero-or-more-parameters> ::= <parameter> ( "," <parameter> )*
+
+<parameter> ::= <identifier> | <literal> | <regex> | <function-call> | <object-call> | <expression>
+
+<reversing> ::= "rev" <end>
+
+<literal> ::= <number> | <string> | <boolean> | <list>
+
+<number> ::= <integer> | <float>
+
+<integer> ::= <digit>+
+
+<float> ::= <digit>+ "." <digit>*
+
+<string> ::= "'" <character>* "'"
+
+<boolean> ::= "true" | "false" | "maybe"
+
+<regex> ::= "@(" <character>* ")" 
+
+<operator> ::= "+"
+             | "-"
+             | "*"
+             | "/"
+             | "%"
+             | "+="
+             | "-="
+             | "*="
+             | "\="
+             | "=="
+             | "<"
+             | ">"
+             | "<="
+             | ">="
+             | "and"
+             | "or"
+             | "not"
+             | "="
+
+<identifier> ::= (<letter> | <digit> | "_")+
+
+<letter> ::= "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z" | "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z"
+
+<digit> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+
+<character> ::= <letter> | <digit> | <symbol>
+
+<symbol> ::= "!" | "@" | "#" | "$" | "%" | "^" | "&" | "*" | "(" | ")" | "-" | "+" | "=" | "{" | "}" | "[" | "]" | "|" | "\" | ":" | ";" | "'" | '"' | "<" | ">" | "," | "." | "?" | "/" | "`" | "~" | "_"

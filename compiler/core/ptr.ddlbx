@@ -1,0 +1,21 @@
+obj Type {
+    var name: Str!
+    var size: Int!
+}
+
+obj Ref {
+    var ptr: Ptr!
+    var type: Type!
+}
+
+fun Type.size(): Int {
+    ret size!
+}
+
+fun Type.name(): Str {
+    ret name!
+}
+
+fun Ref.type(): Type {
+    ret type!
+}

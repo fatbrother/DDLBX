@@ -1,0 +1,5 @@
+obj Lst<T> {
+    var size: Int!
+    var capacity: Int!
+    var type: T!
+}

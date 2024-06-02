@@ -1,0 +1,16 @@
+# Ignore object files and executables
+*.o
+*.out
+
+# Ignore build directories
+build/
+bin/
+
+# Ignore any files or directories that are generated during the build process
+generated/
+
+# Ignore any files or directories that contain sensitive information
+config.ini
+secrets/
+
+.vscode/
