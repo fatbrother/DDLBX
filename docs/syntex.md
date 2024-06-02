@@ -4,13 +4,13 @@
 
 In some languages like C++, you have to use semicolons to end lines of code. In DDLBX, you have to use exclamation marks!!
 
-```dart
+```ddlbx
 print("Hello world")!
 ```
 
 And if this line is so important, you can use more exclamation marks to make it "more important".
 
-```dart
+```ddlbx
 print("Hello world")!!!
 ```
 
@@ -18,73 +18,58 @@ print("Hello world")!!!
 
 You can use `//` to comment your code.
 
-```dart
+```ddlbx
 // This is a comment!
 ```
 
 Remember to use exclamation marks to end your comments to make it "more important".
 
-```dart
+```ddlbx
 // This is a comment!!!
-```
-
-Thanks to the exclamation marks, you can use `//` in strings.
-
-```dart
-Str a = "Hello // world"!!
-print(a)! // Hello
 ```
 
 Of course, you can use comments in comments, but you have to use more exclamation marks to end your comments.
 
-```dart
+```ddlbx
 // This is a comment // This is a comment of comment!!
 ```
 
 ## Variable
 
-Below is the variable declaration syntax.
+In DDLBX, there are some types of variables like `Int`, `Float`, `String`, `Boolean` and `Regex`, we can simply declare a variable like below:
 
 ### Integer
 
 Integers are numbers without decimal points. They can be positive or negative.
 
-```dart
-Int a = 1!
+```ddlbx
+var a = 1!
 ```
 
 ### Float
 
 Floats are numbers with decimal points. They can be positive or negative.
 
-```dart
-Flo a = 1.0!
+```ddlbx
+var a = 1.0!
 ```
 
 ### String
 
 Strings are text. They can be declared with single quotes or double quotes.
 
-```dart
-Str a = 'Hello'!
+```ddlbx
+var a = 'Hello'!
 ```
 
 ### Boolean
 
 Booleans can be `true` or `false` or `maybe`.
 
-```dart
-Boo a = true!
-Boo b = false!
-Boo c = maybe! // will be true or false by random!
-```
-
-### Regex
-
-Regex is a variable type that can be used to match strings.
-
-```dart
-Reg a = @([a-z]+)!
+```ddlbx
+var a = true!
+var b = false!
+var c = maybe! // will be true or false by random!
 ```
 
 It can also use with [Delete and undelete](#delete-and-undelete).
@@ -93,10 +78,10 @@ It can also use with [Delete and undelete](#delete-and-undelete).
 
 Most of languages use English words to name variables. But in DDLBX, you can use any words in asscii.
 
-```dart
-Int a = 1!
-Int 5 = 3!
-Int b = 5! // 3!
+```ddlbx
+var a = 1!
+var 5 = 3!
+var b = 5! // 3!
 ```
 
 ## Operators
@@ -137,80 +122,117 @@ Int b = 5! // 3!
 
 There is a thing you need to know about `~=`. It's used to check if two values are approximate equal. It's hard to say if two values are approximate equal, so it will always return `true`.
 
-```dart
+```ddlbx
 5 ~= 5! // true!
 3 ~= 5! // true!
 ```
 
-### Special operators
-
-| Operator | Description |
-| -------- | ----------- |
-| `^` | Return `true` if code direction is up, else return `false` |
-| `v` | Return `true` if code direction is down, else return `false` |
-
-As you see, the down arrow is a little bit bigger than the up arrow. It's because we are still recommending you to write code from top to bottom.
-
-Also, we use char v as operator, but you can still use it as a variable name because [Naming](#naming).
-
-See [Reversing](#reversing) to have an idea why we need `^` and `v`.
-
 ## Conditionals
 
-You can use `case` to declare conditionals.
+You can use `opt` to declare conditionals.
 
-```dart
-Int a = 0!
-case (a == 0) {
-    print("a is 0")!
-} case (a == 1) {
-    print("a is 1")!
-} else {
-    print("a is not 0 or 1")!
+```ddlbx
+var a = 0!
+opt (a) {
+    0 => print("a is 0")!
+    1 => print("a is 1")!
+    else => print("a is not 0 or 1")!
 }!
 ```
 
-If the containing code is only one line, you can use `=>` instead of `{}`.
+You can also pass two or more variables to conditionals.
 
-```dart
-Int a = 0!
-case (a == 0) => print("a is 0")
-case (a == 1) => print("a is 1")
-else => print("a is not 0 or 1")!
+```ddlbx
+var a = 0!
+var b = 1!
+
+opt (a, b) {
+    a == 0 => print("a is 0")!
+    a == 1 => print("a is 1")!
+    a != 0 => print("a is not 0")!
+    a > b => print("a is greater than b")!
+    a < b => print("a is less than b")!
+    a >= b => print("a is greater than or equal to b")!
+    a <= b => print("a is less than or equal to b")!
+}!
 ```
 
-Use `!` to end your conditionals.
+Else is optional in conditionals.
 
-```dart
-Int a = 0!
-case (a == 0) => print("a is 0")!
+```ddlbx
+var a = 0!
+opt (a) {
+    0 => print("a is 0")!
+    1 => print("a is 1")!
+    else => print("a is not 0 or 1")!
+}!
+```
+
+You can also use scope in conditionals.
+
+```ddlbx
+var a = 0!
+opt (a) {
+    0 => {
+        print("a is 0")!
+    }
+    1 => {
+        print("a is 1")!
+    }
+    else => {
+        print("a is not 0 or 1")!
+    }
+}!
 ```
 
 ## Loops
 
-We don't need loops in DDLBX. We can use functions or reversing(see [Reversing](#reversing)) to implement loops.
+You can use `loop` to declare loops.
+
+```ddlbx
+for (a from 0 to 10) {
+    print(a)!
+}!
+```
+
+You can also use `step` to declare the step of the loop.
+
+```ddlbx
+for (a from 0 to 10 step 2) {
+    print(a)!
+}!
+```
+
+Similar to `while` in other languages, you can also use `for` to declare a loop.
+
+```ddlbx
+for (a < 10) {
+    print(a)!
+    a += 1!
+}!
+```
 
 ## Functions
 
-To declare a function, you can use any letters from the word `func`:
+To declare a function, you can use any letters from the word `fun`:
 
-```dart
-fun a(): void {
+```ddlbx
+fun a(): Non {
    print("Hello world")!
 }!
 ```
 
 You can also pass arguments to functions.
 
-```dart
-fun a(Int b): void {
+```ddlbx
+fun a(b: Int): Non {
    print(b)!
 }!
 ```
 
 You can also return values from functions.
 
-```dart
+```ddlbx
 fun a(): Int {
    ret 1!
 }!
@@ -218,74 +240,64 @@ fun a(): Int {
 
 You can also use `=>` to declare a function.
 
-```dart
-fun add(Int a, Int b): Int => ret a + b!
+```ddlbx
+fun add(a: Int, b: Int ): Int => ret a + b!
 ```
 
-If there are some spcific parameters with it's own return value, you can specify it.
+## Objects
 
-See [Fibonacci](examples/fibonacci.ddlbx) for complete example.
+You can use `obj` to declare an object.
 
-```dart
-fun fib(Int a): Int => fib(a - 1) + fib(a - 2)!
-fun fib(0) => 0!
-fun fib(1) => 1!
+```ddlbx
+obj a {}!
+
+var b = a! // OK
 ```
 
-## Delete and undelete
+In DDLBX, obj only brings variables in the scope of the object. If you want to use a function in an object, you can use `fun` to declare it.
 
-You can use it to prevent some developers from using some words in compile time.
+```ddlbx
+obj a {}!
 
-```dart
-// In this FP project, we don't want developers to use obj
-del @(fun)!
-
-======= other code =======
-fun obj(): void! // Error: fun has been deleted
+fun a.b(): Non {
+    print("Hello world")!
+}!
 ```
 
-```dart
-// In this project, the naming rule is camelCase and we don't want developers to use snake_case, delete the regex
+You can also use `obj` to declare an object with variables.
 
-```dart
-del @([a-z]+_[a-z]+)!
-
-======= other code =======
-Int a_b = 1! // Error: [a-z]+_[a-z]+ has been deleted
+```ddlbx
+obj a {
+    var b: Int,
+    var c: Int
+}!
 ```
 
-If you don't want to delete a variable, you can use `undel`.
+You can add methods to objects "everywhere" in the code.
 
-```dart
-del @(fun)!
-undel @(fun)!
-fun obj(): void! // OK
+```ddlbx
+obj a {
+    var b: Int,
+    var c: Int
+}!
+
+fun a.d(): Int {
+    ret b + c!
+}!
 ```
 
-If you don't want to let anyone use `del` and, you can also delete it.
+You can choose some obj with specific variables.
 
-```dart
-del @(undel)!
-del @(del)!
+```ddlbx
+fun {a: Int, b: Int}.getAplusB(): Int {
+    ret a + b!
+}!
 ```
 
-## Reversing
+## Import
 
-You can Rev the direction of your code in scope.
+In DDLBX, every file is a namespace. You can use `get` to import a file.
 
-```dart
-Str message = "Hello"!
-print(message)! // Hello world
-message = "world"!
-rev!
-```
-
-Implementing loops with reversing and conditionals.
-
-```dart
-Int a = 0!
-// when code direction is reversed, ^ will be false
-case (^) => rev! 
-print(a)!
-case (a++ < 10) => rev!
+```ddlbx
+get "path/to/file.ddlbx"!
 ```

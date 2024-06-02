@@ -1,27 +1,23 @@
-<program> ::= <main> <function>* <object>* <function>*
-
-<main> ::= "Int main(" <argument>* ")" <block>
+<program> ::= <function>* <statement>* <function>*
 
 <end> ::= "!"
 
-<block> ::= "{" <statement>* "}" <end>
+<block> ::= ("{" <statement>* "}" <end>) | ("=>" <statement> <end>)
 
-<function> ::= <type> <identifier> "(" <argument>* ")" ("=>" <statement> | <block>) <end>
+<function> ::= "fun" <identifier> "(" <parameter>* ")" ":" <type> <block>
 
-<argument> ::= <type> <identifier> [ "=" <expression> ]
+<parameter> ::= <identifier> ":" <type>
 
-<object> ::= "obj" <identifier> "{" <argument>* <function>* "}" <end>
+<argument> ::= var <identifier> ":" <type> [ "=" <expression> ]
 
-<statement> ::= <expression> <end>
-              | <when-state>
+<statement> ::= <expression>
+              | <case-state>
               | <format-state>
               | <return-state>
 
-<when-state> ::= "when" "{" <case-state>* [<else-state>] "}" <end>
+<case-state> ::= <case> <case>* <end>
 
-<case-state> ::= "case" <expression> ":" ( <statement>* | "{" <statement>* | "end!" "}" ) <end>
-
-<else-state> ::= "else" ( <statement>* | "{" <statement>* | "end!" "}" ) <end>
+<case> ::= "case" "(" <expression> ")" <block>
 
 <format-state> ::= "del" | "undel" <regex> <end>
 
@@ -29,37 +25,40 @@
 
 <type> ::= "Int"
          | "Str"
-         | "Nul"
+         | "Flt"
          | "Boo"
          | "Reg"
-         | "List" "<" <type> ">"
 
-<expression> ::= (<identifier>
-                | <literal>
+<expression> ::= (
                 | <function-call>
-                | <object-call>
                 | <expression> <operator> <expression>
                 | "(" <expression> ")"
                 | <regex>)
                 | <reversing>
 
+<list> ::= "[" <literal> ( "," <literal> )* "]"
+
+<function-call> ::= <identifier> "(" <zero-or-more-parameters> ")"
+
+<zero-or-more-parameters> ::= <parameter> ( "," <parameter> )*
+
+<parameter> ::= <identifier> | <literal> | <regex> | <function-call> | <object-call> | <expression>
+
+<reversing> ::= "rev" <end>
+
 <literal> ::= <number> | <string> | <boolean> | <list>
 
-<number> ::= [ "-" ] <digit>+ [ "." <digit>+ ]
+<number> ::= <integer> | <float>
+
+<integer> ::= <digit>+
+
+<float> ::= <digit>+ "." <digit>*
 
 <string> ::= "'" <character>* "'"
 
-<boolean> ::= "true" | "false"
+<boolean> ::= "true" | "false" | "maybe"
 
 <regex> ::= "@(" <character>* ")" 
-
-<list> ::= "[" <literal> ( "," <literal> )* "]"
-
-<function-call> ::= <identifier> "(" <expression>* ")" <end>
-
-<object-call> ::= <identifier> "." <identifier> "(" <expression>* ")" <end>
-
-<reversing> ::= "rev" <end>
 
 <operator> ::= "+"
              | "-"
@@ -75,9 +74,9 @@
              | ">"
              | "<="
              | ">="
-             | "&&"
-             | "||"
-             | "\"
+             | "and"
+             | "or"
+             | "not"
              | "="
 
 <identifier> ::= (<letter> | <digit> | "_")+
