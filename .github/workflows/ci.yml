@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ "feature/compiler" ]
+    branches: [ "develop", "feature/compiler" ]
     
   workflow_dispatch:
 
