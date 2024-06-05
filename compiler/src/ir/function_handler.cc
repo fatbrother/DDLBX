@@ -40,7 +40,7 @@ llvm::Function* FunctionHandler::createFunction(llvm::Module& module, std::map<s
         // check if traitParent valid
         for (const auto& [traitName, typeName] : parentTrait) {
             if (objectMap[traitParent]->getMemberType(traitName) != typeName) {
-                throw std::runtime_error("Trait " + traitName + " not found in " + traitParent);
+                throw std::runtime_error("Trait " + traitName + ": " + typeName + " not found in " + traitParent);
             }
         }
 
