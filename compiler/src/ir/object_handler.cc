@@ -25,6 +25,17 @@ llvm::StructType* ObjectHandler::createObject(llvm::LLVMContext& context, llvm::
     for (const auto& templateName : templateList) {
         realName += "_" + templateMap[templateName];
     }
+
+    if (realName != name) {
+        std::map<std::string, std::string> memberNameTypeCopy = memberNameType;
+        for (auto& [memberName, typeName] : memberNameTypeCopy) {
+            if (templateMap.find(typeName) != templateMap.end()) {
+                typeName = templateMap[typeName];
+            }
+        }
+        objectMap[realName] = std::make_shared<ObjectHandler>(realName, memberNameTypeCopy, nullptr);
+        return objectMap[realName]->createObject(context, module, objectMap, templateMap);
+    }
     
     llvm::StructType* structType = llvm::StructType::create(context, realName);
     std::vector<llvm::Type*> memberTypes;
