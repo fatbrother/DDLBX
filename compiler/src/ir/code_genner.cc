@@ -69,7 +69,7 @@ void CodeGenner::generate(const std::unique_ptr<pegtl::parse_tree::node>& node) 
     for (auto& child : node->children) {
         if (child->type == "ddlbx::parser::Function") {
             std::shared_ptr<FunctionHandler> funcHandler = std::make_shared<FunctionHandler>(child);
-            functionMap[funcHandler->getName()] = funcHandler;
+            functionMap[funcHandler->getName()].push_back(funcHandler);
             if (funcHandler->getName() == "main") {
                 generateFunctionDeclaration(*funcHandler);
             }
@@ -448,9 +448,19 @@ llvm::Value* CodeGenner::generateFunctionCall(const std::string &name, const std
     if (!targetFunction) {
         // check if it is in function map
         if (functionMap.find(name) != functionMap.end()) {
-            FunctionHandler& targetFuncHandler = *functionMap[name];
-            generateFunctionDeclaration(targetFuncHandler, parentTypeName);
-            targetFunction = module.getFunction(fullName);
+            for (const auto& funcHandler : functionMap[name]) {
+                FunctionHandler& targetFuncHandler = *funcHandler;
+                try {
+                    generateFunctionDeclaration(targetFuncHandler, parentTypeName);
+                    targetFunction = module.getFunction(fullName);
+                } catch (std::exception& e) {
+                    continue;
+                }
+                break;
+            }
+            if (!targetFunction) {
+                throw std::runtime_error("There is no function comforming to " + fullName);
+            }
         } else {
             throw std::runtime_error(fullName + " is not defined");
         }
