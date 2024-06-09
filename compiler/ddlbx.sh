@@ -10,11 +10,24 @@ set -e
 input_file=""
 output_file_name="a.out"
 
+is_emit_llvm=false
+is_emit_ast=false
+
+print_help() {
+  echo "Usage: ddlbx.sh -i <input_file> [-o <output_file>] [-l] [-a]"
+  echo "Options:"
+  echo "  -h: help"
+  echo "  -i: input file"
+  echo "  -o: output file"
+  echo "  -l: emit llvm"
+  echo "  -a: emit ast"
+}
+
 # parse arguments
-while getopts "hi:o:" opt; do
+while getopts "hi:o:la" opt; do
   case $opt in
     h)
-      echo "Usage: ddlbx.sh -i <input_file> -o <output_file>"
+      print_help
       exit 0
       ;;
     i)
@@ -22,6 +35,12 @@ while getopts "hi:o:" opt; do
       ;;
     o)
       output_file=$OPTARG
+      ;;
+    l)
+      is_emit_llvm=true
+      ;;
+    a)
+      is_emit_ast=true
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -33,6 +52,18 @@ done
 if [ ! -f $input_file ]; then
   echo "Input file does not exist"
   exit 1
+fi
+
+# if emit llvm
+if $is_emit_llvm; then
+  ./build/bin/ddlbx --ll $input_file
+  exit 0
+fi
+
+# if emit ast
+if $is_emit_ast; then
+  ./build/bin/ddlbx --ast $input_file
+  exit 0
 fi
 
 # compile input file

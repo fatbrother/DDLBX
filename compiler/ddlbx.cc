@@ -18,14 +18,41 @@
 
 namespace pegtl = tao::pegtl;
 
+void printHelp() {
+    std::cout << "Usage: ddlbx <file>" << std::endl;
+    std::cout << "       ddlbx --help" << std::endl;
+    std::cout << "       ddlbx --ll <file>" << std::endl;
+    std::cout << "       ddlbx --ast <file>" << std::endl;
+
+    std::cout << "Options:" << std::endl;
+    std::cout << "  --help  Print this help message" << std::endl;
+    std::cout << "  --ll  Emit LLVM IR code" << std::endl;
+    std::cout << "  --ast  Emit AST" << std::endl;
+}
+
 int main(int argc, char** argv) {
-    if (argc != 2) {
-        std::cout << "Usage: ddlbx <file>" << std::endl;
+    std::string fileName = "";
+    bool emitLL = false;
+    bool emitAST = false;
+
+    if (argc == 2) {
+        fileName = argv[1];
+    } else if (argc == 3) {
+        if (std::string(argv[1]) == "--ll") {
+            emitLL = true;
+        } else if (std::string(argv[1]) == "--ast") {
+            emitAST = true;
+        } else {
+            printHelp();
+            return 1;
+        }
+        fileName = argv[2];
+    } else {
+        printHelp();
         return 1;
     }
 
-    std::string fileNmae(argv[1]);
-    std::ifstream file(fileNmae, std::ios::in);
+    std::ifstream file(fileName);
     if (!file) {
         std::cout << "file not found" << std::endl;
         return 1;
@@ -40,6 +67,7 @@ int main(int argc, char** argv) {
         }
         content += line + "\n";
     }
+    file.close();
 
     pegtl::string_input<> in(content, "input"); 
     const auto root = pegtl::parse_tree::parse<ddlbx::parser::Program, ddlbx::parser::Selector>(in);
@@ -49,10 +77,13 @@ int main(int argc, char** argv) {
     }
 
     // print parse tree
-    // pegtl::parse_tree::print_dot(std::cout, *root);
+    if (emitAST) {
+        pegtl::parse_tree::print_dot(std::cout, *root);
+        return 0;
+    }
 
     llvm::LLVMContext context;
-    llvm::Module module(fileNmae, context);
+    llvm::Module module(fileName, context);
     ddlbx::ir::CodeGenner codeGenner(context, module);
     codeGenner.generate(root->children[0]);
 
@@ -66,7 +97,10 @@ int main(int argc, char** argv) {
     passManager.run(module);
 
     // print module
-    // codeGenner.getModule().print(llvm::errs(), nullptr);
+    if (emitLL) {
+        module.print(llvm::errs(), nullptr);
+        return 0;
+    }
 
     // generate object file
     ddlbx::pass::ObjectGenner objectGenner;
