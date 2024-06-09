@@ -15,7 +15,9 @@ jobs:
 
       - name: Build
         run: |
-          git submodule update --init --recursive
+          git submodule update --init --recursive compiler/lib/googletest
+          git submodule update --init --recursive compiler/lib/llvm-project
+          git submodule update --init --recursive compiler/lib/PEGTL
           cd compiler
           chmod +x ./build.sh
           ./build.sh
