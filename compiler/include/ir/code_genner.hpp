@@ -66,7 +66,8 @@ private:
         Assignment,
     };
     static std::map<std::string, int> opPropertyMap;
-    static std::map<std::string, llvm::Instruction::BinaryOps> binaryOpMap;
+    static std::map<std::string, llvm::Instruction::BinaryOps> intOpMap;
+    static std::map<std::string, llvm::Instruction::BinaryOps> fltOpMap;
     static std::map<std::string, ExpressionType> expressionTypeMap;
 
     std::map<std::string, std::shared_ptr<ObjectHandler>> objectMap;
