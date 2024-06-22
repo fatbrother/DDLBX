@@ -1,8 +1,3 @@
-# command 
-#   -h: help
-#   -i: input file
-#   -o: output file
-
 # exit on error
 set -e
 
@@ -72,7 +67,7 @@ fi
 lib_paths="./build/core/libddlbx_core.a"
 
 # link output file
-clang output.o $lib_paths -o $output_file
+clang output.o $lib_paths -o $output_file -lm
 
 # remove output.o
 rm output.o
