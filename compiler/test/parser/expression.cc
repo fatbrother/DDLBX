@@ -22,6 +22,7 @@ TEST(Grammar, Expression) {
     std::string sample12 = "a.b!";
     std::string sample13 = "a.b + 1!";
     std::string sample14 = "a.b + d.e!";
+    std::string sample15 = "res = res + (a * sin(b) + cos(c) * tan(d) - sqrt(e))!";
 
     string_input<> in1(sample1, "input");
     string_input<> in2(sample2, "input");
@@ -37,6 +38,7 @@ TEST(Grammar, Expression) {
     string_input<> in12(sample12, "input");
     string_input<> in13(sample13, "input");
     string_input<> in14(sample14, "input");
+    string_input<> in15(sample15, "input");
 
     EXPECT_TRUE(parse<Expression>(in1));
     EXPECT_TRUE(parse<Expression>(in2));
@@ -52,4 +54,5 @@ TEST(Grammar, Expression) {
     EXPECT_TRUE(parse<Expression>(in12));
     EXPECT_TRUE(parse<Expression>(in13));
     EXPECT_TRUE(parse<Expression>(in14));
+    EXPECT_TRUE(parse<Expression>(in15));
 }

@@ -25,12 +25,19 @@ std::map<std::string, int> CodeGenner::opPropertyMap = {
     {"!", 5},
 };
 
-std::map<std::string, llvm::Instruction::BinaryOps> CodeGenner::binaryOpMap = {
+std::map<std::string, llvm::Instruction::BinaryOps> CodeGenner::intOpMap = {
     {"+", llvm::Instruction::BinaryOps::Add},
     {"-", llvm::Instruction::BinaryOps::Sub},
     {"*", llvm::Instruction::BinaryOps::Mul},
     {"/", llvm::Instruction::BinaryOps::SDiv},
     {"%", llvm::Instruction::BinaryOps::SRem},
+};
+
+std::map<std::string, llvm::Instruction::BinaryOps> CodeGenner::fltOpMap = {
+    {"+", llvm::Instruction::BinaryOps::FAdd},
+    {"-", llvm::Instruction::BinaryOps::FSub},
+    {"*", llvm::Instruction::BinaryOps::FMul},
+    {"/", llvm::Instruction::BinaryOps::FDiv},
 };
 
 std::map<std::string, CodeGenner::ExpressionType> CodeGenner::expressionTypeMap = {
@@ -50,15 +57,32 @@ CodeGenner::CodeGenner(llvm::LLVMContext& context, llvm::Module& module)
     objectMap["Boo"] = std::make_shared<ObjectHandler>("Boo", std::map<std::string, std::string>(), llvm::Type::getInt1Ty(context));
     objectMap["Non"] = std::make_shared<ObjectHandler>("Non", std::map<std::string, std::string>(), llvm::Type::getVoidTy(context));
 
+    // IO
     generateExternalFunctionDeclaration("print", {"Str"}, "Non");
     generateExternalFunctionDeclaration("println", {"Str"}, "Non");
     generateExternalFunctionDeclaration("read", {}, "Str");
     generateExternalFunctionDeclaration("readln", {}, "Str");
+    // Int
     generateExternalFunctionDeclaration("Int_toString", {"Int"}, "Str");
+    // Flt
     generateExternalFunctionDeclaration("Flt_toString", {"Flt"}, "Str");
+    // Str
     generateExternalFunctionDeclaration("Str_toInt", {"Str"}, "Int");
     generateExternalFunctionDeclaration("Str_toFlt", {"Str"}, "Flt");
     generateExternalFunctionDeclaration("Str_substring", {"Str", "Int", "Int"}, "Str");
+    // Math
+    generateExternalFunctionDeclaration("abs", {"Int"}, "Int");
+    generateExternalFunctionDeclaration("abs", {"Flt"}, "Flt");
+    generateExternalFunctionDeclaration("sqrt", {"Flt"}, "Flt");
+    // generateExternalFunctionDeclaration("Qrsqrt", {"Flt"}, "Flt");
+    generateExternalFunctionDeclaration("pow", {"Flt", "Flt"}, "Flt");
+    generateExternalFunctionDeclaration("sin", {"Flt"}, "Flt");
+    generateExternalFunctionDeclaration("cos", {"Flt"}, "Flt");
+    generateExternalFunctionDeclaration("tan", {"Flt"}, "Flt");
+    generateExternalFunctionDeclaration("asin", {"Flt"}, "Flt");
+    generateExternalFunctionDeclaration("acos", {"Flt"}, "Flt");
+    generateExternalFunctionDeclaration("atan", {"Flt"}, "Flt");
+    generateExternalFunctionDeclaration("log", {"Flt"}, "Flt");
 }
 
 void CodeGenner::generate(const std::unique_ptr<pegtl::parse_tree::node>& node) {
@@ -387,9 +411,14 @@ llvm::Value* CodeGenner::handleOperation(llvm::Value* lhs, llvm::Value* rhs, con
         result = builder.CreateOr(lhs, rhs);
     else if (op == "=")
         result = builder.CreateStore(rhs, lhs);
-    else {
-        llvm::Instruction::BinaryOps binaryOp = binaryOpMap[op];
+    else if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy()) {
+        llvm::Instruction::BinaryOps binaryOp = intOpMap[op];
         result = builder.CreateBinOp(binaryOp, lhs, rhs);
+    } else if (lhs->getType()->isFloatingPointTy() && rhs->getType()->isFloatingPointTy()) {
+        llvm::Instruction::BinaryOps binaryOp = fltOpMap[op];
+        result = builder.CreateBinOp(binaryOp, lhs, rhs);
+    } else {
+        throw std::runtime_error("Invalid operation");
     }
     return result;
 }
