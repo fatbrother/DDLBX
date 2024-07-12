@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <map>
 
 #include <llvm/IR/Value.h>
 #include <llvm/IR/IRBuilder.h>

@@ -23,8 +23,6 @@ extern YY_BUFFER_STATE yy_scan_string(const char * str);
 extern YY_BUFFER_STATE yy_switch_to_buffer(YY_BUFFER_STATE buffer);
 extern void yy_delete_buffer(YY_BUFFER_STATE buffer);
 
-namespace pegtl = tao::pegtl;
-
 void printHelp() {
     std::cout << "Usage: ddlbx <file>" << std::endl;
     std::cout << "       ddlbx --help" << std::endl;
