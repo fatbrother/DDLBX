@@ -1,9 +1,6 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <tao/pegtl.hpp>
-#include <tao/pegtl/contrib/parse_tree.hpp>
-#include <tao/pegtl/contrib/parse_tree_to_dot.hpp>
 
 #include <llvm/IR/LegacyPassManager.h>
 #include <llvm/Transforms/Utils.h>
@@ -11,10 +8,20 @@
 #include <llvm/Transforms/Scalar.h>
 #include <llvm/Transforms/Scalar/GVN.h>
 
-#include "ir/code_genner.hpp"
-#include "parser/grammar.hpp"
-#include "parser/selector.hpp"
+#include "ir/node.hpp"
+#include "ir/code_gen_context.hpp"
+#include "parser/parser.hpp"
 #include "pass/object_genner.hpp"
+
+#include <iostream>
+#include <memory>
+
+extern ddlbx::ir::NProgram* program;
+typedef struct yy_buffer_state * YY_BUFFER_STATE;
+extern int yyparse();
+extern YY_BUFFER_STATE yy_scan_string(const char * str);
+extern YY_BUFFER_STATE yy_switch_to_buffer(YY_BUFFER_STATE buffer);
+extern void yy_delete_buffer(YY_BUFFER_STATE buffer);
 
 namespace pegtl = tao::pegtl;
 
@@ -57,35 +64,20 @@ int main(int argc, char** argv) {
         std::cout << "file not found" << std::endl;
         return 1;
     }
+    std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 
-    // for every line in the file, find "//" and remove the rest of the line
-    std::string content;
-    for (std::string line; std::getline(file, line);) {
-        auto pos = line.find("//");
-        if (pos != std::string::npos) {
-            line = line.substr(0, pos);
-        }
-        content += line + "\n";
-    }
+    YY_BUFFER_STATE my_string_buffer = yy_scan_string(content.c_str()); 
+    yy_switch_to_buffer( my_string_buffer ); // switch flex to the buffer we just created
+    yyparse(); 
+    yy_delete_buffer(my_string_buffer );
+
     file.close();
 
-    pegtl::string_input<> in(content, "input"); 
-    const auto root = pegtl::parse_tree::parse<ddlbx::parser::Program, ddlbx::parser::Selector>(in);
-    if (!root) {
-        std::cout << "parse error" << std::endl;
-        return 0;
-    }
-
-    // print parse tree
-    if (emitAST) {
-        pegtl::parse_tree::print_dot(std::cout, *root);
-        return 0;
-    }
-
     llvm::LLVMContext context;
-    llvm::Module module(fileName, context);
-    ddlbx::ir::CodeGenner codeGenner(context, module);
-    codeGenner.generate(root->children[0]);
+    llvm::Module module("main", context);
+    ddlbx::ir::CodeGenContext codeGenContext(context, module);
+
+    program->codeGen(codeGenContext);
 
     // optimize module
     llvm::legacy::PassManager passManager;
@@ -104,5 +96,5 @@ int main(int argc, char** argv) {
 
     // generate object file
     ddlbx::pass::ObjectGenner objectGenner;
-    objectGenner.generate(codeGenner.getModule());
+    objectGenner.generate(module);
 }
