@@ -38,6 +38,7 @@ include_directories(${CMAKE_SOURCE_DIR}/lib/googletest/googletest/include)
 set(LLVM_DIR ${CMAKE_SOURCE_DIR}/lib/llvm-project/llvm/build/lib/cmake/llvm)
 find_package(LLVM REQUIRED CONFIG PATHS ${LLVM_DIR})
 
+
 file(GLOB SOURCES src/**/*.cc src/*.cc)
 add_executable(ddlbx ddlbx.cc ${SOURCES})
 
@@ -47,6 +48,7 @@ target_include_directories(ddlbx PUBLIC ${CMAKE_CURRENT_LIST_DIR}/lib/llvm-proje
 target_include_directories(ddlbx PUBLIC ${CMAKE_CURRENT_LIST_DIR}/lib/llvm-project/utils/bazel/llvm-project-overlay/llvm/include)
 target_include_directories(ddlbx PUBLIC ${CMAKE_CURRENT_LIST_DIR}/lib/PEGTL/include)
 target_include_directories(ddlbx PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
+target_include_directories(ddlbx PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include/parser)
 
 # unit tests
 file(GLOB TESTS test/*.cc test/**/*.cc  src/**/*.cc src/*.cc)
@@ -58,6 +60,7 @@ target_include_directories(ddlbx_test PUBLIC ${CMAKE_CURRENT_LIST_DIR}/lib/llvm-
 target_include_directories(ddlbx_test PUBLIC ${CMAKE_CURRENT_LIST_DIR}/lib/llvm-project/utils/bazel/llvm-project-overlay/llvm/include)
 target_include_directories(ddlbx_test PUBLIC ${CMAKE_CURRENT_LIST_DIR}/lib/PEGTL/include)
 target_include_directories(ddlbx_test PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
+target_include_directories(ddlbx_test PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include/parser)
 
 # link gtest
 add_test(ddlbx_test ddlbx_test)
