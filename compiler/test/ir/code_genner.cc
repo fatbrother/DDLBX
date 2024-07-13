@@ -11,6 +11,7 @@
 extern ddlbx::ir::NProgram* program;
 typedef struct yy_buffer_state * YY_BUFFER_STATE;
 extern int yyparse();
+extern int yylineno;
 extern YY_BUFFER_STATE yy_scan_string(const char * str);
 extern YY_BUFFER_STATE yy_switch_to_buffer(YY_BUFFER_STATE buffer);
 extern void yy_delete_buffer(YY_BUFFER_STATE buffer);
@@ -27,6 +28,7 @@ protected:
 
     // Helper function to generate LLVM IR code from a block
     void generate(const std::string& input) {
+        yylineno = 1;
         YY_BUFFER_STATE my_string_buffer = yy_scan_string(input.c_str()); 
         yy_switch_to_buffer( my_string_buffer );
         yyparse(); 
@@ -279,7 +281,91 @@ TEST_F(CodeGennerTest, GenerateLoop) {
     // Assuming the first successor is the loop block
     llvm::BasicBlock* loopBlock = branchInst->getSuccessor(0);
     ASSERT_NE(nullptr, loopBlock);
-    EXPECT_EQ(3, loopBlock->size());
+    EXPECT_EQ(4, loopBlock->size());
+}
+
+TEST_F(CodeGennerTest, GenerateLoopWithStep) {
+    const std::string input = R"(
+        fun main(): Non {
+            for (i to 10 step 2) { 1 + 1! }
+        }
+    )";
+    generate(input);
+
+    // Assuming the test function is declared in the module
+    llvm::Function* testFunction = module.getFunction("main");
+
+    ASSERT_NE(nullptr, testFunction);
+
+    // Assuming the test function has a single basic block
+    llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
+    ASSERT_NE(nullptr, entryBlock);
+    EXPECT_EQ(3, entryBlock->size());
+
+    // Assuming the last instruction is a branch instruction
+    llvm::BranchInst* branchInst = llvm::dyn_cast<llvm::BranchInst>(&entryBlock->back());
+    ASSERT_NE(nullptr, branchInst);
+
+    // Assuming the first successor is the loop block
+    llvm::BasicBlock* loopBlock = branchInst->getSuccessor(0);
+    ASSERT_NE(nullptr, loopBlock);
+    EXPECT_EQ(4, loopBlock->size());
+}
+
+TEST_F(CodeGennerTest, GenerateLoopWithStepAndFrom) {
+    const std::string input = R"(
+        fun main(): Non {
+            for (i from 1 to 10 step 2) { 1 + 1! }
+        }
+    )";
+    generate(input);
+
+    // Assuming the test function is declared in the module
+    llvm::Function* testFunction = module.getFunction("main");
+
+    ASSERT_NE(nullptr, testFunction);
+
+    // Assuming the test function has a single basic block
+    llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
+    ASSERT_NE(nullptr, entryBlock);
+    EXPECT_EQ(3, entryBlock->size());
+
+    // Assuming the last instruction is a branch instruction
+    llvm::BranchInst* branchInst = llvm::dyn_cast<llvm::BranchInst>(&entryBlock->back());
+    ASSERT_NE(nullptr, branchInst);
+
+    // Assuming the first successor is the loop block
+    llvm::BasicBlock* loopBlock = branchInst->getSuccessor(0);
+    ASSERT_NE(nullptr, loopBlock);
+    EXPECT_EQ(4, loopBlock->size());
+}
+
+TEST_F(CodeGennerTest, GenerateLoopWithCondition) {
+    const std::string input = R"(
+        fun main(): Non {
+            for (true) { 1 + 1! }
+        }
+    )";
+    generate(input);
+
+    // Assuming the test function is declared in the module
+    llvm::Function* testFunction = module.getFunction("main");
+
+    ASSERT_NE(nullptr, testFunction);
+
+    // Assuming the test function has a single basic block
+    llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
+    ASSERT_NE(nullptr, entryBlock);
+    EXPECT_EQ(1, entryBlock->size());
+
+    // Assuming the last instruction is a branch instruction
+    llvm::BranchInst* branchInst = llvm::dyn_cast<llvm::BranchInst>(&entryBlock->back());
+    ASSERT_NE(nullptr, branchInst);
+
+    // Assuming the first successor is the loop block
+    llvm::BasicBlock* loopBlock = branchInst->getSuccessor(0);
+    ASSERT_NE(nullptr, loopBlock);
+    EXPECT_EQ(2, loopBlock->size());
 }
 
 TEST_F(CodeGennerTest, GenerateObject) {
