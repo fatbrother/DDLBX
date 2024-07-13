@@ -4,8 +4,10 @@
 #include <llvm/IR/Value.h>
 
 #include "parser/parser.hpp"
+#include "utils/logger.hpp"
 
 using namespace ddlbx::ir;
+using namespace ddlbx::utility;
 
 llvm::Value* NProgram::codeGen(CodeGenContext& context) {
     for (auto& statement : statements) {
@@ -58,6 +60,10 @@ llvm::Value* NString::codeGen(CodeGenContext& context) {
 
 llvm::Value* NIdentifier::codeGen(CodeGenContext& context) {
     Variable& variable = context.getVariable(name);
+    if (variable.ptr == nullptr) {
+        Logger::error("Variable \"" + name + "\" is not defined");
+        return nullptr;
+    }
     return context.getBuilder().CreateLoad(variable.type, variable.ptr, name.c_str());
 }
 
@@ -185,7 +191,8 @@ llvm::Value* NFunctionDeclaration::codeGen(CodeGenContext& context) {
         if (function->getReturnType()->isVoidTy()) {
             context.getBuilder().CreateRetVoid();
         } else {
-            throw std::runtime_error("Function must return a value");
+            Logger::error("Function must return a value");
+            return nullptr;
         }
     }
 
@@ -298,15 +305,39 @@ llvm::Value* NForStatement::codeGen(CodeGenContext& context) {
     llvm::BasicBlock* loopBlock = llvm::BasicBlock::Create(context.getContext(), "loop", function);
     llvm::BasicBlock* afterBlock = llvm::BasicBlock::Create(context.getContext(), "afterloop", function);
 
-    if (init) {
-        init->codeGen(context);
+    if (nullptr != iterator) {
+        if (nullptr == init) {
+            init = std::make_shared<NInteger>(0);
+        }
+
+        llvm::Value* value = iterator->codeGen(context);
+        if (nullptr == value) {
+            std::shared_ptr<NVariableDeclaration> declaration = std::make_shared<NVariableDeclaration>(iterator, init);
+            declaration->codeGen(context);
+        }
+
+        if (nullptr == increment) {
+            increment = std::make_shared<NBinaryOperator>(iterator, OP_PLUS, std::make_shared<NInteger>(1));
+        } else {
+            increment = std::make_shared<NBinaryOperator>(iterator, OP_PLUS, increment);
+        }
     }
 
     context.getBuilder().CreateBr(loopBlock);
     context.getBuilder().SetInsertPoint(loopBlock);
 
     llvm::Value* conditionValue = condition->codeGen(context);
-    context.getBuilder().CreateCondBr(conditionValue, loopBlock, afterBlock);
+    llvm::Value* condition = context.getBuilder().CreateICmpNE(conditionValue, llvm::ConstantInt::get(context.getType("Boo"), 0, true));
+    
+    context.getBuilder().CreateCondBr(condition, loopBlock, afterBlock);
+
+    block->codeGen(context);
+
+    if (nullptr != increment) {
+        increment->codeGen(context);
+    }
+
+    context.getBuilder().CreateBr(loopBlock);
 
     context.getBuilder().SetInsertPoint(afterBlock);
 

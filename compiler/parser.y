@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include "ir/node.hpp"
+#include "utils/logger.hpp"
 
 #define YYERROR_VERBOSE 1
 
@@ -46,12 +47,13 @@ ddlbx::ir::NProgram* program;
 %token <token> OP_ASSIGN OP_PLUS OP_MINUS OP_MULT OP_DIV OP_AND OP_OR OP_NOT
 %token <token> LPAREN RPAREN LBRACE RBRACE
 %token <token> SEMICOLON COMMA COLON DOT
+%token <token> KW_FROM KW_TO KW_STEP
 
 %type <program> Program
 %type <stmtvec> GlobalStatements
 %type <block> Block Statements
 %type <stmt> Statement GlobalStatement FunctionDeclaration FunctionDefinition OptStatement ForStatement ReturnStatement
-%type <expr> Expression Condition Calculation Term Factor Numeric Boolean String AssignExpression FunctionCallExpression DeclarationExpression FPDeclaration ForInitExpression Primary MemberAccessExpression
+%type <expr> Expression Condition Calculation Term Factor Numeric Boolean String AssignExpression FunctionCallExpression DeclarationExpression FPDeclaration Primary MemberAccessExpression
 %type <varvec> DeclarationList
 %type <argvec> FPDeclarationList
 %type <exprvec> FCParameterList
@@ -184,13 +186,13 @@ Primary:
     ;
 
 Statement:
-      DeclarationExpression SEMICOLON {
+      Expression SEMICOLON {
+        $$ = new ddlbx::ir::NExpressionStatement(std::shared_ptr<ddlbx::ir::NExpression>($1));
+      }
+    | DeclarationExpression SEMICOLON {
         $$ = new ddlbx::ir::NExpressionStatement(std::shared_ptr<ddlbx::ir::NExpression>($1));
       }
     | AssignExpression SEMICOLON {
-        $$ = new ddlbx::ir::NExpressionStatement(std::shared_ptr<ddlbx::ir::NExpression>($1));
-      }
-    | FunctionCallExpression SEMICOLON {
         $$ = new ddlbx::ir::NExpressionStatement(std::shared_ptr<ddlbx::ir::NExpression>($1));
       }
     | OptStatement
@@ -199,17 +201,29 @@ Statement:
     ;
 
 ForStatement:
-      KW_FOR LPAREN ForInitExpression SEMICOLON Condition SEMICOLON AssignExpression RPAREN Block {
-        $$ = new ddlbx::ir::NForStatement(std::shared_ptr<ddlbx::ir::NExpression>($3), std::shared_ptr<ddlbx::ir::NExpression>($5), std::shared_ptr<ddlbx::ir::NExpression>($7), std::shared_ptr<ddlbx::ir::NBlock>($9));
+      KW_FOR LPAREN Identifier KW_TO Expression RPAREN Block {
+        $$ = new ddlbx::ir::NForStatement(std::shared_ptr<ddlbx::ir::NIdentifier>($3), 
+                                          nullptr,
+                                          std::shared_ptr<ddlbx::ir::NExpression>($5), 
+                                          nullptr, 
+                                          std::shared_ptr<ddlbx::ir::NBlock>($7));
       }
-    ;
-
-ForInitExpression:
-      DeclarationExpression {
-        $$ = $1;
+    | KW_FOR LPAREN Identifier KW_TO Expression KW_STEP Expression RPAREN Block {
+        $$ = new ddlbx::ir::NForStatement(std::shared_ptr<ddlbx::ir::NIdentifier>($3), 
+                                          nullptr, 
+                                          std::shared_ptr<ddlbx::ir::NExpression>($5), 
+                                          std::shared_ptr<ddlbx::ir::NExpression>($7), 
+                                          std::shared_ptr<ddlbx::ir::NBlock>($9));
       }
-    | AssignExpression {
-        $$ = $1;
+    | KW_FOR LPAREN Identifier KW_FROM Expression KW_TO Expression KW_STEP Expression RPAREN Block {
+        $$ = new ddlbx::ir::NForStatement(std::shared_ptr<ddlbx::ir::NIdentifier>($3), 
+                                          std::shared_ptr<ddlbx::ir::NExpression>($5), 
+                                          std::shared_ptr<ddlbx::ir::NExpression>($7), 
+                                          std::shared_ptr<ddlbx::ir::NExpression>($9), 
+                                          std::shared_ptr<ddlbx::ir::NBlock>($11));
+      }
+    | KW_FOR LPAREN Expression RPAREN Block {
+        $$ = new ddlbx::ir::NForStatement(nullptr, nullptr, std::shared_ptr<ddlbx::ir::NExpression>($3), nullptr, std::shared_ptr<ddlbx::ir::NBlock>($5));
       }
     ;
 
@@ -399,7 +413,7 @@ Type:
 %%  
 
 void yyerror(const char *s) {
-    std::cout << "Error: " << s << " at line " << yylineno << ", near '" << yytext << "'\n\n";
+    ddlbx::utility::Logger::error("Error: " + std::string(s) + " at " + std::to_string(yylineno) + ":" + std::to_string(yycolumn) + " near " + std::string(yytext));
     return;
 }
 

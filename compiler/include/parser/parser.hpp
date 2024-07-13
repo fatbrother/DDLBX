@@ -80,14 +80,20 @@ extern int yydebug;
     OP_MINUS = 281,                /* OP_MINUS  */
     OP_MULT = 282,                 /* OP_MULT  */
     OP_DIV = 283,                  /* OP_DIV  */
-    LPAREN = 284,                  /* LPAREN  */
-    RPAREN = 285,                  /* RPAREN  */
-    LBRACE = 286,                  /* LBRACE  */
-    RBRACE = 287,                  /* RBRACE  */
-    SEMICOLON = 288,               /* SEMICOLON  */
-    COMMA = 289,                   /* COMMA  */
-    COLON = 290,                   /* COLON  */
-    DOT = 291                      /* DOT  */
+    OP_AND = 284,                  /* OP_AND  */
+    OP_OR = 285,                   /* OP_OR  */
+    OP_NOT = 286,                  /* OP_NOT  */
+    LPAREN = 287,                  /* LPAREN  */
+    RPAREN = 288,                  /* RPAREN  */
+    LBRACE = 289,                  /* LBRACE  */
+    RBRACE = 290,                  /* RBRACE  */
+    SEMICOLON = 291,               /* SEMICOLON  */
+    COMMA = 292,                   /* COMMA  */
+    COLON = 293,                   /* COLON  */
+    DOT = 294,                     /* DOT  */
+    KW_FROM = 295,                 /* KW_FROM  */
+    KW_TO = 296,                   /* KW_TO  */
+    KW_STEP = 297                  /* KW_STEP  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -96,7 +102,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 26 "parser.y"
+#line 27 "parser.y"
 
     ddlbx::ir::NProgram *program;
     ddlbx::ir::NType *type;
@@ -111,7 +117,7 @@ union YYSTYPE
     std::string *string;
     int token;
 
-#line 115 "include/parser/parser.hpp"
+#line 121 "include/parser/parser.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

@@ -73,6 +73,7 @@
 #include <iostream>
 #include <vector>
 #include "ir/node.hpp"
+#include "utils/logger.hpp"
 
 #define YYERROR_VERBOSE 1
 
@@ -92,7 +93,7 @@ extern char* yytext;
 ddlbx::ir::NProgram* program;
 
 
-#line 96 "src/parser/parser.cc"
+#line 97 "src/parser/parser.cc"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -160,38 +161,40 @@ enum yysymbol_kind_t
   YYSYMBOL_COMMA = 37,                     /* COMMA  */
   YYSYMBOL_COLON = 38,                     /* COLON  */
   YYSYMBOL_DOT = 39,                       /* DOT  */
-  YYSYMBOL_YYACCEPT = 40,                  /* $accept  */
-  YYSYMBOL_Program = 41,                   /* Program  */
-  YYSYMBOL_GlobalStatements = 42,          /* GlobalStatements  */
-  YYSYMBOL_GlobalStatement = 43,           /* GlobalStatement  */
-  YYSYMBOL_FunctionDefinition = 44,        /* FunctionDefinition  */
-  YYSYMBOL_FunctionDeclaration = 45,       /* FunctionDeclaration  */
-  YYSYMBOL_FPDeclarationList = 46,         /* FPDeclarationList  */
-  YYSYMBOL_FPDeclaration = 47,             /* FPDeclaration  */
-  YYSYMBOL_ReturnStatement = 48,           /* ReturnStatement  */
-  YYSYMBOL_FunctionCallExpression = 49,    /* FunctionCallExpression  */
-  YYSYMBOL_FCParameterList = 50,           /* FCParameterList  */
-  YYSYMBOL_MemberAccessExpression = 51,    /* MemberAccessExpression  */
-  YYSYMBOL_Primary = 52,                   /* Primary  */
-  YYSYMBOL_Statement = 53,                 /* Statement  */
-  YYSYMBOL_ForStatement = 54,              /* ForStatement  */
-  YYSYMBOL_ForInitExpression = 55,         /* ForInitExpression  */
-  YYSYMBOL_OptStatement = 56,              /* OptStatement  */
-  YYSYMBOL_Block = 57,                     /* Block  */
-  YYSYMBOL_Statements = 58,                /* Statements  */
-  YYSYMBOL_DeclarationExpression = 59,     /* DeclarationExpression  */
-  YYSYMBOL_DeclarationList = 60,           /* DeclarationList  */
-  YYSYMBOL_AssignExpression = 61,          /* AssignExpression  */
-  YYSYMBOL_Expression = 62,                /* Expression  */
-  YYSYMBOL_Condition = 63,                 /* Condition  */
-  YYSYMBOL_Calculation = 64,               /* Calculation  */
-  YYSYMBOL_Term = 65,                      /* Term  */
-  YYSYMBOL_Factor = 66,                    /* Factor  */
-  YYSYMBOL_Identifier = 67,                /* Identifier  */
-  YYSYMBOL_Numeric = 68,                   /* Numeric  */
-  YYSYMBOL_Boolean = 69,                   /* Boolean  */
-  YYSYMBOL_String = 70,                    /* String  */
-  YYSYMBOL_Type = 71                       /* Type  */
+  YYSYMBOL_KW_FROM = 40,                   /* KW_FROM  */
+  YYSYMBOL_KW_TO = 41,                     /* KW_TO  */
+  YYSYMBOL_KW_STEP = 42,                   /* KW_STEP  */
+  YYSYMBOL_YYACCEPT = 43,                  /* $accept  */
+  YYSYMBOL_Program = 44,                   /* Program  */
+  YYSYMBOL_GlobalStatements = 45,          /* GlobalStatements  */
+  YYSYMBOL_GlobalStatement = 46,           /* GlobalStatement  */
+  YYSYMBOL_FunctionDefinition = 47,        /* FunctionDefinition  */
+  YYSYMBOL_FunctionDeclaration = 48,       /* FunctionDeclaration  */
+  YYSYMBOL_FPDeclarationList = 49,         /* FPDeclarationList  */
+  YYSYMBOL_FPDeclaration = 50,             /* FPDeclaration  */
+  YYSYMBOL_ReturnStatement = 51,           /* ReturnStatement  */
+  YYSYMBOL_FunctionCallExpression = 52,    /* FunctionCallExpression  */
+  YYSYMBOL_FCParameterList = 53,           /* FCParameterList  */
+  YYSYMBOL_MemberAccessExpression = 54,    /* MemberAccessExpression  */
+  YYSYMBOL_Primary = 55,                   /* Primary  */
+  YYSYMBOL_Statement = 56,                 /* Statement  */
+  YYSYMBOL_ForStatement = 57,              /* ForStatement  */
+  YYSYMBOL_OptStatement = 58,              /* OptStatement  */
+  YYSYMBOL_Block = 59,                     /* Block  */
+  YYSYMBOL_Statements = 60,                /* Statements  */
+  YYSYMBOL_DeclarationExpression = 61,     /* DeclarationExpression  */
+  YYSYMBOL_DeclarationList = 62,           /* DeclarationList  */
+  YYSYMBOL_AssignExpression = 63,          /* AssignExpression  */
+  YYSYMBOL_Expression = 64,                /* Expression  */
+  YYSYMBOL_Condition = 65,                 /* Condition  */
+  YYSYMBOL_Calculation = 66,               /* Calculation  */
+  YYSYMBOL_Term = 67,                      /* Term  */
+  YYSYMBOL_Factor = 68,                    /* Factor  */
+  YYSYMBOL_Identifier = 69,                /* Identifier  */
+  YYSYMBOL_Numeric = 70,                   /* Numeric  */
+  YYSYMBOL_Boolean = 71,                   /* Boolean  */
+  YYSYMBOL_String = 72,                    /* String  */
+  YYSYMBOL_Type = 73                       /* Type  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -519,19 +522,19 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  9
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   135
+#define YYLAST   137
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  40
+#define YYNTOKENS  43
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  32
+#define YYNNTS  31
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  79
+#define YYNRULES  80
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  135
+#define YYNSTATES  138
 
 /* YYMAXUTOK -- Last valid token kind.  */
-#define YYMAXUTOK   294
+#define YYMAXUTOK   297
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -574,21 +577,22 @@ static const yytype_int8 yytranslate[] =
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
       25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
-      35,    36,    37,    38,    39
+      35,    36,    37,    38,    39,    40,    41,    42
 };
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,    66,    66,    74,    78,    84,    85,    91,    99,   106,
-     109,   112,   119,   125,   128,   134,   137,   144,   147,   150,
-     157,   160,   166,   169,   172,   175,   178,   181,   187,   190,
-     193,   196,   197,   198,   202,   208,   211,   217,   223,   229,
-     232,   238,   245,   248,   251,   255,   262,   268,   271,   277,
-     283,   286,   289,   292,   295,   298,   301,   307,   310,   313,
-     319,   322,   325,   331,   334,   337,   340,   343,   346,   349,
-     355,   362,   365,   371,   377,   383,   386,   389,   392,   395
+       0,    68,    68,    76,    80,    86,    87,    93,   101,   108,
+     111,   114,   121,   127,   130,   136,   139,   146,   149,   152,
+     159,   162,   168,   171,   174,   177,   180,   183,   189,   192,
+     195,   198,   199,   200,   204,   211,   218,   225,   231,   237,
+     243,   246,   252,   259,   262,   265,   269,   276,   282,   285,
+     291,   297,   300,   303,   306,   309,   312,   315,   321,   324,
+     327,   333,   336,   339,   345,   348,   351,   354,   357,   360,
+     363,   369,   376,   379,   385,   391,   397,   400,   403,   406,
+     409
 };
 #endif
 
@@ -610,12 +614,12 @@ static const char *const yytname[] =
   "KW_OPT", "KW_FOR", "COM_EQ", "COM_NE", "COM_LE", "COM_GE", "COM_LT",
   "COM_GT", "OP_ASSIGN", "OP_PLUS", "OP_MINUS", "OP_MULT", "OP_DIV",
   "OP_AND", "OP_OR", "OP_NOT", "LPAREN", "RPAREN", "LBRACE", "RBRACE",
-  "SEMICOLON", "COMMA", "COLON", "DOT", "$accept", "Program",
-  "GlobalStatements", "GlobalStatement", "FunctionDefinition",
-  "FunctionDeclaration", "FPDeclarationList", "FPDeclaration",
-  "ReturnStatement", "FunctionCallExpression", "FCParameterList",
-  "MemberAccessExpression", "Primary", "Statement", "ForStatement",
-  "ForInitExpression", "OptStatement", "Block", "Statements",
+  "SEMICOLON", "COMMA", "COLON", "DOT", "KW_FROM", "KW_TO", "KW_STEP",
+  "$accept", "Program", "GlobalStatements", "GlobalStatement",
+  "FunctionDefinition", "FunctionDeclaration", "FPDeclarationList",
+  "FPDeclaration", "ReturnStatement", "FunctionCallExpression",
+  "FCParameterList", "MemberAccessExpression", "Primary", "Statement",
+  "ForStatement", "OptStatement", "Block", "Statements",
   "DeclarationExpression", "DeclarationList", "AssignExpression",
   "Expression", "Condition", "Calculation", "Term", "Factor", "Identifier",
   "Numeric", "Boolean", "String", "Type", YY_NULLPTR
@@ -628,7 +632,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-88)
+#define YYPACT_NINF (-93)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -642,20 +646,20 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-       7,    22,    38,     7,   -88,   -12,   -88,   -88,    32,   -88,
-     -88,   -88,   -88,   -88,    22,    13,   -31,   -88,    31,   -88,
-     -88,   -88,   -88,     5,    22,    58,    60,    28,   -88,   -88,
-      61,     8,    57,   -88,   -88,   -88,    64,    65,    25,   -88,
-     -88,   -88,    66,    22,    74,    28,   -88,    68,     8,    67,
-      14,    33,    45,   -88,    36,    70,    71,    72,    75,   -88,
-      78,    28,     0,    80,   -88,    28,    22,    22,   -88,   -88,
-      28,    28,    74,   -88,   -88,   -88,   -88,   -88,   -88,   -88,
-      81,   -88,    28,    28,    28,    28,    28,    28,    28,    28,
-      28,    28,    28,    28,    22,    82,    69,   -88,   -88,    78,
-     -88,    37,   -88,   -88,   -88,   -88,    54,   -88,    77,   -88,
-     -88,    63,    63,    63,    63,    63,    63,    45,    45,   -88,
-     -88,   -88,    78,    83,    28,   -88,    28,   -88,   -88,    84,
-     -88,    22,    85,    83,   -88
+      -3,    16,    31,    -3,   -93,    29,   -93,   -93,     5,   -93,
+     -93,   -93,   -93,   -93,    16,    23,   -30,   -93,    18,   -93,
+     -93,   -93,   -93,    13,    16,    11,    20,    64,   -93,   -93,
+      48,    14,    56,   -93,   -93,   -93,    67,    73,    76,    68,
+      55,    72,   -93,    40,    71,    77,    79,    21,    16,    74,
+     -93,    83,    15,    84,   -93,    96,    64,    64,    89,    64,
+      16,    16,   -93,   -93,   -93,    64,    64,    64,    64,    64,
+      64,    64,    64,    64,    64,    64,    64,    64,    64,    74,
+     -93,   -93,   -93,   -93,   -93,   -93,   -93,   -93,    16,    90,
+      91,    -7,    86,   -28,   -93,   -93,   -93,   -93,   -93,    80,
+      80,    80,    80,    80,    80,    72,    72,   -93,   -93,   -93,
+     -27,   -93,   -93,    96,    92,    92,    64,    64,   -93,    64,
+     -93,   -93,   -93,    87,   -29,   -93,    64,    92,    64,    85,
+     -93,    97,    64,    92,    98,   -93,    92,   -93
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -663,38 +667,38 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       0,     0,     0,     2,     3,     0,     5,    70,     0,     1,
-       4,    39,     6,     8,     9,     0,     0,    11,     0,    71,
-      72,    74,    73,     0,     0,     0,     0,     0,    38,    33,
-      27,     0,     0,    40,    32,    31,     0,     0,    22,    23,
-      24,    25,     0,     0,     0,     0,    14,    68,    69,     0,
-      49,    56,    57,    60,    63,    64,    65,    66,    41,    44,
-      45,     0,     0,     0,    30,    17,     0,     0,    28,    29,
-       0,    17,     0,    10,    77,    75,    76,    78,    79,    12,
-       0,    13,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,    35,    36,     0,
-      26,     0,    19,    20,    21,    46,     0,     7,    67,    47,
-      48,    52,    55,    53,    54,    50,    51,    58,    59,    61,
-      62,    43,    42,     0,     0,    16,     0,    15,    37,     0,
-      18,     0,     0,     0,    34
+       0,     0,     0,     2,     3,     0,     5,    71,     0,     1,
+       4,    40,     6,     8,     9,     0,     0,    11,     0,    72,
+      73,    75,    74,     0,     0,     0,     0,     0,    39,    33,
+      69,    70,     0,    41,    32,    31,     0,     0,     0,    50,
+      57,    58,    61,    64,    65,    66,    67,     0,     0,     0,
+      14,     0,    64,    42,    45,    46,     0,     0,     0,    17,
+       0,     0,    29,    30,    28,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,    17,     0,
+      10,    78,    76,    77,    79,    80,    12,    13,     0,     0,
+       0,    64,    68,     0,    19,    20,    21,    48,    49,    53,
+      56,    54,    55,    51,    52,    59,    60,    62,    63,    47,
+       0,     7,    44,    43,     0,     0,     0,     0,    16,     0,
+      15,    38,    37,     0,     0,    18,     0,     0,     0,     0,
+      34,     0,     0,     0,     0,    35,     0,    36
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -88,   -88,   -88,   116,   -88,   -88,   -88,    79,   -88,   106,
-      52,   109,   -88,   -88,   -88,   -88,   -88,   -87,   -88,    73,
-     -88,   -23,   -20,   -57,    -8,     4,     6,    -1,   110,   111,
-     112,    56
+     -93,   -93,   -93,   126,   -93,   -93,   -93,    88,   -93,   -93,
+      54,   -93,   -93,   -93,   -93,   -93,   -92,   -93,   -93,   -93,
+     -22,   -15,    78,    22,    34,    39,     0,   -93,   -93,   -93,
+      58
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     2,     3,     4,     5,     6,    16,    17,    29,    47,
-     101,    48,    32,    33,    34,    96,    35,    13,    15,    36,
-      58,    37,   102,    50,    51,    52,    53,    54,    55,    56,
-      57,    79
+       0,     2,     3,     4,     5,     6,    16,    17,    29,    30,
+      93,    31,    32,    33,    34,    35,    13,    15,    36,    53,
+      37,    94,    39,    40,    41,    42,    52,    44,    45,    46,
+      86
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -702,71 +706,72 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int16 yytable[] =
 {
-       8,    59,    42,    49,    95,     7,    43,    63,    19,    20,
-       7,    21,    22,    18,    38,    24,    19,    20,     7,    21,
-      22,     1,    11,    60,    12,    80,    23,     7,    24,    25,
-      26,    19,    20,     7,    21,    22,   128,    45,     9,    98,
-      65,    46,    18,    82,    83,    27,   134,    66,    28,    70,
-     105,    84,    85,    86,    87,    88,    89,    71,    90,    91,
-      45,    99,   109,   110,    14,   103,   104,   129,    71,    44,
-     125,   121,    92,    93,   126,   -22,   111,   112,   113,   114,
-     115,   116,    74,    75,    76,    77,    78,   127,    90,    91,
-      61,   126,    62,   122,   117,   118,    67,    64,   119,   120,
-      68,    69,    70,    81,    72,   124,   130,   -27,   132,   -23,
-     -24,   -25,    94,   100,   108,   123,   -26,    11,   133,    10,
-     131,    30,    73,   106,    31,    39,    40,    41,   107,     0,
-      99,     0,     0,     0,     0,    97
+      38,     8,    54,    47,   127,   118,   120,    48,    51,   119,
+     119,     1,    58,   128,    18,    43,    19,    20,     7,    21,
+      22,     7,   121,   122,    55,    78,    19,    20,     7,    21,
+      22,     9,   -22,   116,   117,   130,    23,    14,    24,    25,
+      26,   135,    90,    56,   137,    27,    59,    78,    18,    50,
+      97,    98,    57,    60,   -22,    27,    49,    91,    28,    79,
+      95,    96,   109,    11,    77,    12,   112,    19,    20,     7,
+      21,    22,    78,    67,    68,    69,    70,    71,    72,   -22,
+      73,    74,    81,    82,    83,    84,    85,   -27,   113,    99,
+     100,   101,   102,   103,   104,    61,    27,    65,    66,    75,
+      76,   123,   124,    62,   125,    73,    74,   105,   106,    63,
+     -23,   129,    64,   131,   107,   108,   -24,   134,   -25,    87,
+      77,    88,    92,   114,   115,   -26,    11,   132,   126,    10,
+     133,   136,   110,     0,    89,     0,    80,   111
 };
 
 static const yytype_int16 yycheck[] =
 {
-       1,    24,    33,    23,    61,     5,    37,    27,     3,     4,
-       5,     6,     7,    14,    15,    15,     3,     4,     5,     6,
-       7,    14,    34,    24,    36,    45,    13,     5,    15,    16,
-      17,     3,     4,     5,     6,     7,   123,    32,     0,    62,
-      32,    36,    43,    29,    30,    32,   133,    39,    35,    24,
-      70,    18,    19,    20,    21,    22,    23,    32,    25,    26,
-      32,    62,    82,    83,    32,    66,    67,   124,    32,    38,
-      33,    94,    27,    28,    37,    39,    84,    85,    86,    87,
-      88,    89,     8,     9,    10,    11,    12,    33,    25,    26,
-      32,    37,    32,    94,    90,    91,    39,    36,    92,    93,
-      36,    36,    24,    36,    38,    36,   126,    39,   131,    39,
-      39,    39,    37,    33,    33,    33,    39,    34,    33,     3,
-      36,    15,    43,    71,    15,    15,    15,    15,    72,    -1,
-     131,    -1,    -1,    -1,    -1,    62
+      15,     1,    24,    33,    33,    33,    33,    37,    23,    37,
+      37,    14,    27,    42,    14,    15,     3,     4,     5,     6,
+       7,     5,   114,   115,    24,    32,     3,     4,     5,     6,
+       7,     0,    39,    40,    41,   127,    13,    32,    15,    16,
+      17,   133,    57,    32,   136,    32,    32,    32,    48,    36,
+      65,    66,    32,    39,    39,    32,    38,    57,    35,    38,
+      60,    61,    77,    34,    24,    36,    88,     3,     4,     5,
+       6,     7,    32,    18,    19,    20,    21,    22,    23,    39,
+      25,    26,     8,     9,    10,    11,    12,    39,    88,    67,
+      68,    69,    70,    71,    72,    39,    32,    29,    30,    27,
+      28,   116,   117,    36,   119,    25,    26,    73,    74,    36,
+      39,   126,    36,   128,    75,    76,    39,   132,    39,    36,
+      24,    37,    33,    33,    33,    39,    34,    42,    41,     3,
+      33,    33,    78,    -1,    56,    -1,    48,    79
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,    14,    41,    42,    43,    44,    45,     5,    67,     0,
-      43,    34,    36,    57,    32,    58,    46,    47,    67,     3,
-       4,     6,     7,    13,    15,    16,    17,    32,    35,    48,
-      49,    51,    52,    53,    54,    56,    59,    61,    67,    68,
-      69,    70,    33,    37,    38,    32,    36,    49,    51,    62,
-      63,    64,    65,    66,    67,    68,    69,    70,    60,    61,
-      67,    32,    32,    62,    36,    32,    39,    39,    36,    36,
-      24,    32,    38,    47,     8,     9,    10,    11,    12,    71,
-      62,    36,    29,    30,    18,    19,    20,    21,    22,    23,
-      25,    26,    27,    28,    37,    63,    55,    59,    61,    67,
-      33,    50,    62,    67,    67,    62,    50,    71,    33,    62,
-      62,    64,    64,    64,    64,    64,    64,    65,    65,    66,
-      66,    61,    67,    33,    36,    33,    37,    33,    57,    63,
-      62,    36,    61,    33,    57
+       0,    14,    44,    45,    46,    47,    48,     5,    69,     0,
+      46,    34,    36,    59,    32,    60,    49,    50,    69,     3,
+       4,     6,     7,    13,    15,    16,    17,    32,    35,    51,
+      52,    54,    55,    56,    57,    58,    61,    63,    64,    65,
+      66,    67,    68,    69,    70,    71,    72,    33,    37,    38,
+      36,    64,    69,    62,    63,    69,    32,    32,    64,    32,
+      39,    39,    36,    36,    36,    29,    30,    18,    19,    20,
+      21,    22,    23,    25,    26,    27,    28,    24,    32,    38,
+      50,     8,     9,    10,    11,    12,    73,    36,    37,    65,
+      64,    69,    33,    53,    64,    69,    69,    64,    64,    66,
+      66,    66,    66,    66,    66,    67,    67,    68,    68,    64,
+      53,    73,    63,    69,    33,    33,    40,    41,    33,    37,
+      33,    59,    59,    64,    64,    64,    41,    33,    42,    64,
+      59,    64,    42,    33,    64,    59,    33,    59
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    40,    41,    42,    42,    43,    43,    44,    45,    46,
-      46,    46,    47,    48,    48,    49,    49,    50,    50,    50,
-      51,    51,    52,    52,    52,    52,    52,    52,    53,    53,
-      53,    53,    53,    53,    54,    55,    55,    56,    57,    58,
-      58,    59,    60,    60,    60,    60,    61,    62,    62,    62,
-      63,    63,    63,    63,    63,    63,    63,    64,    64,    64,
-      65,    65,    65,    66,    66,    66,    66,    66,    66,    66,
-      67,    68,    68,    69,    70,    71,    71,    71,    71,    71
+       0,    43,    44,    45,    45,    46,    46,    47,    48,    49,
+      49,    49,    50,    51,    51,    52,    52,    53,    53,    53,
+      54,    54,    55,    55,    55,    55,    55,    55,    56,    56,
+      56,    56,    56,    56,    57,    57,    57,    57,    58,    59,
+      60,    60,    61,    62,    62,    62,    62,    63,    64,    64,
+      64,    65,    65,    65,    65,    65,    65,    65,    66,    66,
+      66,    67,    67,    67,    68,    68,    68,    68,    68,    68,
+      68,    69,    70,    70,    71,    72,    73,    73,    73,    73,
+      73
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
@@ -775,11 +780,12 @@ static const yytype_int8 yyr2[] =
        0,     2,     1,     1,     2,     1,     2,     7,     2,     0,
        3,     1,     3,     3,     2,     4,     4,     0,     3,     1,
        3,     3,     1,     1,     1,     1,     3,     1,     2,     2,
-       2,     1,     1,     1,     9,     1,     1,     5,     3,     0,
-       2,     2,     3,     3,     1,     1,     3,     3,     3,     1,
-       3,     3,     3,     3,     3,     3,     1,     1,     3,     3,
-       1,     3,     3,     1,     1,     1,     1,     3,     1,     1,
-       1,     1,     1,     1,     1,     1,     1,     1,     1,     1
+       2,     1,     1,     1,     7,     9,    11,     5,     5,     3,
+       0,     2,     2,     3,     3,     1,     1,     3,     3,     3,
+       1,     3,     3,     3,     3,     3,     3,     1,     1,     3,
+       3,     1,     3,     3,     1,     1,     1,     1,     3,     1,
+       1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
+       1
 };
 
 
@@ -1243,612 +1249,632 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* Program: GlobalStatements  */
-#line 66 "parser.y"
+#line 68 "parser.y"
                        {
         (yyval.program) = new ddlbx::ir::NProgram();
         (yyval.program)->statements = *(yyvsp[0].stmtvec);
         program = (yyval.program);
       }
-#line 1253 "src/parser/parser.cc"
+#line 1259 "src/parser/parser.cc"
     break;
 
   case 3: /* GlobalStatements: GlobalStatement  */
-#line 74 "parser.y"
+#line 76 "parser.y"
                       {
         (yyval.stmtvec) = new std::vector<std::shared_ptr<ddlbx::ir::NStatement>>();
         (yyval.stmtvec)->push_back(std::shared_ptr<ddlbx::ir::NStatement>((yyvsp[0].stmt)));
       }
-#line 1262 "src/parser/parser.cc"
+#line 1268 "src/parser/parser.cc"
     break;
 
   case 4: /* GlobalStatements: GlobalStatements GlobalStatement  */
-#line 78 "parser.y"
+#line 80 "parser.y"
                                        {
         (yyvsp[-1].stmtvec)->push_back(std::shared_ptr<ddlbx::ir::NStatement>((yyvsp[0].stmt)));
       }
-#line 1270 "src/parser/parser.cc"
+#line 1276 "src/parser/parser.cc"
     break;
 
   case 6: /* GlobalStatement: FunctionDefinition SEMICOLON  */
-#line 85 "parser.y"
+#line 87 "parser.y"
                                    {
         (yyval.stmt) = (yyvsp[-1].stmt);
       }
-#line 1278 "src/parser/parser.cc"
+#line 1284 "src/parser/parser.cc"
     break;
 
   case 7: /* FunctionDefinition: KW_FUNCTION Identifier LPAREN FPDeclarationList RPAREN COLON Type  */
-#line 91 "parser.y"
+#line 93 "parser.y"
                                                                         {
         (yyval.stmt) = new ddlbx::ir::NFunctionDefinition(std::shared_ptr<ddlbx::ir::NType>((yyvsp[0].type)), 
                                                 std::shared_ptr<ddlbx::ir::NIdentifier>((yyvsp[-5].identifier)), 
                                                 *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>((yyvsp[-3].argvec))));
       }
-#line 1288 "src/parser/parser.cc"
+#line 1294 "src/parser/parser.cc"
     break;
 
   case 8: /* FunctionDeclaration: FunctionDefinition Block  */
-#line 99 "parser.y"
+#line 101 "parser.y"
                                {
         (yyval.stmt) = new ddlbx::ir::NFunctionDeclaration(std::shared_ptr<ddlbx::ir::NFunctionDefinition>(dynamic_cast<ddlbx::ir::NFunctionDefinition*>((yyvsp[-1].stmt))),
                                                  std::shared_ptr<ddlbx::ir::NBlock>((yyvsp[0].block)));
       }
-#line 1297 "src/parser/parser.cc"
+#line 1303 "src/parser/parser.cc"
     break;
 
   case 9: /* FPDeclarationList: %empty  */
-#line 106 "parser.y"
+#line 108 "parser.y"
                   {
         (yyval.argvec) = new std::vector<std::shared_ptr<ddlbx::ir::NArgument>>();
       }
-#line 1305 "src/parser/parser.cc"
+#line 1311 "src/parser/parser.cc"
     break;
 
   case 10: /* FPDeclarationList: FPDeclarationList COMMA FPDeclaration  */
-#line 109 "parser.y"
+#line 111 "parser.y"
                                             {
         (yyvsp[-2].argvec)->push_back(std::shared_ptr<ddlbx::ir::NArgument>(dynamic_cast<ddlbx::ir::NArgument*>((yyvsp[0].expr))));
       }
-#line 1313 "src/parser/parser.cc"
+#line 1319 "src/parser/parser.cc"
     break;
 
   case 11: /* FPDeclarationList: FPDeclaration  */
-#line 112 "parser.y"
+#line 114 "parser.y"
                     {
         (yyval.argvec) = new std::vector<std::shared_ptr<ddlbx::ir::NArgument>>();
         (yyval.argvec)->push_back(std::shared_ptr<ddlbx::ir::NArgument>(dynamic_cast<ddlbx::ir::NArgument*>((yyvsp[0].expr))));
       }
-#line 1322 "src/parser/parser.cc"
+#line 1328 "src/parser/parser.cc"
     break;
 
   case 12: /* FPDeclaration: Identifier COLON Type  */
-#line 119 "parser.y"
+#line 121 "parser.y"
                             {
         (yyval.expr) = new ddlbx::ir::NArgument(std::shared_ptr<ddlbx::ir::NType>((yyvsp[0].type)), std::shared_ptr<ddlbx::ir::NIdentifier>((yyvsp[-2].identifier)));
       }
-#line 1330 "src/parser/parser.cc"
+#line 1336 "src/parser/parser.cc"
     break;
 
   case 13: /* ReturnStatement: KW_RETURN Expression SEMICOLON  */
-#line 125 "parser.y"
+#line 127 "parser.y"
                                      {
         (yyval.stmt) = new ddlbx::ir::NReturnStatement(std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-1].expr)));
       }
-#line 1338 "src/parser/parser.cc"
+#line 1344 "src/parser/parser.cc"
     break;
 
   case 14: /* ReturnStatement: KW_RETURN SEMICOLON  */
-#line 128 "parser.y"
+#line 130 "parser.y"
                           {
         (yyval.stmt) = new ddlbx::ir::NReturnStatement();
       }
-#line 1346 "src/parser/parser.cc"
+#line 1352 "src/parser/parser.cc"
     break;
 
   case 15: /* FunctionCallExpression: Identifier LPAREN FCParameterList RPAREN  */
-#line 134 "parser.y"
+#line 136 "parser.y"
                                                {
         (yyval.expr) = new ddlbx::ir::NFunctionCall(std::shared_ptr<ddlbx::ir::NIdentifier>((yyvsp[-3].identifier)), std::vector<std::shared_ptr<ddlbx::ir::NExpression>>(*(yyvsp[-1].exprvec)));
       }
-#line 1354 "src/parser/parser.cc"
+#line 1360 "src/parser/parser.cc"
     break;
 
   case 16: /* FunctionCallExpression: MemberAccessExpression LPAREN FCParameterList RPAREN  */
-#line 137 "parser.y"
+#line 139 "parser.y"
                                                            {
         (yyval.expr) = new ddlbx::ir::NFunctionCall(std::shared_ptr<ddlbx::ir::NMemberAccess>(dynamic_cast<ddlbx::ir::NMemberAccess*>((yyvsp[-3].expr))),
                                                           std::vector<std::shared_ptr<ddlbx::ir::NExpression>>(*(yyvsp[-1].exprvec)));
       }
-#line 1363 "src/parser/parser.cc"
+#line 1369 "src/parser/parser.cc"
     break;
 
   case 17: /* FCParameterList: %empty  */
-#line 144 "parser.y"
+#line 146 "parser.y"
                   {
         (yyval.exprvec) = new std::vector<std::shared_ptr<ddlbx::ir::NExpression>>();
       }
-#line 1371 "src/parser/parser.cc"
+#line 1377 "src/parser/parser.cc"
     break;
 
   case 18: /* FCParameterList: FCParameterList COMMA Expression  */
-#line 147 "parser.y"
+#line 149 "parser.y"
                                        {
         (yyvsp[-2].exprvec)->push_back(std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[0].expr)));
       }
-#line 1379 "src/parser/parser.cc"
+#line 1385 "src/parser/parser.cc"
     break;
 
   case 19: /* FCParameterList: Expression  */
-#line 150 "parser.y"
+#line 152 "parser.y"
                  {
         (yyval.exprvec) = new std::vector<std::shared_ptr<ddlbx::ir::NExpression>>();
         (yyval.exprvec)->push_back(std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[0].expr)));
       }
-#line 1388 "src/parser/parser.cc"
+#line 1394 "src/parser/parser.cc"
     break;
 
   case 20: /* MemberAccessExpression: MemberAccessExpression DOT Identifier  */
-#line 157 "parser.y"
+#line 159 "parser.y"
                                             {
         dynamic_cast<ddlbx::ir::NMemberAccess*>((yyvsp[-2].expr))->ids.push_back(std::shared_ptr<ddlbx::ir::NIdentifier>((yyvsp[0].identifier)));
       }
-#line 1396 "src/parser/parser.cc"
+#line 1402 "src/parser/parser.cc"
     break;
 
   case 21: /* MemberAccessExpression: Primary DOT Identifier  */
-#line 160 "parser.y"
+#line 162 "parser.y"
                              {
         (yyval.expr) = new ddlbx::ir::NMemberAccess(std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-2].expr)), {std::shared_ptr<ddlbx::ir::NIdentifier>((yyvsp[0].identifier))});
       }
-#line 1404 "src/parser/parser.cc"
+#line 1410 "src/parser/parser.cc"
     break;
 
   case 22: /* Primary: Identifier  */
-#line 166 "parser.y"
+#line 168 "parser.y"
                  {
         (yyval.expr) = (yyvsp[0].identifier);
       }
-#line 1412 "src/parser/parser.cc"
+#line 1418 "src/parser/parser.cc"
     break;
 
   case 23: /* Primary: Numeric  */
-#line 169 "parser.y"
+#line 171 "parser.y"
               {
         (yyval.expr) = (yyvsp[0].expr);
       }
-#line 1420 "src/parser/parser.cc"
+#line 1426 "src/parser/parser.cc"
     break;
 
   case 24: /* Primary: Boolean  */
-#line 172 "parser.y"
+#line 174 "parser.y"
               {
         (yyval.expr) = (yyvsp[0].expr);
       }
-#line 1428 "src/parser/parser.cc"
+#line 1434 "src/parser/parser.cc"
     break;
 
   case 25: /* Primary: String  */
-#line 175 "parser.y"
+#line 177 "parser.y"
              {
         (yyval.expr) = (yyvsp[0].expr);
       }
-#line 1436 "src/parser/parser.cc"
+#line 1442 "src/parser/parser.cc"
     break;
 
   case 26: /* Primary: LPAREN Expression RPAREN  */
-#line 178 "parser.y"
+#line 180 "parser.y"
                                {
         (yyval.expr) = (yyvsp[-1].expr);
       }
-#line 1444 "src/parser/parser.cc"
+#line 1450 "src/parser/parser.cc"
     break;
 
   case 27: /* Primary: FunctionCallExpression  */
-#line 181 "parser.y"
+#line 183 "parser.y"
                              {
         (yyval.expr) = (yyvsp[0].expr);
       }
-#line 1452 "src/parser/parser.cc"
+#line 1458 "src/parser/parser.cc"
     break;
 
-  case 28: /* Statement: DeclarationExpression SEMICOLON  */
-#line 187 "parser.y"
+  case 28: /* Statement: Expression SEMICOLON  */
+#line 189 "parser.y"
+                           {
+        (yyval.stmt) = new ddlbx::ir::NExpressionStatement(std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-1].expr)));
+      }
+#line 1466 "src/parser/parser.cc"
+    break;
+
+  case 29: /* Statement: DeclarationExpression SEMICOLON  */
+#line 192 "parser.y"
                                       {
         (yyval.stmt) = new ddlbx::ir::NExpressionStatement(std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-1].expr)));
       }
-#line 1460 "src/parser/parser.cc"
+#line 1474 "src/parser/parser.cc"
     break;
 
-  case 29: /* Statement: AssignExpression SEMICOLON  */
-#line 190 "parser.y"
+  case 30: /* Statement: AssignExpression SEMICOLON  */
+#line 195 "parser.y"
                                  {
         (yyval.stmt) = new ddlbx::ir::NExpressionStatement(std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-1].expr)));
       }
-#line 1468 "src/parser/parser.cc"
+#line 1482 "src/parser/parser.cc"
     break;
 
-  case 30: /* Statement: FunctionCallExpression SEMICOLON  */
-#line 193 "parser.y"
-                                       {
-        (yyval.stmt) = new ddlbx::ir::NExpressionStatement(std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-1].expr)));
+  case 34: /* ForStatement: KW_FOR LPAREN Identifier KW_TO Expression RPAREN Block  */
+#line 204 "parser.y"
+                                                             {
+        (yyval.stmt) = new ddlbx::ir::NForStatement(std::shared_ptr<ddlbx::ir::NIdentifier>((yyvsp[-4].identifier)), 
+                                          nullptr,
+                                          std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-2].expr)), 
+                                          nullptr, 
+                                          std::shared_ptr<ddlbx::ir::NBlock>((yyvsp[0].block)));
       }
-#line 1476 "src/parser/parser.cc"
+#line 1494 "src/parser/parser.cc"
     break;
 
-  case 34: /* ForStatement: KW_FOR LPAREN ForInitExpression SEMICOLON Condition SEMICOLON AssignExpression RPAREN Block  */
-#line 202 "parser.y"
-                                                                                                  {
-        (yyval.stmt) = new ddlbx::ir::NForStatement(std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-6].expr)), std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-4].expr)), std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-2].expr)), std::shared_ptr<ddlbx::ir::NBlock>((yyvsp[0].block)));
-      }
-#line 1484 "src/parser/parser.cc"
-    break;
-
-  case 35: /* ForInitExpression: DeclarationExpression  */
-#line 208 "parser.y"
-                            {
-        (yyval.expr) = (yyvsp[0].expr);
-      }
-#line 1492 "src/parser/parser.cc"
-    break;
-
-  case 36: /* ForInitExpression: AssignExpression  */
+  case 35: /* ForStatement: KW_FOR LPAREN Identifier KW_TO Expression KW_STEP Expression RPAREN Block  */
 #line 211 "parser.y"
-                       {
-        (yyval.expr) = (yyvsp[0].expr);
+                                                                                {
+        (yyval.stmt) = new ddlbx::ir::NForStatement(std::shared_ptr<ddlbx::ir::NIdentifier>((yyvsp[-6].identifier)), 
+                                          nullptr, 
+                                          std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-4].expr)), 
+                                          std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-2].expr)), 
+                                          std::shared_ptr<ddlbx::ir::NBlock>((yyvsp[0].block)));
       }
-#line 1500 "src/parser/parser.cc"
+#line 1506 "src/parser/parser.cc"
     break;
 
-  case 37: /* OptStatement: KW_OPT LPAREN Condition RPAREN Block  */
-#line 217 "parser.y"
+  case 36: /* ForStatement: KW_FOR LPAREN Identifier KW_FROM Expression KW_TO Expression KW_STEP Expression RPAREN Block  */
+#line 218 "parser.y"
+                                                                                                   {
+        (yyval.stmt) = new ddlbx::ir::NForStatement(std::shared_ptr<ddlbx::ir::NIdentifier>((yyvsp[-8].identifier)), 
+                                          std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-6].expr)), 
+                                          std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-4].expr)), 
+                                          std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-2].expr)), 
+                                          std::shared_ptr<ddlbx::ir::NBlock>((yyvsp[0].block)));
+      }
+#line 1518 "src/parser/parser.cc"
+    break;
+
+  case 37: /* ForStatement: KW_FOR LPAREN Expression RPAREN Block  */
+#line 225 "parser.y"
+                                            {
+        (yyval.stmt) = new ddlbx::ir::NForStatement(nullptr, nullptr, std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-2].expr)), nullptr, std::shared_ptr<ddlbx::ir::NBlock>((yyvsp[0].block)));
+      }
+#line 1526 "src/parser/parser.cc"
+    break;
+
+  case 38: /* OptStatement: KW_OPT LPAREN Condition RPAREN Block  */
+#line 231 "parser.y"
                                            {
         (yyval.stmt) = new ddlbx::ir::NOptStatement(std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-2].expr)), std::shared_ptr<ddlbx::ir::NBlock>((yyvsp[0].block)));
       }
-#line 1508 "src/parser/parser.cc"
+#line 1534 "src/parser/parser.cc"
     break;
 
-  case 38: /* Block: LBRACE Statements RBRACE  */
-#line 223 "parser.y"
+  case 39: /* Block: LBRACE Statements RBRACE  */
+#line 237 "parser.y"
                                {
         (yyval.block) = (yyvsp[-1].block);
       }
-#line 1516 "src/parser/parser.cc"
+#line 1542 "src/parser/parser.cc"
     break;
 
-  case 39: /* Statements: %empty  */
-#line 229 "parser.y"
+  case 40: /* Statements: %empty  */
+#line 243 "parser.y"
                   {
         (yyval.block) = new ddlbx::ir::NBlock();
       }
-#line 1524 "src/parser/parser.cc"
+#line 1550 "src/parser/parser.cc"
     break;
 
-  case 40: /* Statements: Statements Statement  */
-#line 232 "parser.y"
+  case 41: /* Statements: Statements Statement  */
+#line 246 "parser.y"
                            {
         (yyvsp[-1].block)->statements.push_back((yyvsp[0].stmt));
       }
-#line 1532 "src/parser/parser.cc"
+#line 1558 "src/parser/parser.cc"
     break;
 
-  case 41: /* DeclarationExpression: KW_VAR DeclarationList  */
-#line 238 "parser.y"
+  case 42: /* DeclarationExpression: KW_VAR DeclarationList  */
+#line 252 "parser.y"
                              {
         std::vector<std::shared_ptr<ddlbx::ir::NVariableDeclaration>> *varList = (yyvsp[0].varvec);
         (yyval.expr) = new ddlbx::ir::NVariableDeclarationList(*varList);
       }
-#line 1541 "src/parser/parser.cc"
+#line 1567 "src/parser/parser.cc"
     break;
 
-  case 42: /* DeclarationList: DeclarationList COMMA Identifier  */
-#line 245 "parser.y"
+  case 43: /* DeclarationList: DeclarationList COMMA Identifier  */
+#line 259 "parser.y"
                                        {
         (yyvsp[-2].varvec)->push_back(std::make_shared<ddlbx::ir::NVariableDeclaration>(std::shared_ptr<ddlbx::ir::NIdentifier>((yyvsp[0].identifier)), nullptr));
-      }
-#line 1549 "src/parser/parser.cc"
-    break;
-
-  case 43: /* DeclarationList: DeclarationList COMMA AssignExpression  */
-#line 248 "parser.y"
-                                             {
-        (yyvsp[-2].varvec)->push_back(std::make_shared<ddlbx::ir::NVariableDeclaration>(std::shared_ptr<ddlbx::ir::NAssignment>(dynamic_cast<ddlbx::ir::NAssignment*>((yyvsp[0].expr)))));
-      }
-#line 1557 "src/parser/parser.cc"
-    break;
-
-  case 44: /* DeclarationList: AssignExpression  */
-#line 251 "parser.y"
-                       {
-        (yyval.varvec) = new std::vector<std::shared_ptr<ddlbx::ir::NVariableDeclaration>>();
-        (yyval.varvec)->push_back(std::make_shared<ddlbx::ir::NVariableDeclaration>(std::shared_ptr<ddlbx::ir::NAssignment>(dynamic_cast<ddlbx::ir::NAssignment*>((yyvsp[0].expr)))));
-      }
-#line 1566 "src/parser/parser.cc"
-    break;
-
-  case 45: /* DeclarationList: Identifier  */
-#line 255 "parser.y"
-                 {
-        (yyval.varvec) = new std::vector<std::shared_ptr<ddlbx::ir::NVariableDeclaration>>();
-        (yyval.varvec)->push_back(std::make_shared<ddlbx::ir::NVariableDeclaration>(std::shared_ptr<ddlbx::ir::NIdentifier>((yyvsp[0].identifier)), nullptr));
       }
 #line 1575 "src/parser/parser.cc"
     break;
 
-  case 46: /* AssignExpression: Identifier OP_ASSIGN Expression  */
+  case 44: /* DeclarationList: DeclarationList COMMA AssignExpression  */
 #line 262 "parser.y"
-                                      {
-        (yyval.expr) = new ddlbx::ir::NAssignment(std::shared_ptr<ddlbx::ir::NIdentifier>((yyvsp[-2].identifier)), std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[0].expr)));
+                                             {
+        (yyvsp[-2].varvec)->push_back(std::make_shared<ddlbx::ir::NVariableDeclaration>(std::shared_ptr<ddlbx::ir::NAssignment>(dynamic_cast<ddlbx::ir::NAssignment*>((yyvsp[0].expr)))));
       }
 #line 1583 "src/parser/parser.cc"
     break;
 
-  case 47: /* Expression: Condition OP_AND Expression  */
-#line 268 "parser.y"
+  case 45: /* DeclarationList: AssignExpression  */
+#line 265 "parser.y"
+                       {
+        (yyval.varvec) = new std::vector<std::shared_ptr<ddlbx::ir::NVariableDeclaration>>();
+        (yyval.varvec)->push_back(std::make_shared<ddlbx::ir::NVariableDeclaration>(std::shared_ptr<ddlbx::ir::NAssignment>(dynamic_cast<ddlbx::ir::NAssignment*>((yyvsp[0].expr)))));
+      }
+#line 1592 "src/parser/parser.cc"
+    break;
+
+  case 46: /* DeclarationList: Identifier  */
+#line 269 "parser.y"
+                 {
+        (yyval.varvec) = new std::vector<std::shared_ptr<ddlbx::ir::NVariableDeclaration>>();
+        (yyval.varvec)->push_back(std::make_shared<ddlbx::ir::NVariableDeclaration>(std::shared_ptr<ddlbx::ir::NIdentifier>((yyvsp[0].identifier)), nullptr));
+      }
+#line 1601 "src/parser/parser.cc"
+    break;
+
+  case 47: /* AssignExpression: Identifier OP_ASSIGN Expression  */
+#line 276 "parser.y"
+                                      {
+        (yyval.expr) = new ddlbx::ir::NAssignment(std::shared_ptr<ddlbx::ir::NIdentifier>((yyvsp[-2].identifier)), std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[0].expr)));
+      }
+#line 1609 "src/parser/parser.cc"
+    break;
+
+  case 48: /* Expression: Condition OP_AND Expression  */
+#line 282 "parser.y"
                                   {
         (yyval.expr) = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-2].expr)), (yyvsp[-1].token), std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[0].expr)));
       }
-#line 1591 "src/parser/parser.cc"
+#line 1617 "src/parser/parser.cc"
     break;
 
-  case 48: /* Expression: Condition OP_OR Expression  */
-#line 271 "parser.y"
+  case 49: /* Expression: Condition OP_OR Expression  */
+#line 285 "parser.y"
                                  {
         (yyval.expr) = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-2].expr)), (yyvsp[-1].token), std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[0].expr)));
       }
-#line 1599 "src/parser/parser.cc"
+#line 1625 "src/parser/parser.cc"
     break;
 
-  case 49: /* Expression: Condition  */
-#line 277 "parser.y"
+  case 50: /* Expression: Condition  */
+#line 291 "parser.y"
                 {
         (yyval.expr) = (yyvsp[0].expr);
       }
-#line 1607 "src/parser/parser.cc"
+#line 1633 "src/parser/parser.cc"
     break;
 
-  case 50: /* Condition: Calculation COM_LT Calculation  */
-#line 283 "parser.y"
+  case 51: /* Condition: Calculation COM_LT Calculation  */
+#line 297 "parser.y"
                                      {
         (yyval.expr) = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-2].expr)), (yyvsp[-1].token), std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[0].expr)));
       }
-#line 1615 "src/parser/parser.cc"
+#line 1641 "src/parser/parser.cc"
     break;
 
-  case 51: /* Condition: Calculation COM_GT Calculation  */
-#line 286 "parser.y"
+  case 52: /* Condition: Calculation COM_GT Calculation  */
+#line 300 "parser.y"
                                      {
         (yyval.expr) = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-2].expr)), (yyvsp[-1].token), std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[0].expr)));
       }
-#line 1623 "src/parser/parser.cc"
+#line 1649 "src/parser/parser.cc"
     break;
 
-  case 52: /* Condition: Calculation COM_EQ Calculation  */
-#line 289 "parser.y"
+  case 53: /* Condition: Calculation COM_EQ Calculation  */
+#line 303 "parser.y"
                                      {
         (yyval.expr) = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-2].expr)), (yyvsp[-1].token), std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[0].expr)));
       }
-#line 1631 "src/parser/parser.cc"
+#line 1657 "src/parser/parser.cc"
     break;
 
-  case 53: /* Condition: Calculation COM_LE Calculation  */
-#line 292 "parser.y"
+  case 54: /* Condition: Calculation COM_LE Calculation  */
+#line 306 "parser.y"
                                      {
         (yyval.expr) = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-2].expr)), (yyvsp[-1].token), std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[0].expr)));
       }
-#line 1639 "src/parser/parser.cc"
+#line 1665 "src/parser/parser.cc"
     break;
 
-  case 54: /* Condition: Calculation COM_GE Calculation  */
-#line 295 "parser.y"
+  case 55: /* Condition: Calculation COM_GE Calculation  */
+#line 309 "parser.y"
                                      {
         (yyval.expr) = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-2].expr)), (yyvsp[-1].token), std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[0].expr)));
       }
-#line 1647 "src/parser/parser.cc"
+#line 1673 "src/parser/parser.cc"
     break;
 
-  case 55: /* Condition: Calculation COM_NE Calculation  */
-#line 298 "parser.y"
+  case 56: /* Condition: Calculation COM_NE Calculation  */
+#line 312 "parser.y"
                                      {
         (yyval.expr) = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-2].expr)), (yyvsp[-1].token), std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[0].expr)));
       }
-#line 1655 "src/parser/parser.cc"
+#line 1681 "src/parser/parser.cc"
     break;
 
-  case 56: /* Condition: Calculation  */
-#line 301 "parser.y"
+  case 57: /* Condition: Calculation  */
+#line 315 "parser.y"
                   {
         (yyval.expr) = (yyvsp[0].expr);
       }
-#line 1663 "src/parser/parser.cc"
+#line 1689 "src/parser/parser.cc"
     break;
 
-  case 57: /* Calculation: Term  */
-#line 307 "parser.y"
+  case 58: /* Calculation: Term  */
+#line 321 "parser.y"
            {
         (yyval.expr) = (yyvsp[0].expr);
       }
-#line 1671 "src/parser/parser.cc"
+#line 1697 "src/parser/parser.cc"
     break;
 
-  case 58: /* Calculation: Calculation OP_PLUS Term  */
-#line 310 "parser.y"
+  case 59: /* Calculation: Calculation OP_PLUS Term  */
+#line 324 "parser.y"
                                {
         (yyval.expr) = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-2].expr)), (yyvsp[-1].token), std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[0].expr)));
       }
-#line 1679 "src/parser/parser.cc"
+#line 1705 "src/parser/parser.cc"
     break;
 
-  case 59: /* Calculation: Calculation OP_MINUS Term  */
-#line 313 "parser.y"
+  case 60: /* Calculation: Calculation OP_MINUS Term  */
+#line 327 "parser.y"
                                 {
         (yyval.expr) = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-2].expr)), (yyvsp[-1].token), std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[0].expr)));
       }
-#line 1687 "src/parser/parser.cc"
+#line 1713 "src/parser/parser.cc"
     break;
 
-  case 60: /* Term: Factor  */
-#line 319 "parser.y"
+  case 61: /* Term: Factor  */
+#line 333 "parser.y"
              {
         (yyval.expr) = (yyvsp[0].expr);
       }
-#line 1695 "src/parser/parser.cc"
+#line 1721 "src/parser/parser.cc"
     break;
 
-  case 61: /* Term: Term OP_MULT Factor  */
-#line 322 "parser.y"
+  case 62: /* Term: Term OP_MULT Factor  */
+#line 336 "parser.y"
                           {
         (yyval.expr) = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-2].expr)), (yyvsp[-1].token), std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[0].expr)));
       }
-#line 1703 "src/parser/parser.cc"
+#line 1729 "src/parser/parser.cc"
     break;
 
-  case 62: /* Term: Term OP_DIV Factor  */
-#line 325 "parser.y"
+  case 63: /* Term: Term OP_DIV Factor  */
+#line 339 "parser.y"
                          {
         (yyval.expr) = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[-2].expr)), (yyvsp[-1].token), std::shared_ptr<ddlbx::ir::NExpression>((yyvsp[0].expr)));
       }
-#line 1711 "src/parser/parser.cc"
+#line 1737 "src/parser/parser.cc"
     break;
 
-  case 63: /* Factor: Identifier  */
-#line 331 "parser.y"
+  case 64: /* Factor: Identifier  */
+#line 345 "parser.y"
                  {
         (yyval.expr) = (yyvsp[0].identifier);
       }
-#line 1719 "src/parser/parser.cc"
+#line 1745 "src/parser/parser.cc"
     break;
 
-  case 64: /* Factor: Numeric  */
-#line 334 "parser.y"
+  case 65: /* Factor: Numeric  */
+#line 348 "parser.y"
               {
         (yyval.expr) = (yyvsp[0].expr);
       }
-#line 1727 "src/parser/parser.cc"
+#line 1753 "src/parser/parser.cc"
     break;
 
-  case 65: /* Factor: Boolean  */
-#line 337 "parser.y"
+  case 66: /* Factor: Boolean  */
+#line 351 "parser.y"
               {
         (yyval.expr) = (yyvsp[0].expr);
       }
-#line 1735 "src/parser/parser.cc"
+#line 1761 "src/parser/parser.cc"
     break;
 
-  case 66: /* Factor: String  */
-#line 340 "parser.y"
+  case 67: /* Factor: String  */
+#line 354 "parser.y"
              {
         (yyval.expr) = (yyvsp[0].expr);
       }
-#line 1743 "src/parser/parser.cc"
+#line 1769 "src/parser/parser.cc"
     break;
 
-  case 67: /* Factor: LPAREN Expression RPAREN  */
-#line 343 "parser.y"
+  case 68: /* Factor: LPAREN Expression RPAREN  */
+#line 357 "parser.y"
                                {
         (yyval.expr) = (yyvsp[-1].expr);
       }
-#line 1751 "src/parser/parser.cc"
+#line 1777 "src/parser/parser.cc"
     break;
 
-  case 68: /* Factor: FunctionCallExpression  */
-#line 346 "parser.y"
+  case 69: /* Factor: FunctionCallExpression  */
+#line 360 "parser.y"
                              {
         (yyval.expr) = (yyvsp[0].expr);
       }
-#line 1759 "src/parser/parser.cc"
+#line 1785 "src/parser/parser.cc"
     break;
 
-  case 69: /* Factor: MemberAccessExpression  */
-#line 349 "parser.y"
+  case 70: /* Factor: MemberAccessExpression  */
+#line 363 "parser.y"
                              {
         (yyval.expr) = (yyvsp[0].expr);
       }
-#line 1767 "src/parser/parser.cc"
+#line 1793 "src/parser/parser.cc"
     break;
 
-  case 70: /* Identifier: IDENTIFIER  */
-#line 355 "parser.y"
+  case 71: /* Identifier: IDENTIFIER  */
+#line 369 "parser.y"
                  {
         (yyval.identifier) = new ddlbx::ir::NIdentifier(*((yyvsp[0].string)));
         delete (yyvsp[0].string);
       }
-#line 1776 "src/parser/parser.cc"
+#line 1802 "src/parser/parser.cc"
     break;
 
-  case 71: /* Numeric: NUMBER  */
-#line 362 "parser.y"
+  case 72: /* Numeric: NUMBER  */
+#line 376 "parser.y"
              {
         (yyval.expr) = new ddlbx::ir::NInteger(atol((yyvsp[0].string)->c_str()));
       }
-#line 1784 "src/parser/parser.cc"
+#line 1810 "src/parser/parser.cc"
     break;
 
-  case 72: /* Numeric: FRAC_NUMBER  */
-#line 365 "parser.y"
+  case 73: /* Numeric: FRAC_NUMBER  */
+#line 379 "parser.y"
                   {
         (yyval.expr) = new ddlbx::ir::NFloat(atof((yyvsp[0].string)->c_str()));
       }
-#line 1792 "src/parser/parser.cc"
+#line 1818 "src/parser/parser.cc"
     break;
 
-  case 73: /* Boolean: BOOL  */
-#line 371 "parser.y"
+  case 74: /* Boolean: BOOL  */
+#line 385 "parser.y"
            {
         (yyval.expr) = new ddlbx::ir::NBoolean(*(yyvsp[0].string));
       }
-#line 1800 "src/parser/parser.cc"
+#line 1826 "src/parser/parser.cc"
     break;
 
-  case 74: /* String: STRING  */
-#line 377 "parser.y"
+  case 75: /* String: STRING  */
+#line 391 "parser.y"
              {
         (yyval.expr) = new ddlbx::ir::NString(*(yyvsp[0].string));
       }
-#line 1808 "src/parser/parser.cc"
+#line 1834 "src/parser/parser.cc"
     break;
 
-  case 75: /* Type: KW_INT  */
-#line 383 "parser.y"
+  case 76: /* Type: KW_INT  */
+#line 397 "parser.y"
              {
         (yyval.type) = new ddlbx::ir::NType(*(yyvsp[0].string));
       }
-#line 1816 "src/parser/parser.cc"
+#line 1842 "src/parser/parser.cc"
     break;
 
-  case 76: /* Type: KW_FLOAT  */
-#line 386 "parser.y"
+  case 77: /* Type: KW_FLOAT  */
+#line 400 "parser.y"
                {
         (yyval.type) = new ddlbx::ir::NType(*(yyvsp[0].string));
       }
-#line 1824 "src/parser/parser.cc"
+#line 1850 "src/parser/parser.cc"
     break;
 
-  case 77: /* Type: KW_NONE  */
-#line 389 "parser.y"
+  case 78: /* Type: KW_NONE  */
+#line 403 "parser.y"
               {
         (yyval.type) = new ddlbx::ir::NType(*(yyvsp[0].string));
       }
-#line 1832 "src/parser/parser.cc"
+#line 1858 "src/parser/parser.cc"
     break;
 
-  case 78: /* Type: KW_BOOL  */
-#line 392 "parser.y"
+  case 79: /* Type: KW_BOOL  */
+#line 406 "parser.y"
               {
         (yyval.type) = new ddlbx::ir::NType(*(yyvsp[0].string));
       }
-#line 1840 "src/parser/parser.cc"
+#line 1866 "src/parser/parser.cc"
     break;
 
-  case 79: /* Type: KW_STRING  */
-#line 395 "parser.y"
+  case 80: /* Type: KW_STRING  */
+#line 409 "parser.y"
                 {
         (yyval.type) = new ddlbx::ir::NType(*(yyvsp[0].string));
       }
-#line 1848 "src/parser/parser.cc"
+#line 1874 "src/parser/parser.cc"
     break;
 
 
-#line 1852 "src/parser/parser.cc"
+#line 1878 "src/parser/parser.cc"
 
       default: break;
     }
@@ -2041,11 +2067,11 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 399 "parser.y"
+#line 413 "parser.y"
   
 
 void yyerror(const char *s) {
-    std::cout << "Error: " << s << " at line " << yylineno << ", near '" << yytext << "'\n\n";
+    ddlbx::utility::Logger::error("Error: " + std::string(s) + " at " + std::to_string(yylineno) + ":" + std::to_string(yycolumn) + " near " + std::string(yytext));
     return;
 }
 

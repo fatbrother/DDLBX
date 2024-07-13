@@ -222,11 +222,13 @@ public:
 
 class NForStatement : public NStatement {
 public:
+    std::shared_ptr<NIdentifier> iterator;
     std::shared_ptr<NExpression> init;
     std::shared_ptr<NExpression> condition;
     std::shared_ptr<NExpression> increment;
     std::shared_ptr<NBlock> block;
-    NForStatement(std::shared_ptr<NExpression> init, std::shared_ptr<NExpression> condition, std::shared_ptr<NExpression> increment, std::shared_ptr<NBlock> block) : init(init), condition(condition), increment(increment), block(block) {}
+    NForStatement(std::shared_ptr<NIdentifier>iterator, std::shared_ptr<NExpression> init, std::shared_ptr<NExpression> condition, 
+                  std::shared_ptr<NExpression> increment, std::shared_ptr<NBlock> block) : iterator(iterator), init(init), condition(condition), increment(increment), block(block) {}
     virtual llvm::Value* codeGen(CodeGenContext& context);
 };
 
