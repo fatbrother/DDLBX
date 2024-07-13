@@ -31,6 +31,10 @@ include_directories(${CMAKE_SOURCE_DIR}/lib/googletest/googletest/include)
 set(LLVM_DIR ${CMAKE_SOURCE_DIR}/lib/llvm-project/llvm/build/lib/cmake/llvm)
 find_package(LLVM REQUIRED CONFIG PATHS ${LLVM_DIR})
 
+# if BUILD_TYPE is Debug, add DDLBX_DEBUG
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_definitions(-DDDLBX_DEBUG)
+endif()
 
 file(GLOB SOURCES src/**/*.cc src/*.cc)
 add_executable(ddlbx ddlbx.cc ${SOURCES})
@@ -44,7 +48,7 @@ target_include_directories(ddlbx PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
 target_include_directories(ddlbx PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include/parser)
 
 # unit tests
-file(GLOB TESTS test/*.cc test/**/*.cc  src/**/*.cc src/*.cc)
+file(GLOB TESTS test/*.cc test/ir/*.cc  src/**/*.cc src/*.cc)
 add_executable(ddlbx_test ${TESTS})
 
 #include headers

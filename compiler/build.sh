@@ -12,7 +12,7 @@ create_parser() {
     echo "Parser created"
 }
 
-DEBUG=false
+BUILD_TYPE=Release
 
 while getopts "pd" opt; do
     case $opt in
@@ -20,7 +20,7 @@ while getopts "pd" opt; do
             create_parser
             ;;
         d)
-            DEBUG=true
+            BUILD_TYPE=Debug
             ;;
         \?)
             echo "Invalid option: -$OPTARG" >&2
@@ -32,5 +32,5 @@ mkdir -p $root_path/build
 mkdir -p $root_path/build/bin
 
 # Build
-cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Release
+cmake -S . -B ./build -DCMAKE_BUILD_TYPE=$BUILD_TYPE
 cmake --build ./build --config Release
