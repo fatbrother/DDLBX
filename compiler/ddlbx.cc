@@ -77,6 +77,8 @@ int main(int argc, char** argv) {
 
     program->codeGen(codeGenContext);
 
+    delete program;
+
     // optimize module
     llvm::legacy::PassManager passManager;
     passManager.add(llvm::createPromoteMemoryToRegisterPass());

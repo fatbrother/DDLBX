@@ -43,7 +43,7 @@ ddlbx::ir::NProgram* program;
 %token <token>  KW_RETURN KW_FUNCTION KW_VAR KW_OPT KW_FOR
 
 %token <token> COM_EQ COM_NE COM_LE COM_GE COM_LT COM_GT
-%token <token> OP_ASSIGN OP_PLUS OP_MINUS OP_MULT OP_DIV
+%token <token> OP_ASSIGN OP_PLUS OP_MINUS OP_MULT OP_DIV OP_AND OP_OR OP_NOT
 %token <token> LPAREN RPAREN LBRACE RBRACE
 %token <token> SEMICOLON COMMA COLON DOT
 
@@ -51,7 +51,7 @@ ddlbx::ir::NProgram* program;
 %type <stmtvec> GlobalStatements
 %type <block> Block Statements
 %type <stmt> Statement GlobalStatement FunctionDeclaration FunctionDefinition OptStatement ForStatement ReturnStatement
-%type <expr> Condition Expression Term Factor Numeric Boolean String AssignExpression FunctionCallExpression DeclarationExpression FPDeclaration ForInitExpression Primary MemberAccessExpression
+%type <expr> Expression Condition Calculation Term Factor Numeric Boolean String AssignExpression FunctionCallExpression DeclarationExpression FPDeclaration ForInitExpression Primary MemberAccessExpression
 %type <varvec> DeclarationList
 %type <argvec> FPDeclarationList
 %type <exprvec> FCParameterList
@@ -264,34 +264,53 @@ AssignExpression:
       }
     ;
 
-Condition:
-      Expression COM_LT Expression {
+Expression:
+      Condition OP_AND Expression {
         $$ = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>($1), $2, std::shared_ptr<ddlbx::ir::NExpression>($3));
       }
-    | Expression COM_GT Expression {
+    | Condition OP_OR Expression {
         $$ = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>($1), $2, std::shared_ptr<ddlbx::ir::NExpression>($3));
       }
-    | Expression COM_EQ Expression {
-        $$ = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>($1), $2, std::shared_ptr<ddlbx::ir::NExpression>($3));
-      }
-    | Expression COM_LE Expression {
-        $$ = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>($1), $2, std::shared_ptr<ddlbx::ir::NExpression>($3));
-      }
-    | Expression COM_GE Expression {
-        $$ = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>($1), $2, std::shared_ptr<ddlbx::ir::NExpression>($3));
-      }
-    | Expression COM_NE Expression {
-        $$ = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>($1), $2, std::shared_ptr<ddlbx::ir::NExpression>($3));
+    /* | OP_NOT LogicalExpression {
+        $$ = new ddlbx::ir::NUnaryOperator($1, std::shared_ptr<ddlbx::ir::NExpression>($2));
+      } */
+    | Condition {
+        $$ = $1;
       }
     ;
-Expression:
+
+Condition:
+      Calculation COM_LT Calculation {
+        $$ = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>($1), $2, std::shared_ptr<ddlbx::ir::NExpression>($3));
+      }
+    | Calculation COM_GT Calculation {
+        $$ = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>($1), $2, std::shared_ptr<ddlbx::ir::NExpression>($3));
+      }
+    | Calculation COM_EQ Calculation {
+        $$ = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>($1), $2, std::shared_ptr<ddlbx::ir::NExpression>($3));
+      }
+    | Calculation COM_LE Calculation {
+        $$ = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>($1), $2, std::shared_ptr<ddlbx::ir::NExpression>($3));
+      }
+    | Calculation COM_GE Calculation {
+        $$ = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>($1), $2, std::shared_ptr<ddlbx::ir::NExpression>($3));
+      }
+    | Calculation COM_NE Calculation {
+        $$ = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>($1), $2, std::shared_ptr<ddlbx::ir::NExpression>($3));
+      }
+    | Calculation {
+        $$ = $1;
+      }
+    ;
+
+Calculation:
       Term {
         $$ = $1;
       }
-    | Expression OP_PLUS Term {
+    | Calculation OP_PLUS Term {
         $$ = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>($1), $2, std::shared_ptr<ddlbx::ir::NExpression>($3));
       }
-    | Expression OP_MINUS Term {
+    | Calculation OP_MINUS Term {
         $$ = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>($1), $2, std::shared_ptr<ddlbx::ir::NExpression>($3));
       }
     ;

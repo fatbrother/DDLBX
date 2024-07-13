@@ -80,6 +80,7 @@ llvm::Value* NVariableDeclaration::codeGen(CodeGenContext& context) {
     llvm::Type* type = value->getType();
     std::string name = id->name;
     llvm::Value* ptr = context.getBuilder().CreateAlloca(type, nullptr, name.c_str());
+    context.getBuilder().CreateStore(value, ptr);
     context.setVariable(name, {type, ptr});
     return value;
 }
@@ -97,24 +98,43 @@ llvm::Value* NBinaryOperator::codeGen(CodeGenContext& context) {
     switch (op) {
         case OP_PLUS:
             result = context.getBuilder().CreateAdd(lvalue, rvalue);
+            break;
         case OP_MINUS:
             result = context.getBuilder().CreateSub(lvalue, rvalue);
+            break;
         case OP_MULT:
             result = context.getBuilder().CreateMul(lvalue, rvalue);
+            break;
         case OP_DIV:
             result = context.getBuilder().CreateSDiv(lvalue, rvalue);
+            break;
+        case OP_AND:
+            result = context.getBuilder().CreateAnd(lvalue, rvalue);
+            break;
+        case OP_OR:
+            result = context.getBuilder().CreateOr(lvalue, rvalue);
+            break;
+        case OP_NOT:
+            result = context.getBuilder().CreateNot(lvalue);
+            break;
         case COM_EQ:
             result = context.getBuilder().CreateICmpEQ(lvalue, rvalue);
+            break;
         case COM_NE:
             result = context.getBuilder().CreateICmpNE(lvalue, rvalue);
+            break;
         case COM_LE:
             result = context.getBuilder().CreateICmpSLE(lvalue, rvalue);
+            break;
         case COM_GE:
             result = context.getBuilder().CreateICmpSGE(lvalue, rvalue);
+            break;
         case COM_LT:
             result = context.getBuilder().CreateICmpSLT(lvalue, rvalue);
+            break;
         case COM_GT:
             result = context.getBuilder().CreateICmpSGT(lvalue, rvalue);
+            break;
         default:
             throw std::runtime_error("Invalid binary operator");
     }
@@ -261,13 +281,14 @@ llvm::Value* NOptStatement::codeGen(CodeGenContext& context) {
     llvm::Value* conditionValue = condition->codeGen(context);
     llvm::Function* function = context.getBuilder().GetInsertBlock()->getParent();
     llvm::BasicBlock* thenBlock = llvm::BasicBlock::Create(context.getContext(), "then", function);
-    llvm::BasicBlock* mergeBlock = llvm::BasicBlock::Create(context.getContext(), "ifcont");
+    llvm::BasicBlock* mergeBlock = llvm::BasicBlock::Create(context.getContext(), "ifcont", function);
 
     context.getBuilder().CreateCondBr(conditionValue, thenBlock, mergeBlock);
 
     context.getBuilder().SetInsertPoint(thenBlock);
-    thenBlock = then->codeGen(context) ? thenBlock : context.getBuilder().GetInsertBlock();
-    context.getBuilder().CreateBr(mergeBlock);
+    then->codeGen(context);
+
+    context.getBuilder().SetInsertPoint(mergeBlock);
 
     return nullptr;
 }
@@ -275,7 +296,7 @@ llvm::Value* NOptStatement::codeGen(CodeGenContext& context) {
 llvm::Value* NForStatement::codeGen(CodeGenContext& context) {
     llvm::Function* function = context.getBuilder().GetInsertBlock()->getParent();
     llvm::BasicBlock* loopBlock = llvm::BasicBlock::Create(context.getContext(), "loop", function);
-    llvm::BasicBlock* afterBlock = llvm::BasicBlock::Create(context.getContext(), "afterloop");
+    llvm::BasicBlock* afterBlock = llvm::BasicBlock::Create(context.getContext(), "afterloop", function);
 
     if (init) {
         init->codeGen(context);

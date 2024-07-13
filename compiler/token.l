@@ -2,15 +2,16 @@
 #include <string>
 #include <iostream>
 #include "ir/node.hpp"
+#include "utils/log.hpp"
 #include "parser/parser.hpp"
 
 #define SAVE_TOKEN yylval.string = new std::string(yytext)
 #define TOKEN(t) yylval.token = t; return t
+#define YYTEXT_STR std::string(yytext)
 
 extern int yylineno;
 extern char* yytext;
 int yycolumn = 1;
-
 
 %}
 
@@ -31,53 +32,58 @@ int yycolumn = 1;
 <MULTI_COMMENT>\*+[^*/]* { ; }
 <MULTI_COMMENT>\*+\/ { BEGIN 0; }
 
-"opt"           { TOKEN(KW_OPT); }
-"for"           { TOKEN(KW_FOR); }
-"ret"           { TOKEN(KW_RETURN); }
-"fun"           { TOKEN(KW_FUNCTION); }
-"var"           { TOKEN(KW_VAR); }
+"opt"           { ddlbx::utility::Log::log("TOKEN: KW_OPT");      TOKEN(KW_OPT); }
+"for"           { ddlbx::utility::Log::log("TOKEN: KW_FOR");      TOKEN(KW_FOR); }
+"ret"           { ddlbx::utility::Log::log("TOKEN: KW_RETURN");   TOKEN(KW_RETURN); }
+"fun"           { ddlbx::utility::Log::log("TOKEN: KW_FUNCTION"); TOKEN(KW_FUNCTION); }
+"var"           { ddlbx::utility::Log::log("TOKEN: KW_VAR");      TOKEN(KW_VAR); }
 
-"Int"           { SAVE_TOKEN; return KW_INT;   }
-"Flt"           { SAVE_TOKEN; return KW_FLOAT; }
-"Boo"           { SAVE_TOKEN; return KW_BOOL;  }
-"Str"           { SAVE_TOKEN; return KW_STRING; }
-"Non"           { SAVE_TOKEN; return KW_NONE;  }
+"Int"           { SAVE_TOKEN; ddlbx::utility::Log::log("TOKEN: KW_INT");      return KW_INT;   }
+"Flt"           { SAVE_TOKEN; ddlbx::utility::Log::log("TOKEN: KW_FLOAT");    return KW_FLOAT; }
+"Boo"           { SAVE_TOKEN; ddlbx::utility::Log::log("TOKEN: KW_BOOL");     return KW_BOOL;  }
+"Str"           { SAVE_TOKEN; ddlbx::utility::Log::log("TOKEN: KW_STRING");   return KW_STRING; }
+"Non"           { SAVE_TOKEN; ddlbx::utility::Log::log("TOKEN: KW_NONE");     return KW_NONE;  }
 
-"true"                   { SAVE_TOKEN;         return BOOL; }
-"false"                  { SAVE_TOKEN;         return BOOL; }
-"maybe"                  { SAVE_TOKEN;         return BOOL; }
-[0-9]+                   { SAVE_TOKEN;         return NUMBER; }
-[0-9]+"."[0-9]*          { SAVE_TOKEN;         return FRAC_NUMBER; }
-[A-Za-z_][A-Za-z0-9_]*   { SAVE_TOKEN;         return IDENTIFIER; }
-\'[^"]*\'                { SAVE_TOKEN;         return STRING; }
+"and"           { ddlbx::utility::Log::log("TOKEN: AND");  TOKEN(OP_AND); }
+"or"            { ddlbx::utility::Log::log("TOKEN: OR");   TOKEN(OP_OR);  }
+"not"           { ddlbx::utility::Log::log("TOKEN: NOT");  TOKEN(OP_NOT); }
 
-"=="            { TOKEN(COM_EQ); }
-"<="            { TOKEN(COM_LE); }
-">="            { TOKEN(COM_GE); }
-"<>"            { TOKEN(COM_NE); }
+"true"                   { SAVE_TOKEN;     ddlbx::utility::Log::log("TOKEN: BOOL " + YYTEXT_STR);         return BOOL; }
+"false"                  { SAVE_TOKEN;     ddlbx::utility::Log::log("TOKEN: BOOL " + YYTEXT_STR);         return BOOL; }
+"maybe"                  { SAVE_TOKEN;     ddlbx::utility::Log::log("TOKEN: BOOL " + YYTEXT_STR);         return BOOL; }
+[0-9]+                   { SAVE_TOKEN;     ddlbx::utility::Log::log("TOKEN: INT " + YYTEXT_STR);          return NUMBER; }
+[0-9]+"."[0-9]*          { SAVE_TOKEN;     ddlbx::utility::Log::log("TOKEN: FLOAT " + YYTEXT_STR);        return FRAC_NUMBER; }
+[A-Za-z_][A-Za-z0-9_]*   { SAVE_TOKEN;     ddlbx::utility::Log::log("TOKEN: IDENTIFIER " + YYTEXT_STR);   return IDENTIFIER; }
+\'[^"]*\'                { SAVE_TOKEN;     ddlbx::utility::Log::log("TOKEN: STRING " + YYTEXT_STR);       return STRING; }
 
-"<"             { TOKEN(COM_LT);  }
-">"             { TOKEN(COM_GT);  }
 
-"="             { TOKEN(OP_ASSIGN); }
-"+"             { TOKEN(OP_PLUS);   }
-"-"             { TOKEN(OP_MINUS);  }
-"*"             { TOKEN(OP_MULT);   }
-"/"             { TOKEN(OP_DIV);    }
+"=="            { ddlbx::utility::Log::log("TOKEN: EQ");   TOKEN(COM_EQ); }
+"<="            { ddlbx::utility::Log::log("TOKEN: LE");   TOKEN(COM_LE); }
+">="            { ddlbx::utility::Log::log("TOKEN: GE");   TOKEN(COM_GE); }
+"<>"            { ddlbx::utility::Log::log("TOKEN: NE");   TOKEN(COM_NE); }
 
-"("             { TOKEN(LPAREN); }
-")"             { TOKEN(RPAREN); }
-"{"             { TOKEN(LBRACE); }
-"}"             { TOKEN(RBRACE); }
+"<"             { ddlbx::utility::Log::log("TOKEN: '<'");  TOKEN(COM_LT);  }
+">"             { ddlbx::utility::Log::log("TOKEN: '>'");  TOKEN(COM_GT);  }
 
-","             { TOKEN(COMMA);    }
-":"             { TOKEN(COLON); }
-"!"             { TOKEN(SEMICOLON); }
+"="             { ddlbx::utility::Log::log("TOKEN: '='");  TOKEN(OP_ASSIGN); }
+"+"             { ddlbx::utility::Log::log("TOKEN: '+'");  TOKEN(OP_PLUS);   }
+"-"             { ddlbx::utility::Log::log("TOKEN: '-'");  TOKEN(OP_MINUS);  }
+"*"             { ddlbx::utility::Log::log("TOKEN: '*'");  TOKEN(OP_MULT);   }
+"/"             { ddlbx::utility::Log::log("TOKEN: '/'");  TOKEN(OP_DIV);    }
+
+"("             { ddlbx::utility::Log::log("TOKEN: '('");  TOKEN(LPAREN); }
+")"             { ddlbx::utility::Log::log("TOKEN: ')'");  TOKEN(RPAREN); }
+"{"             { ddlbx::utility::Log::log("TOKEN: '{'");  TOKEN(LBRACE); }
+"}"             { ddlbx::utility::Log::log("TOKEN: '}'");  TOKEN(RBRACE); }
+
+","             { ddlbx::utility::Log::log("TOKEN: ','");  TOKEN(COMMA);    }
+":"             { ddlbx::utility::Log::log("TOKEN: ':'");  TOKEN(COLON); }
+"!"             { ddlbx::utility::Log::log("TOKEN: '!'");  TOKEN(SEMICOLON); }
 
 
 [ \t\r]+        { ; }
 \n              { yycolumn = 1; }
 
-.               { std::cout << "unknown token: " << yytext << "\n"; yyterminate(); }
+.               { ddlbx::utility::Log::log("unknown token: " + YYTEXT_STR + "\n"); yyterminate(); }
 
 %%

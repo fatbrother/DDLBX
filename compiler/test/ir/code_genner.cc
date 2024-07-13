@@ -1,35 +1,40 @@
-#include "ir/code_genner.hpp"
-
 #include <gtest/gtest.h>
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
 
-#include <tao/pegtl.hpp>
-#include <tao/pegtl/contrib/parse_tree.hpp>
+#include "ir/node.hpp"
+#include "ir/code_gen_context.hpp"
+#include "parser/parser.hpp"
 
-#include "parser/grammar.hpp"
-#include "parser/selector.hpp"
-
-using namespace ddlbx::ir;
-using namespace tao::pegtl;
+extern ddlbx::ir::NProgram* program;
+typedef struct yy_buffer_state * YY_BUFFER_STATE;
+extern int yyparse();
+extern YY_BUFFER_STATE yy_scan_string(const char * str);
+extern YY_BUFFER_STATE yy_switch_to_buffer(YY_BUFFER_STATE buffer);
+extern void yy_delete_buffer(YY_BUFFER_STATE buffer);
 
 class CodeGennerTest : public ::testing::Test {
 protected:
     llvm::LLVMContext context;
     llvm::Module module;
-    CodeGenner codeGenner;
+    ddlbx::ir::CodeGenContext codeGenContext;
 
-    CodeGennerTest() : module("test", context), codeGenner(context, module) {}
+    CodeGennerTest() : module("test", context), codeGenContext(context, module) {}
 
     void SetUp() override {}
 
     // Helper function to generate LLVM IR code from a block
     void generate(const std::string& input) {
-        memory_input<> in(input, "test");
-        const auto root = parse_tree::parse<ddlbx::parser::Program, ddlbx::parser::Selector>(in);
-        codeGenner.generate(root->children[0]);
+        YY_BUFFER_STATE my_string_buffer = yy_scan_string(input.c_str()); 
+        yy_switch_to_buffer( my_string_buffer );
+        yyparse(); 
+        yy_delete_buffer(my_string_buffer );
+
+        program->codeGen(codeGenContext);
+
+        delete program;
     }
 };
 
@@ -202,7 +207,9 @@ TEST_F(CodeGennerTest, OperatorPriority) {
 TEST_F(CodeGennerTest, GenerateConditional) {
     const std::string input = R"(
         fun main(): Int {
-            opt (1) ret 1!
+            opt (1) {
+                ret 1!
+            }
 
             ret 0!
         }
@@ -237,6 +244,14 @@ TEST_F(CodeGennerTest, GenerateConditional) {
     llvm::BasicBlock* elseBlock = branchInst->getSuccessor(1);
     ASSERT_NE(nullptr, elseBlock);
     EXPECT_EQ(1, elseBlock->size());
+
+    // Assuming the first instruction in the merge block is a return instruction
+    llvm::BasicBlock* mergeBlock = &testFunction->back();
+    ASSERT_NE(nullptr, mergeBlock);
+    EXPECT_EQ(1, mergeBlock->size());
+    llvm::ReturnInst* mergeRetInst = llvm::dyn_cast<llvm::ReturnInst>(&mergeBlock->front());
+    ASSERT_NE(nullptr, mergeRetInst);
+    EXPECT_EQ(0, llvm::cast<llvm::ConstantInt>(mergeRetInst->getReturnValue())->getSExtValue());
 }
 
 TEST_F(CodeGennerTest, GenerateLoop) {
