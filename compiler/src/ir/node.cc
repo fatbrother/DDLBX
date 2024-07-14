@@ -142,7 +142,22 @@ llvm::Value* NBinaryOperator::codeGen(CodeGenContext& context) {
             result = context.getBuilder().CreateICmpSGT(lvalue, rvalue);
             break;
         default:
-            throw std::runtime_error("Invalid binary operator");
+            Logger::error("Invalid binary operator");
+    }
+
+    return result;
+}
+
+llvm::Value* NUnaryOperator::codeGen(CodeGenContext& context) {
+    llvm::Value* value = expr->codeGen(context);
+    llvm::Value* result = nullptr;
+
+    switch (op) {
+        case OP_NOT:
+            result = context.getBuilder().CreateNot(value);
+            break;
+        default:
+            Logger::error("Invalid unary operator");
     }
 
     return result;

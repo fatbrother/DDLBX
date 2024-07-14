@@ -151,6 +151,15 @@ public:
     virtual std::string getType() override { return "NBinaryOperator"; }
 };
 
+class NUnaryOperator : public NExpression {
+public:
+    int op;
+    std::shared_ptr<NExpression> expr;
+    NUnaryOperator(int op, std::shared_ptr<NExpression> expr) : op(op), expr(expr) {}
+    virtual llvm::Value* codeGen(CodeGenContext& context) override;
+    virtual std::string getType() override { return "NUnaryOperator"; }
+};
+
 class NArgument : public NExpression {
 public:
     std::shared_ptr<NType> type;

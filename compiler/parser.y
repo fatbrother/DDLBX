@@ -285,9 +285,9 @@ Expression:
     | Condition OP_OR Expression {
         $$ = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>($1), $2, std::shared_ptr<ddlbx::ir::NExpression>($3));
       }
-    /* | OP_NOT LogicalExpression {
+    | OP_NOT Expression {
         $$ = new ddlbx::ir::NUnaryOperator($1, std::shared_ptr<ddlbx::ir::NExpression>($2));
-      } */
+      }
     | Condition {
         $$ = $1;
       }
