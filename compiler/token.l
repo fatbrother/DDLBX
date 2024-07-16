@@ -37,6 +37,7 @@ int yycolumn = 1;
 "ret"           { ddlbx::utility::Logger::info("TOKEN: KW_RETURN");   TOKEN(KW_RETURN); }
 "fun"           { ddlbx::utility::Logger::info("TOKEN: KW_FUNCTION"); TOKEN(KW_FUNCTION); }
 "var"           { ddlbx::utility::Logger::info("TOKEN: KW_VAR");      TOKEN(KW_VAR); }
+"obj"           { ddlbx::utility::Logger::info("TOKEN: KW_OBJECT");   TOKEN(KW_OBJECT); }
 
 "Int"           { SAVE_TOKEN; ddlbx::utility::Logger::info("TOKEN: KW_INT");      return KW_INT;   }
 "Flt"           { SAVE_TOKEN; ddlbx::utility::Logger::info("TOKEN: KW_FLOAT");    return KW_FLOAT; }

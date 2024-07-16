@@ -31,17 +31,19 @@ ddlbx::ir::NProgram* program;
     ddlbx::ir::NExpression *expr;
     ddlbx::ir::NStatement *stmt;
     ddlbx::ir::NIdentifier *identifier;
+    ddlbx::ir::NMemberDeclaration *member;
     std::vector<std::shared_ptr<ddlbx::ir::NStatement>> *stmtvec;
     std::vector<std::shared_ptr<ddlbx::ir::NVariableDeclaration>> *varvec;
     std::vector<std::shared_ptr<ddlbx::ir::NArgument>> *argvec;
     std::vector<std::shared_ptr<ddlbx::ir::NExpression>> *exprvec;
+    std::vector<std::shared_ptr<ddlbx::ir::NMemberDeclaration>> *membervec;
     std::string *string;
     int token;
 }
 
 %token <string> NUMBER FRAC_NUMBER IDENTIFIER STRING BOOL
 %token <string> KW_NONE KW_INT KW_FLOAT KW_BOOL KW_STRING 
-%token <token>  KW_RETURN KW_FUNCTION KW_VAR KW_OPT KW_FOR
+%token <token>  KW_RETURN KW_FUNCTION KW_VAR KW_OPT KW_FOR KW_OBJECT
 
 %token <token> COM_EQ COM_NE COM_LE COM_GE COM_LT COM_GT
 %token <token> OP_ASSIGN OP_PLUS OP_MINUS OP_MULT OP_DIV OP_AND OP_OR OP_NOT
@@ -52,11 +54,13 @@ ddlbx::ir::NProgram* program;
 %type <program> Program
 %type <stmtvec> GlobalStatements
 %type <block> Block Statements
-%type <stmt> Statement GlobalStatement FunctionDeclaration FunctionDefinition OptStatement ForStatement ReturnStatement
+%type <stmt> Statement GlobalStatement FunctionDeclaration FunctionDefinition OptStatement ForStatement ReturnStatement ObjectDeclaration
 %type <expr> Expression Condition Calculation Term Factor Numeric Boolean String AssignExpression FunctionCallExpression DeclarationExpression FPDeclaration Primary MemberAccessExpression
 %type <varvec> DeclarationList
 %type <argvec> FPDeclarationList
 %type <exprvec> FCParameterList
+%type <membervec> MemberDeclarationList
+%type <member> MemberDeclaration
 %type <identifier> Identifier
 %type <type> Type
 
@@ -84,6 +88,7 @@ GlobalStatements:
 
 GlobalStatement:
       FunctionDeclaration
+    | ObjectDeclaration
     | FunctionDefinition SEMICOLON {
         $$ = $1;
       }
@@ -120,6 +125,30 @@ FPDeclarationList:
 FPDeclaration:
       Identifier COLON Type {
         $$ = new ddlbx::ir::NArgument(std::shared_ptr<ddlbx::ir::NType>($3), std::shared_ptr<ddlbx::ir::NIdentifier>($1));
+      }
+    ;
+
+ObjectDeclaration:
+      KW_OBJECT Identifier LBRACE MemberDeclarationList RBRACE {
+        $$ = new ddlbx::ir::NObjectDeclaration(std::shared_ptr<ddlbx::ir::NIdentifier>($2), *$4);
+      }
+
+MemberDeclaration:
+      Identifier COLON Type {
+        $$ = new ddlbx::ir::NMemberDeclaration(std::shared_ptr<ddlbx::ir::NType>($3), std::shared_ptr<ddlbx::ir::NIdentifier>($1));
+      }
+    ;
+
+MemberDeclarationList:
+      /* empty */ {
+        $$ = new std::vector<std::shared_ptr<ddlbx::ir::NMemberDeclaration>>();
+      }
+    | MemberDeclarationList COMMA MemberDeclaration {
+        $1->push_back(std::shared_ptr<ddlbx::ir::NMemberDeclaration>($3));
+      }
+    | MemberDeclaration {
+        $$ = new std::vector<std::shared_ptr<ddlbx::ir::NMemberDeclaration>>();
+        $$->push_back(std::shared_ptr<ddlbx::ir::NMemberDeclaration>($1));
       }
     ;
 

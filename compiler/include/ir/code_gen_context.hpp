@@ -42,6 +42,10 @@ public:
         return types[name].type;
     }
 
+    void addType(const std::string &name, llvm::Type *type, const std::unordered_map<std::string, llvm::Type *> &nameTypeMap) {
+        types[name] = {name, type, nameTypeMap};
+    }
+
     std::string getTypeName(llvm::Type *type) {
         for (auto &[name, t] : types) {
             if (t.type == type) return t.name;

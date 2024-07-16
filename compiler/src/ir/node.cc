@@ -358,3 +358,42 @@ llvm::Value* NForStatement::codeGen(CodeGenContext& context) {
 
     return nullptr;
 }
+
+llvm::Value* NObjectDeclaration::codeGen(CodeGenContext& context) {
+    llvm::StructType* structType = llvm::StructType::create(context.getContext(), id->name);
+    std::unordered_map<std::string, llvm::Type*> nameTypeMap;
+    std::vector<llvm::Type*> memberTypes;
+
+    for (const auto& member : members) {
+        memberTypes.push_back(member->type->codeGen(context));
+        nameTypeMap[member->id->name] = memberTypes.back();
+    }
+
+    structType->setBody(memberTypes);
+
+    context.addType(id->name, structType, nameTypeMap);
+
+    // create constructor
+    std::vector<llvm::Type*> argTypes;
+    for (const auto& member : members) {
+        argTypes.push_back(member->type->codeGen(context));
+    }
+
+    llvm::FunctionType* constructorType = llvm::FunctionType::get(structType, argTypes, false);
+    llvm::Function* constructor = llvm::Function::Create(constructorType, llvm::Function::ExternalLinkage, id->name, context.getModule());
+    llvm::BasicBlock* block = llvm::BasicBlock::Create(context.getContext(), "entry", constructor, 0);
+    context.getBuilder().SetInsertPoint(block);
+    llvm::Value* structValue = context.getBuilder().CreateAlloca(structType, nullptr, id->name);
+
+    auto argIt = constructor->arg_begin();
+    for (auto it = memberTypes.begin(); it != memberTypes.end(); it++) {
+        llvm::Value* value = &*argIt;
+        llvm::Value* ptr = context.getBuilder().CreateStructGEP(structType, structValue, std::distance(memberTypes.begin(), it));
+        context.getBuilder().CreateStore(value, ptr);
+        argIt++;
+    }
+
+    context.getBuilder().CreateRet(structValue);
+
+    return nullptr;
+}

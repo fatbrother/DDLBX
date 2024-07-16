@@ -7,6 +7,9 @@
 #include <vector>
 
 #include "ir/code_gen_context.hpp"
+#include "utils/logger.hpp"
+
+using namespace ddlbx::utility;
 
 namespace ddlbx::ir {
 
@@ -174,7 +177,9 @@ public:
     std::shared_ptr<NType> retType;
     std::shared_ptr<NIdentifier> id;
     std::vector<std::shared_ptr<NArgument>> arguments;
-    NFunctionDefinition(std::shared_ptr<NType> type, std::shared_ptr<NIdentifier> id, std::vector<std::shared_ptr<NArgument>> arguments) : retType(type), id(id), arguments(arguments) {}
+    NFunctionDefinition(std::shared_ptr<NType> type, 
+                        std::shared_ptr<NIdentifier> id, 
+                        std::vector<std::shared_ptr<NArgument>> arguments) : retType(type), id(id), arguments(arguments) {}
     virtual llvm::Value* codeGen(CodeGenContext& context) override;
     virtual std::string getType() override { return "NFunctionDeclaration"; }
 };
@@ -238,6 +243,25 @@ public:
     std::shared_ptr<NBlock> block;
     NForStatement(std::shared_ptr<NIdentifier>iterator, std::shared_ptr<NExpression> init, std::shared_ptr<NExpression> condition, 
                   std::shared_ptr<NExpression> increment, std::shared_ptr<NBlock> block) : iterator(iterator), init(init), condition(condition), increment(increment), block(block) {}
+    virtual llvm::Value* codeGen(CodeGenContext& context);
+};
+
+class NMemberDeclaration : public NStatement {
+public:
+    std::shared_ptr<NType> type;
+    std::shared_ptr<NIdentifier> id;
+    NMemberDeclaration(std::shared_ptr<NType> type, std::shared_ptr<NIdentifier> id) : type(type), id(id) {}
+    virtual llvm::Value* codeGen(CodeGenContext& context) { 
+        Logger::error("NMemberDeclaration::codeGen() should not be called");
+        return nullptr; 
+    }
+};
+
+class NObjectDeclaration : public NStatement {
+public:
+    std::shared_ptr<NIdentifier> id;
+    std::vector<std::shared_ptr<NMemberDeclaration>> members;
+    NObjectDeclaration(std::shared_ptr<NIdentifier> id, std::vector<std::shared_ptr<NMemberDeclaration>> members) : id(id), members(members) {}
     virtual llvm::Value* codeGen(CodeGenContext& context);
 };
 

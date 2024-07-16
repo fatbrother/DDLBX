@@ -69,31 +69,32 @@ extern int yydebug;
     KW_VAR = 270,                  /* KW_VAR  */
     KW_OPT = 271,                  /* KW_OPT  */
     KW_FOR = 272,                  /* KW_FOR  */
-    COM_EQ = 273,                  /* COM_EQ  */
-    COM_NE = 274,                  /* COM_NE  */
-    COM_LE = 275,                  /* COM_LE  */
-    COM_GE = 276,                  /* COM_GE  */
-    COM_LT = 277,                  /* COM_LT  */
-    COM_GT = 278,                  /* COM_GT  */
-    OP_ASSIGN = 279,               /* OP_ASSIGN  */
-    OP_PLUS = 280,                 /* OP_PLUS  */
-    OP_MINUS = 281,                /* OP_MINUS  */
-    OP_MULT = 282,                 /* OP_MULT  */
-    OP_DIV = 283,                  /* OP_DIV  */
-    OP_AND = 284,                  /* OP_AND  */
-    OP_OR = 285,                   /* OP_OR  */
-    OP_NOT = 286,                  /* OP_NOT  */
-    LPAREN = 287,                  /* LPAREN  */
-    RPAREN = 288,                  /* RPAREN  */
-    LBRACE = 289,                  /* LBRACE  */
-    RBRACE = 290,                  /* RBRACE  */
-    SEMICOLON = 291,               /* SEMICOLON  */
-    COMMA = 292,                   /* COMMA  */
-    COLON = 293,                   /* COLON  */
-    DOT = 294,                     /* DOT  */
-    KW_FROM = 295,                 /* KW_FROM  */
-    KW_TO = 296,                   /* KW_TO  */
-    KW_STEP = 297                  /* KW_STEP  */
+    KW_OBJECT = 273,               /* KW_OBJECT  */
+    COM_EQ = 274,                  /* COM_EQ  */
+    COM_NE = 275,                  /* COM_NE  */
+    COM_LE = 276,                  /* COM_LE  */
+    COM_GE = 277,                  /* COM_GE  */
+    COM_LT = 278,                  /* COM_LT  */
+    COM_GT = 279,                  /* COM_GT  */
+    OP_ASSIGN = 280,               /* OP_ASSIGN  */
+    OP_PLUS = 281,                 /* OP_PLUS  */
+    OP_MINUS = 282,                /* OP_MINUS  */
+    OP_MULT = 283,                 /* OP_MULT  */
+    OP_DIV = 284,                  /* OP_DIV  */
+    OP_AND = 285,                  /* OP_AND  */
+    OP_OR = 286,                   /* OP_OR  */
+    OP_NOT = 287,                  /* OP_NOT  */
+    LPAREN = 288,                  /* LPAREN  */
+    RPAREN = 289,                  /* RPAREN  */
+    LBRACE = 290,                  /* LBRACE  */
+    RBRACE = 291,                  /* RBRACE  */
+    SEMICOLON = 292,               /* SEMICOLON  */
+    COMMA = 293,                   /* COMMA  */
+    COLON = 294,                   /* COLON  */
+    DOT = 295,                     /* DOT  */
+    KW_FROM = 296,                 /* KW_FROM  */
+    KW_TO = 297,                   /* KW_TO  */
+    KW_STEP = 298                  /* KW_STEP  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -110,14 +111,16 @@ union YYSTYPE
     ddlbx::ir::NExpression *expr;
     ddlbx::ir::NStatement *stmt;
     ddlbx::ir::NIdentifier *identifier;
+    ddlbx::ir::NMemberDeclaration *member;
     std::vector<std::shared_ptr<ddlbx::ir::NStatement>> *stmtvec;
     std::vector<std::shared_ptr<ddlbx::ir::NVariableDeclaration>> *varvec;
     std::vector<std::shared_ptr<ddlbx::ir::NArgument>> *argvec;
     std::vector<std::shared_ptr<ddlbx::ir::NExpression>> *exprvec;
+    std::vector<std::shared_ptr<ddlbx::ir::NMemberDeclaration>> *membervec;
     std::string *string;
     int token;
 
-#line 121 "include/parser/parser.hpp"
+#line 124 "include/parser/parser.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;
