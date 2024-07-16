@@ -416,9 +416,8 @@ TEST_F(CodeGennerTest, GenerateObject) {
     EXPECT_TRUE(aType->isIntegerTy());
 
     // check if factory function is generated
-    llvm::Function* factoryFunction = module.getFunction("Test_factory");
+    llvm::Function* factoryFunction = module.getFunction("Test");
     ASSERT_NE(nullptr, factoryFunction);
-    EXPECT_EQ("Test_factory", factoryFunction->getName().str());
     EXPECT_EQ(1, factoryFunction->arg_size());
 }
 
