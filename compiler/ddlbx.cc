@@ -71,6 +71,10 @@ int main(int argc, char** argv) {
 
     file.close();
 
+    if (nullptr == program) {
+        return 1;
+    }
+
     llvm::LLVMContext context;
     llvm::Module module("main", context);
     ddlbx::ir::CodeGenContext codeGenContext(context, module);
