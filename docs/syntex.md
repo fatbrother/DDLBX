@@ -241,7 +241,7 @@ fun a(): Int {
 You can also use `=>` to declare a function.
 
 ```ddlbx
-fun add(a: Int, b: Int ): Int => ret a + b!
+fun add(a: Int, b: Int ): Int => a + b!
 ```
 
 ## Objects
