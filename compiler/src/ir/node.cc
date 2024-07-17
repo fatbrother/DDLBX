@@ -171,17 +171,17 @@ llvm::Value* NFunctionDefinition::codeGen(CodeGenContext& context) {
     }
 
     llvm::FunctionType* functionType = llvm::FunctionType::get(retType->codeGen(context), argTypes, false);
-    llvm::Function* function = llvm::Function::Create(functionType, llvm::Function::ExternalLinkage, id->name.c_str(), context.getModule());
+    llvm::Function* function = llvm::Function::Create(functionType, llvm::Function::ExternalLinkage, name.c_str(), context.getModule());
 
     return nullptr;
 }
 
 llvm::Value* NFunctionDeclaration::codeGen(CodeGenContext& context) {
-    llvm::Function* function = context.getModule().getFunction(this->definition->id->name.c_str());
+    llvm::Function* function = context.getModule().getFunction(this->definition->name.c_str());
 
     if (!function) {
         this->definition->codeGen(context);
-        function = context.getModule().getFunction(this->definition->id->name.c_str());
+        function = context.getModule().getFunction(this->definition->name.c_str());
 
         if (!function) {
             throw std::runtime_error("Function not found");
@@ -193,10 +193,10 @@ llvm::Value* NFunctionDeclaration::codeGen(CodeGenContext& context) {
 
     auto argIt = this->definition->arguments.begin();
     for (auto it = function->arg_begin(); it != function->arg_end(); it++) {
-        it->setName((*argIt)->id->name.c_str());
-        llvm::AllocaInst* inst = context.getBuilder().CreateAlloca((*argIt)->type->codeGen(context), nullptr, (*argIt)->id->name.c_str());
+        it->setName((*argIt)->name.c_str());
+        llvm::AllocaInst* inst = context.getBuilder().CreateAlloca((*argIt)->type->codeGen(context), nullptr, (*argIt)->name.c_str());
         context.getBuilder().CreateStore(&*it, inst);
-        context.setVariable((*argIt)->id->name, {(*argIt)->type->codeGen(context), inst});
+        context.setVariable((*argIt)->name, {(*argIt)->type->codeGen(context), inst});
         argIt++;
     }
 
@@ -257,7 +257,7 @@ llvm::Value* NFunctionCall::codeGen(CodeGenContext& context) {
         std::string parentTypeName = context.getTypeName(parentType);
         std::string name = id->name;
         
-        fullName = parentTypeName == "" ? name : parentTypeName + "_" + name;
+        fullName = parentTypeName == "" ? name : parentTypeName + "." + name;
     }
 
     llvm::Function* targetFunction = context.getModule().getFunction(fullName);
@@ -360,18 +360,18 @@ llvm::Value* NForStatement::codeGen(CodeGenContext& context) {
 }
 
 llvm::Value* NObjectDeclaration::codeGen(CodeGenContext& context) {
-    llvm::StructType* structType = llvm::StructType::create(context.getContext(), id->name);
+    llvm::StructType* structType = llvm::StructType::create(context.getContext(), name);
     std::unordered_map<std::string, llvm::Type*> nameTypeMap;
     std::vector<llvm::Type*> memberTypes;
 
     for (const auto& member : members) {
         memberTypes.push_back(member->type->codeGen(context));
-        nameTypeMap[member->id->name] = memberTypes.back();
+        nameTypeMap[member->name] = memberTypes.back();
     }
 
     structType->setBody(memberTypes);
 
-    context.addType(id->name, structType, nameTypeMap);
+    context.addType(name, structType, nameTypeMap);
 
     // create constructor
     std::vector<llvm::Type*> argTypes;
@@ -380,10 +380,10 @@ llvm::Value* NObjectDeclaration::codeGen(CodeGenContext& context) {
     }
 
     llvm::FunctionType* constructorType = llvm::FunctionType::get(structType, argTypes, false);
-    llvm::Function* constructor = llvm::Function::Create(constructorType, llvm::Function::ExternalLinkage, id->name, context.getModule());
+    llvm::Function* constructor = llvm::Function::Create(constructorType, llvm::Function::ExternalLinkage, name, context.getModule());
     llvm::BasicBlock* block = llvm::BasicBlock::Create(context.getContext(), "entry", constructor, 0);
     context.getBuilder().SetInsertPoint(block);
-    llvm::Value* structValue = context.getBuilder().CreateAlloca(structType, nullptr, id->name);
+    llvm::Value* structValue = context.getBuilder().CreateAlloca(structType, nullptr, name);
 
     auto argIt = constructor->arg_begin();
     for (auto it = memberTypes.begin(); it != memberTypes.end(); it++) {
@@ -394,6 +394,20 @@ llvm::Value* NObjectDeclaration::codeGen(CodeGenContext& context) {
     }
 
     context.getBuilder().CreateRet(structValue);
+
+    return nullptr;
+}
+
+llvm::Value* NMethodDeclaration::codeGen(CodeGenContext& context) {
+    if (nullptr == context.getType(name)) {
+        Logger::error("Type \"" + name + "\" is not defined");
+        return nullptr;
+    }
+
+    llvm::StructType* structType = llvm::cast<llvm::StructType>(context.getType(name));
+    declaration->definition->arguments.push_back(std::make_shared<NArgument>(std::make_shared<NType>(name), "this"));
+    declaration->definition->name = name + "." + declaration->definition->name;
+    declaration->codeGen(context);
 
     return nullptr;
 }

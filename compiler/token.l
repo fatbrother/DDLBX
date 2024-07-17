@@ -84,7 +84,7 @@ int yycolumn = 1;
 ","             { ddlbx::utility::Logger::info("TOKEN: ','");  TOKEN(COMMA);    }
 ":"             { ddlbx::utility::Logger::info("TOKEN: ':'");  TOKEN(COLON); }
 "!"             { ddlbx::utility::Logger::info("TOKEN: '!'");  TOKEN(SEMICOLON); }
-
+"."             { ddlbx::utility::Logger::info("TOKEN: '.'");  TOKEN(DOT); }
 
 [ \t\r]+        { ; }
 \n              { yycolumn = 1; }

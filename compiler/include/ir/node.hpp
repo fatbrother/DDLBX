@@ -166,8 +166,8 @@ public:
 class NArgument : public NExpression {
 public:
     std::shared_ptr<NType> type;
-    std::shared_ptr<NIdentifier> id;
-    NArgument(std::shared_ptr<NType> type, std::shared_ptr<NIdentifier> id) : type(type), id(id) {}
+    std::string name;
+    NArgument(std::shared_ptr<NType> type, std::string name) : type(type), name(name) {}
     virtual llvm::Value* codeGen(CodeGenContext& context) override { return nullptr; }
     virtual std::string getType() override { return "NArgument"; }
 };
@@ -175,11 +175,11 @@ public:
 class NFunctionDefinition : public NStatement {
 public:
     std::shared_ptr<NType> retType;
-    std::shared_ptr<NIdentifier> id;
+    std::string name;
     std::vector<std::shared_ptr<NArgument>> arguments;
     NFunctionDefinition(std::shared_ptr<NType> type, 
-                        std::shared_ptr<NIdentifier> id, 
-                        std::vector<std::shared_ptr<NArgument>> arguments) : retType(type), id(id), arguments(arguments) {}
+                        std::string name,
+                        std::vector<std::shared_ptr<NArgument>> arguments) : retType(type), name(name), arguments(arguments) {}
     virtual llvm::Value* codeGen(CodeGenContext& context) override;
     virtual std::string getType() override { return "NFunctionDeclaration"; }
 };
@@ -249,8 +249,8 @@ public:
 class NMemberDeclaration : public NStatement {
 public:
     std::shared_ptr<NType> type;
-    std::shared_ptr<NIdentifier> id;
-    NMemberDeclaration(std::shared_ptr<NType> type, std::shared_ptr<NIdentifier> id) : type(type), id(id) {}
+    std::string name;
+    NMemberDeclaration(std::shared_ptr<NType> type, std::string name) : type(type), name(name) {}
     virtual llvm::Value* codeGen(CodeGenContext& context) { 
         Logger::error("NMemberDeclaration::codeGen() should not be called");
         return nullptr; 
@@ -259,9 +259,17 @@ public:
 
 class NObjectDeclaration : public NStatement {
 public:
-    std::shared_ptr<NIdentifier> id;
+    std::string name;
     std::vector<std::shared_ptr<NMemberDeclaration>> members;
-    NObjectDeclaration(std::shared_ptr<NIdentifier> id, std::vector<std::shared_ptr<NMemberDeclaration>> members) : id(id), members(members) {}
+    NObjectDeclaration(std::string name, std::vector<std::shared_ptr<NMemberDeclaration>> members) : name(name), members(members) {}
+    virtual llvm::Value* codeGen(CodeGenContext& context);
+};
+
+class NMethodDeclaration : public NStatement {
+public:
+    std::string name;
+    std::shared_ptr<NFunctionDeclaration> declaration;
+    NMethodDeclaration(std::string name, std::shared_ptr<NFunctionDeclaration> declaration) : name(name), declaration(declaration) {}
     virtual llvm::Value* codeGen(CodeGenContext& context);
 };
 

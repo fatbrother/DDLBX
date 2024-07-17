@@ -54,7 +54,7 @@ ddlbx::ir::NProgram* program;
 %type <program> Program
 %type <stmtvec> GlobalStatements
 %type <block> Block Statements
-%type <stmt> Statement GlobalStatement FunctionDeclaration FunctionDefinition OptStatement ForStatement ReturnStatement ObjectDeclaration
+%type <stmt> Statement GlobalStatement FunctionDeclaration FunctionDefinition OptStatement ForStatement ReturnStatement ObjectDeclaration MethodDeclaration
 %type <expr> Expression Condition Calculation Term Factor Numeric Boolean String AssignExpression FunctionCallExpression DeclarationExpression FPDeclaration Primary MemberAccessExpression
 %type <varvec> DeclarationList
 %type <argvec> FPDeclarationList
@@ -87,17 +87,18 @@ GlobalStatements:
     ;
 
 GlobalStatement:
-      FunctionDeclaration
-    | ObjectDeclaration
-    | FunctionDefinition SEMICOLON {
+      FunctionDefinition SEMICOLON {
         $$ = $1;
       }
+    | MethodDeclaration
+    | FunctionDeclaration
+    | ObjectDeclaration
     ;
 
 FunctionDefinition:
-      KW_FUNCTION Identifier LPAREN FPDeclarationList RPAREN COLON Type {
+      KW_FUNCTION IDENTIFIER LPAREN FPDeclarationList RPAREN COLON Type {
         $$ = new ddlbx::ir::NFunctionDefinition(std::shared_ptr<ddlbx::ir::NType>($7), 
-                                                std::shared_ptr<ddlbx::ir::NIdentifier>($2), 
+                                                *$2,
                                                 *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>($4)));
       }
     ;
@@ -123,19 +124,19 @@ FPDeclarationList:
     ;
 
 FPDeclaration:
-      Identifier COLON Type {
-        $$ = new ddlbx::ir::NArgument(std::shared_ptr<ddlbx::ir::NType>($3), std::shared_ptr<ddlbx::ir::NIdentifier>($1));
+      IDENTIFIER COLON Type {
+        $$ = new ddlbx::ir::NArgument(std::shared_ptr<ddlbx::ir::NType>($3), *$1);
       }
     ;
 
 ObjectDeclaration:
-      KW_OBJECT Identifier LBRACE MemberDeclarationList RBRACE {
-        $$ = new ddlbx::ir::NObjectDeclaration(std::shared_ptr<ddlbx::ir::NIdentifier>($2), *$4);
+      KW_OBJECT IDENTIFIER LBRACE MemberDeclarationList RBRACE {
+        $$ = new ddlbx::ir::NObjectDeclaration(*$2, *$4);
       }
 
 MemberDeclaration:
-      Identifier COLON Type {
-        $$ = new ddlbx::ir::NMemberDeclaration(std::shared_ptr<ddlbx::ir::NType>($3), std::shared_ptr<ddlbx::ir::NIdentifier>($1));
+      IDENTIFIER COLON Type {
+        $$ = new ddlbx::ir::NMemberDeclaration(std::shared_ptr<ddlbx::ir::NType>($3), *$1);
       }
     ;
 
@@ -151,6 +152,16 @@ MemberDeclarationList:
         $$->push_back(std::shared_ptr<ddlbx::ir::NMemberDeclaration>($1));
       }
     ;
+
+MethodDeclaration:
+      KW_FUNCTION IDENTIFIER DOT IDENTIFIER LPAREN FPDeclarationList RPAREN COLON Type Block {
+        ddlbx::ir::NFunctionDefinition *funcDef = new ddlbx::ir::NFunctionDefinition(std::shared_ptr<ddlbx::ir::NType>($9), 
+                                                                        *$4, 
+                                                                        *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>($6)));
+        ddlbx::ir::NFunctionDeclaration *funcDecl = new ddlbx::ir::NFunctionDeclaration(std::shared_ptr<ddlbx::ir::NFunctionDefinition>(funcDef), 
+                                                                           std::shared_ptr<ddlbx::ir::NBlock>($10));
+        $$ = new ddlbx::ir::NMethodDeclaration(*$2, std::shared_ptr<ddlbx::ir::NFunctionDeclaration>(funcDecl));
+      }
 
 ReturnStatement:
       KW_RETURN Expression SEMICOLON {
