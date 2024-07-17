@@ -34,6 +34,10 @@ protected:
         yyparse(); 
         yy_delete_buffer(my_string_buffer );
 
+        if (program == nullptr) {
+            FAIL() << "Failed to parse the input";
+        }
+
         program->codeGen(codeGenContext);
 
         delete program;
@@ -435,7 +439,7 @@ TEST_F(CodeGennerTest, GenerateObjectWithMethod) {
     generate(input);
 
     // Assuming the test function is declared in the module
-    llvm::Function* testFunction = module.getFunction("Test_test");
+    llvm::Function* testFunction = module.getFunction("Test.test");
 
     ASSERT_NE(nullptr, testFunction);
 
@@ -461,7 +465,7 @@ TEST_F(CodeGennerTest, GenerateMemberAccessInMethod) {
     generate(input);
 
     // Assuming the test function is declared in the module
-    llvm::Function* testFunction = module.getFunction("Test_test");
+    llvm::Function* testFunction = module.getFunction("Test.test");
     ASSERT_NE(nullptr, testFunction);
 
     // Assuming the test function has a single basic block
@@ -517,7 +521,7 @@ TEST_F(CodeGennerTest, GenerateMethodCall) {
     ASSERT_NE(nullptr, callInst);
 
     // Assuming the called function is Test_test
-    EXPECT_EQ("Test_test", callInst->getCalledFunction()->getName().str());
+    EXPECT_EQ("Test.test", callInst->getCalledFunction()->getName().str());
 }
 
 TEST_F(CodeGennerTest, GenerateTraitFunction) {
@@ -535,7 +539,7 @@ TEST_F(CodeGennerTest, GenerateTraitFunction) {
     )";
     generate(input);
 
-    llvm::Function* testFunction = module.getFunction("Test_test");
+    llvm::Function* testFunction = module.getFunction("Test.test");
     ASSERT_NE(nullptr, testFunction);
 
     // Assuming the test function has a single basic block
