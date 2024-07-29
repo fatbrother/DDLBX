@@ -98,7 +98,8 @@ llvm::Value* NBinaryOperator::codeGen(CodeGenContext& context) {
 
     if (lvalue->getType() != rvalue->getType()) {
         // TODO: Implement type coercion
-        throw std::runtime_error("Type mismatch");
+        Logger::error("Type mismatch");
+        return nullptr;
     }
 
     switch (op) {
@@ -240,47 +241,14 @@ llvm::Value* NMemberAccess::codeGen(CodeGenContext& context) {
 }
 
 llvm::Value* NFunctionCall::codeGen(CodeGenContext& context) {
-    if (id->name == "sizeof" && !parent) {
+    if (name == "sizeof" && !parent) {
         if (arguments.size() != 1) {
-            throw std::runtime_error("sizeof function takes exactly one argument");
+            Logger::error("Function \"sizeof\" expects 1 argument, but " + std::to_string(arguments.size()) + " were provided");
+            return nullptr;
         }
         llvm::Value* value = arguments[0]->codeGen(context);
         llvm::Type* type = value->getType();
         return llvm::ConstantInt::get(type, type->getPrimitiveSizeInBits() / 8);
-    }
-
-    std::string fullName = id->name;
-    llvm::Value* parentValue = nullptr;
-    if (parent) {
-        parentValue = parent->codeGen(context);
-        llvm::Type* parentType = parentValue->getType();
-        std::string parentTypeName = context.getTypeName(parentType);
-        std::string name = id->name;
-        
-        fullName = parentTypeName == "" ? name : parentTypeName + "." + name;
-    }
-
-    llvm::Function* targetFunction = context.getModule().getFunction(fullName);
-    if (!targetFunction) {
-        // TODO: Implement template functions
-        // if (functionMap.find(name) != functionMap.end()) {
-        //     for (const auto& funcHandler : functionMap[name]) {
-        //         FunctionHandler& targetFuncHandler = *funcHandler;
-        //         try {
-        //             generateFunctionDeclaration(targetFuncHandler, parentTypeName);
-        //             targetFunction = context.getModule().getFunction(fullName);
-        //         } catch (std::exception& e) {
-        //             continue;
-        //         }
-        //         break;
-        //     }
-        //     if (!targetFunction) {
-        //         throw std::runtime_error("There is no function comforming to " + fullName);
-        //     }
-        // } else {
-        //     throw std::runtime_error(fullName + " is not defined");
-        // }
-        throw std::runtime_error(fullName + " is not defined");
     }
 
     std::vector<llvm::Value*> argValues;
@@ -288,12 +256,33 @@ llvm::Value* NFunctionCall::codeGen(CodeGenContext& context) {
         argValues.push_back(arg->codeGen(context));
     }
 
+    std::string fullName = name;
+    llvm::Value* parentValue = nullptr;
+    if (parent) {
+        parentValue = parent->codeGen(context);
+        if (!parentValue) {
+            Logger::error("Parent value code generation failed");
+            return nullptr;
+        }
+        llvm::Type* parentType = parentValue->getType();
+        std::string parentTypeName = context.getTypeName(parentType);
+        
+        fullName = parentTypeName + "." + name;
+    }
+
+    llvm::Function* targetFunction = context.getModule().getFunction(fullName);
+    if (!targetFunction) {
+        Logger::error("Function " + fullName + " not found");
+        return nullptr;
+    }
+
     if (parentValue) {
         argValues.push_back(parentValue);
     }
 
     if (targetFunction->arg_size() != argValues.size()) {
-        throw std::runtime_error("Function " + fullName + " expects " + std::to_string(targetFunction->arg_size()) + " arguments, but " + std::to_string(argValues.size()) + " were provided");
+        Logger::error("Function " + fullName + " expects " + std::to_string(targetFunction->arg_size()) + " arguments, but " + std::to_string(argValues.size()) + " were provided");
+        return nullptr;
     }
 
     return context.getBuilder().CreateCall(targetFunction, argValues);

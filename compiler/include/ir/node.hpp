@@ -213,14 +213,14 @@ public:
 class NFunctionCall : public NExpression {
 public:
     std::shared_ptr<NMemberAccess> parent;
-    std::shared_ptr<NIdentifier> id;
+    std::string name;
     std::vector<std::shared_ptr<NExpression>> arguments;
     NFunctionCall(std::shared_ptr<NMemberAccess> parent,
-                  std::vector<std::shared_ptr<NExpression>> arguments) : parent(parent), id(parent->ids.back()), arguments(arguments) {
+                  std::vector<std::shared_ptr<NExpression>> arguments) : parent(parent), name(parent->ids.back()->name), arguments(arguments) {
         parent->ids.pop_back();
     }
-    NFunctionCall(std::shared_ptr<NIdentifier> id,
-                  std::vector<std::shared_ptr<NExpression>> arguments) : id(id), arguments(arguments) {}
+    NFunctionCall(std::string name,
+                  std::vector<std::shared_ptr<NExpression>> arguments) : name(name), arguments(arguments) {}
     virtual llvm::Value* codeGen(CodeGenContext& context) override;
     virtual std::string getType() override { return "NFunctionCall"; }
 };
