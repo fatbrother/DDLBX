@@ -39,12 +39,6 @@ int yycolumn = 1;
 "var"           { ddlbx::utility::Logger::info("TOKEN: KW_VAR");      TOKEN(KW_VAR); }
 "obj"           { ddlbx::utility::Logger::info("TOKEN: KW_OBJECT");   TOKEN(KW_OBJECT); }
 
-"Int"           { SAVE_TOKEN; ddlbx::utility::Logger::info("TOKEN: KW_INT");      return KW_INT;   }
-"Flt"           { SAVE_TOKEN; ddlbx::utility::Logger::info("TOKEN: KW_FLOAT");    return KW_FLOAT; }
-"Boo"           { SAVE_TOKEN; ddlbx::utility::Logger::info("TOKEN: KW_BOOL");     return KW_BOOL;  }
-"Str"           { SAVE_TOKEN; ddlbx::utility::Logger::info("TOKEN: KW_STRING");   return KW_STRING; }
-"Non"           { SAVE_TOKEN; ddlbx::utility::Logger::info("TOKEN: KW_NONE");     return KW_NONE;  }
-
 "and"           { ddlbx::utility::Logger::info("TOKEN: AND");  TOKEN(OP_AND); }
 "or"            { ddlbx::utility::Logger::info("TOKEN: OR");   TOKEN(OP_OR);  }
 "not"           { ddlbx::utility::Logger::info("TOKEN: NOT");  TOKEN(OP_NOT); }

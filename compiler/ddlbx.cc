@@ -10,7 +10,6 @@
 
 #include "ir/node.hpp"
 #include "ir/code_gen_context.hpp"
-#include "parser/parser.hpp"
 #include "pass/object_genner.hpp"
 
 #include <iostream>

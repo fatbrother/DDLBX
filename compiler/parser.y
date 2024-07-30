@@ -4,6 +4,7 @@
 #include <vector>
 #include "ir/node.hpp"
 #include "utils/logger.hpp"
+#include "parser/parser.hpp"
 
 #define YYERROR_VERBOSE 1
 
@@ -37,12 +38,12 @@ ddlbx::ir::NProgram* program;
     std::vector<std::shared_ptr<ddlbx::ir::NArgument>> *argvec;
     std::vector<std::shared_ptr<ddlbx::ir::NExpression>> *exprvec;
     std::vector<std::shared_ptr<ddlbx::ir::NMemberDeclaration>> *membervec;
+    std::vector<std::string> *stringvec;
     std::string *string;
     int token;
 }
 
 %token <string> NUMBER FRAC_NUMBER IDENTIFIER STRING BOOL
-%token <string> KW_NONE KW_INT KW_FLOAT KW_BOOL KW_STRING 
 %token <token>  KW_RETURN KW_FUNCTION KW_VAR KW_OPT KW_FOR KW_OBJECT
 
 %token <token> COM_EQ COM_NE COM_LE COM_GE COM_LT COM_GT
@@ -55,10 +56,11 @@ ddlbx::ir::NProgram* program;
 %type <stmtvec> GlobalStatements
 %type <block> Block Statements
 %type <stmt> Statement GlobalStatement FunctionDeclaration FunctionDefinition OptStatement ForStatement ReturnStatement ObjectDeclaration MethodDeclaration
-%type <expr> Expression Condition Calculation Term Factor Numeric Boolean String AssignExpression FunctionCallExpression DeclarationExpression FPDeclaration Primary MemberAccessExpression
+%type <expr> Expression Condition Calculation Term Factor Numeric Boolean String AssignExpression FunctionCallExpression DeclarationExpression FPDeclaration Primary MemberAccessExpression ObjectCreateExpression
 %type <varvec> DeclarationList
 %type <argvec> FPDeclarationList
 %type <exprvec> FCParameterList
+%type <stringvec> TypeList TemplateDeclaration
 %type <membervec> MemberDeclarationList
 %type <member> MemberDeclaration
 %type <identifier> Identifier
@@ -101,6 +103,12 @@ FunctionDefinition:
                                                 *$2,
                                                 *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>($4)));
       }
+    | KW_FUNCTION IDENTIFIER TemplateDeclaration LPAREN FPDeclarationList RPAREN COLON Type {
+        $$ = new ddlbx::ir::NTemplateFunctionDefinition(std::shared_ptr<ddlbx::ir::NType>($8), 
+                                                *$2,
+                                                *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>($5)),
+                                                *$3);
+      }
     ;
 
 FunctionDeclaration:
@@ -133,10 +141,13 @@ ObjectDeclaration:
       KW_OBJECT IDENTIFIER LBRACE MemberDeclarationList RBRACE {
         $$ = new ddlbx::ir::NObjectDeclaration(*$2, *$4);
       }
+    | KW_OBJECT IDENTIFIER TemplateDeclaration LBRACE MemberDeclarationList RBRACE {
+        $$ = new ddlbx::ir::NTemplateObjectDeclaration(*$2, *$5, *$3);
+      }
 
 MemberDeclaration:
-      IDENTIFIER COLON Type {
-        $$ = new ddlbx::ir::NMemberDeclaration(std::shared_ptr<ddlbx::ir::NType>($3), *$1);
+      IDENTIFIER COLON IDENTIFIER {
+        $$ = new ddlbx::ir::NMemberDeclaration(std::make_shared<ddlbx::ir::NType>(*$3), *$1);
       }
     ;
 
@@ -155,11 +166,10 @@ MemberDeclarationList:
 
 MethodDeclaration:
       KW_FUNCTION IDENTIFIER DOT IDENTIFIER LPAREN FPDeclarationList RPAREN COLON Type Block {
-        ddlbx::ir::NFunctionDefinition *funcDef = new ddlbx::ir::NFunctionDefinition(std::shared_ptr<ddlbx::ir::NType>($9), 
-                                                                        *$4, 
-                                                                        *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>($6)));
-        ddlbx::ir::NFunctionDeclaration *funcDecl = new ddlbx::ir::NFunctionDeclaration(std::shared_ptr<ddlbx::ir::NFunctionDefinition>(funcDef), 
-                                                                           std::shared_ptr<ddlbx::ir::NBlock>($10));
+        ddlbx::ir::NFunctionDefinition *funcDef = new ddlbx::ir::NFunctionDefinition(
+            std::shared_ptr<ddlbx::ir::NType>($9), *$4, *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>($6)));
+        ddlbx::ir::NFunctionDeclaration *funcDecl = new ddlbx::ir::NFunctionDeclaration(
+            std::shared_ptr<ddlbx::ir::NFunctionDefinition>(funcDef), std::shared_ptr<ddlbx::ir::NBlock>($10));
         $$ = new ddlbx::ir::NMethodDeclaration(*$2, std::shared_ptr<ddlbx::ir::NFunctionDeclaration>(funcDecl));
       }
 
@@ -173,12 +183,40 @@ ReturnStatement:
     ;
 
 FunctionCallExpression:
-      Identifier LPAREN FCParameterList RPAREN {
-        $$ = new ddlbx::ir::NFunctionCall(std::shared_ptr<ddlbx::ir::NIdentifier>($1), std::vector<std::shared_ptr<ddlbx::ir::NExpression>>(*$3));
+      IDENTIFIER LPAREN FCParameterList RPAREN {
+        $$ = new ddlbx::ir::NFunctionCall(*$1, std::vector<std::shared_ptr<ddlbx::ir::NExpression>>(*$3));
       }
     | MemberAccessExpression LPAREN FCParameterList RPAREN {
         $$ = new ddlbx::ir::NFunctionCall(std::shared_ptr<ddlbx::ir::NMemberAccess>(dynamic_cast<ddlbx::ir::NMemberAccess*>($1)),
                                                           std::vector<std::shared_ptr<ddlbx::ir::NExpression>>(*$3));
+      }
+    ;
+
+ObjectCreateExpression:
+      IDENTIFIER LBRACE FCParameterList RBRACE {
+        $$ = new ddlbx::ir::NObjectCreation(*$1, std::vector<std::shared_ptr<ddlbx::ir::NExpression>>(*$3));
+      }
+    | IDENTIFIER TemplateDeclaration LBRACE FCParameterList RBRACE {
+        $$ = new ddlbx::ir::NObjectCreation(*$1, std::vector<std::shared_ptr<ddlbx::ir::NExpression>>(*$4), *$2);
+      }
+    ;
+
+TemplateDeclaration:
+      COM_LT TypeList COM_GT {
+        $$ = $2;
+      }
+    ;
+
+TypeList:
+      /* empty */ {
+        $$ = new std::vector<std::string>();
+      }
+    | TypeList COMMA Type {
+        $1->push_back($3->name);
+      }
+    | Type {
+        $$ = new std::vector<std::string>();
+        $$->push_back($1->name);
       }
     ;
 
@@ -221,6 +259,9 @@ Primary:
         $$ = $2;
       }
     | FunctionCallExpression {
+        $$ = $1;
+      }
+    | ObjectCreateExpression {
         $$ = $1;
       }
     ;
@@ -400,6 +441,9 @@ Factor:
     | FunctionCallExpression {
         $$ = $1;
       }
+    | ObjectCreateExpression {
+        $$ = $1;
+      }
     | MemberAccessExpression {
         $$ = $1;
       }
@@ -434,19 +478,7 @@ String:
     ;
 
 Type:
-      KW_INT {
-        $$ = new ddlbx::ir::NType(*$1);
-      }
-    | KW_FLOAT {
-        $$ = new ddlbx::ir::NType(*$1);
-      }
-    | KW_NONE {
-        $$ = new ddlbx::ir::NType(*$1);
-      }
-    | KW_BOOL {
-        $$ = new ddlbx::ir::NType(*$1);
-      }
-    | KW_STRING {
+      IDENTIFIER {
         $$ = new ddlbx::ir::NType(*$1);
       }
 

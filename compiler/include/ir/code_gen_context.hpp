@@ -2,11 +2,10 @@
 
 #include <iostream>
 #include <map>
+#include <memory>
 
 #include <llvm/IR/Value.h>
 #include <llvm/IR/IRBuilder.h>
-
-#include "ir/code_genner.hpp"
 
 namespace ddlbx::ir {
 
@@ -21,6 +20,9 @@ struct Type {
     std::unordered_map<std::string, llvm::Type *> nameTypeMap;
 };
 
+class NTemplateObjectDeclaration;
+class NTemplateFunctionDeclaration;
+
 class CodeGenContext {
 public:
     CodeGenContext(llvm::LLVMContext &context, llvm::Module &module)
@@ -31,41 +33,19 @@ public:
         types["Boo"] = {"Boo", llvm::Type::getInt1Ty(context), {}};
         types["Non"] = {"Non", llvm::Type::getVoidTy(context), {}};
     }
-
-    llvm::Module &getModule() { return module; }
-
-    llvm::LLVMContext &getContext() { return context; }
-
-    llvm::IRBuilder<> &getBuilder() { return builder; }
-
-    llvm::Type *getType(const std::string &name) {
-        return types[name].type;
-    }
-
-    void addType(const std::string &name, llvm::Type *type, const std::unordered_map<std::string, llvm::Type *> &nameTypeMap) {
-        types[name] = {name, type, nameTypeMap};
-    }
-
-    std::string getTypeName(llvm::Type *type) {
-        for (auto &[name, t] : types) {
-            if (t.type == type) return t.name;
-        }
-        return "";
-    }
-
-    Variable& getVariable(const std::string &name) {
-        return variables[name];
-    }
-
-    void setVariable(const std::string &name, Variable variable) {
-        variables[name] = variable;
-    }
-
-    int getTypeMemberIndex(const std::string &typeName, const std::string &memberName) {
-        int i = std::distance(types[typeName].nameTypeMap.begin(),
-                              types[typeName].nameTypeMap.find(memberName));
-        return i == types[typeName].nameTypeMap.size() ? -1 : i;
-    }
+    llvm::Module &getModule();
+    llvm::LLVMContext &getContext();
+    llvm::IRBuilder<> &getBuilder();
+    llvm::Type *getType(const std::string &name);
+    void addType(const std::string &name, llvm::Type *type, const std::unordered_map<std::string, llvm::Type *> &nameTypeMap);
+    std::string getTypeName(llvm::Type *type);
+    Variable& getVariable(const std::string &name);
+    void setVariable(const std::string &name, Variable variable);
+    int getTypeMemberIndex(const std::string &typeName, const std::string &memberName);
+    void registerTemplateObject(std::shared_ptr<NTemplateObjectDeclaration> templateObject);
+    void registerTemplateFunction(std::shared_ptr<NTemplateFunctionDeclaration> templateFunction);
+    std::shared_ptr<NTemplateObjectDeclaration> getTemplateObject(const std::string &name);
+    std::shared_ptr<NTemplateFunctionDeclaration> getTemplateFunction(const std::string &name);
 
 private:
     llvm::LLVMContext &context;
@@ -74,6 +54,8 @@ private:
 
     std::map<std::string, Type> types;
     std::map<std::string, Variable> variables;
+    std::map<std::string, std::shared_ptr<NTemplateObjectDeclaration>> templateObjects;
+    std::map<std::string, std::shared_ptr<NTemplateFunctionDeclaration>> templateFunctions;
 };
 
 } // namespace ddlbx::ir

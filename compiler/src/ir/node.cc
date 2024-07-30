@@ -11,6 +11,14 @@ using namespace ddlbx::utility;
 
 llvm::Value* NProgram::codeGen(CodeGenContext& context) {
     for (auto& statement : statements) {
+        if (true == statement->isObject) {
+            std::shared_ptr<NObjectDeclaration> objectDeclaration = std::dynamic_pointer_cast<NObjectDeclaration>(statement);
+            if (true == objectDeclaration->isTemplate) {
+                std::shared_ptr<NTemplateObjectDeclaration> templateObject = std::dynamic_pointer_cast<NTemplateObjectDeclaration>(objectDeclaration);
+                context.registerTemplateObject(templateObject);
+                continue;
+            }
+        }
         statement->codeGen(context);
     }
     return nullptr;
@@ -288,6 +296,50 @@ llvm::Value* NFunctionCall::codeGen(CodeGenContext& context) {
     return context.getBuilder().CreateCall(targetFunction, argValues);
 }
 
+llvm::Value* NObjectCreation::codeGen(CodeGenContext& context) {
+    std::string fullName = name;
+    if (!templateArgs.empty()) {
+        fullName += "<";
+        for (const auto& arg : templateArgs) {
+            fullName += arg + ",";
+        }
+        fullName.pop_back();
+        fullName += ">";
+    }
+
+    llvm::BasicBlock* currentBlock = context.getBuilder().GetInsertBlock();
+    llvm::Type* type = context.getType(fullName);
+    if (nullptr == type) {
+        Logger::info("Type \"" + fullName + "\" is not defined, trying to find template object");
+        std::shared_ptr<NTemplateObjectDeclaration> templateObject = context.getTemplateObject(name);
+        if (nullptr == templateObject) {
+            Logger::error("Template object \"" + name + "\" is not defined");
+            return nullptr;
+        }
+
+        std::vector<std::shared_ptr<NType>> templateArgTypes;
+        for (const auto& arg : templateArgs) {
+            templateArgTypes.push_back(std::make_shared<NType>(arg));
+        }
+        templateObject->codeGen(context, templateArgTypes);
+        type = context.getType(fullName);
+    }
+
+    std::vector<llvm::Value*> argValues;
+    for (const auto& arg : arguments) {
+        argValues.push_back(arg->codeGen(context));
+    }
+
+    llvm::Function* constructor = context.getModule().getFunction(fullName);
+    if (nullptr == constructor) {
+        Logger::error("Constructor for type \"" + fullName + "\" is not defined");
+        return nullptr;
+    }
+
+    context.getBuilder().SetInsertPoint(currentBlock);
+    return context.getBuilder().CreateCall(constructor, argValues);
+}
+
 llvm::Value* NOptStatement::codeGen(CodeGenContext& context) {
     llvm::Value* conditionValue = condition->codeGen(context);
     llvm::Function* function = context.getBuilder().GetInsertBlock()->getParent();
@@ -382,6 +434,63 @@ llvm::Value* NObjectDeclaration::codeGen(CodeGenContext& context) {
         argIt++;
     }
 
+    context.getBuilder().CreateRet(structValue);
+
+    return nullptr;
+}
+
+llvm::Value* NTemplateObjectDeclaration::codeGen(CodeGenContext& context, std::vector<std::shared_ptr<NType>> templateTypes) {
+    std::string fullName = name + "<";
+    for (const auto& type : templateTypes) {
+        fullName += type->name + ",";
+    }
+    fullName.pop_back();
+    fullName += ">";
+
+    std::unordered_map<std::string, llvm::Type*> nameTypeMap;
+    std::unordered_map<std::string, llvm::Type*> templateNameTypeMap;
+    for (int i = 0; i < templates.size(); i++) {
+        templateNameTypeMap[templates[i]] = templateTypes[i]->codeGen(context);
+    }
+
+    std::vector<llvm::Type*> memberTypes;
+    for (const auto& member : members) {
+        if (templateNameTypeMap.find(member->type->name) != templateNameTypeMap.end()) {
+            memberTypes.push_back(templateNameTypeMap[member->type->name]);
+        } else {
+            memberTypes.push_back(member->type->codeGen(context));
+        }
+        nameTypeMap[member->name] = memberTypes.back();
+    }
+
+    llvm::StructType* structType = llvm::StructType::create(context.getContext(), fullName);
+    structType->setBody(memberTypes);
+
+    context.addType(fullName, structType, nameTypeMap);
+
+    // create constructor
+    std::vector<llvm::Type*> argTypes;
+    for (const auto& member : members) {
+        if (templateNameTypeMap.find(member->type->name) != templateNameTypeMap.end()) {
+            argTypes.push_back(templateNameTypeMap[member->type->name]);
+        } else {
+            argTypes.push_back(member->type->codeGen(context));
+        }
+    }
+
+    llvm::FunctionType* constructorType = llvm::FunctionType::get(structType, argTypes, false);
+    llvm::Function* constructor = llvm::Function::Create(constructorType, llvm::Function::ExternalLinkage, fullName, context.getModule());
+    llvm::BasicBlock* block = llvm::BasicBlock::Create(context.getContext(), "entry", constructor, 0);
+    context.getBuilder().SetInsertPoint(block);
+    llvm::Value* structValue = context.getBuilder().CreateAlloca(structType, nullptr, fullName);
+
+    auto argIt = constructor->arg_begin();
+    for (auto it = memberTypes.begin(); it != memberTypes.end(); it++) {
+        llvm::Value* value = &*argIt;
+        llvm::Value* ptr = context.getBuilder().CreateStructGEP(structType, structValue, std::distance(memberTypes.begin(), it));
+        context.getBuilder().CreateStore(value, ptr);
+        argIt++;
+    }
     context.getBuilder().CreateRet(structValue);
 
     return nullptr;
