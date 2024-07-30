@@ -6,8 +6,11 @@ create_parser() {
     mkdir -p src/parser
     mkdir -p include/parser
 
-    bison -o src/parser/parser.cc --header=include/parser/parser.hpp parser.y -Wcounterexamples
+    btyacc -d parser.y
     lex -o src/parser/token.cc token.l
+
+    mv y.tab.h include/parser/parser.hpp
+    mv y.tab.c src/parser/parser.cc
 
     echo "Parser created"
 }
