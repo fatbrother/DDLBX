@@ -6,7 +6,6 @@
 
 #include "ir/node.hpp"
 #include "ir/code_gen_context.hpp"
-#include "parser/parser.hpp"
 
 extern ddlbx::ir::NProgram* program;
 typedef struct yy_buffer_state * YY_BUFFER_STATE;
@@ -405,7 +404,7 @@ TEST_F(CodeGennerTest, GenerateObject) {
         }
 
         fun main(): Non {
-            var t = Test(0)!
+            var t = Test{0}!
         }
     )";
     generate(input);
@@ -432,7 +431,7 @@ TEST_F(CodeGennerTest, GenerateObjectWithMethod) {
         fun Test.test(): Int { ret 1! }
 
         fun main(): Non {
-            var t = Test()!
+            var t = Test{}!
             t.test()!
         }
     )";
@@ -458,7 +457,7 @@ TEST_F(CodeGennerTest, GenerateMemberAccessInMethod) {
         fun Test.test(): Int { ret this.a! }
 
         fun main(): Non {
-            var t = Test(0)!
+            var t = Test{0}!
             t.test()!
         }
     )";
@@ -480,7 +479,7 @@ TEST_F(CodeGennerTest, GenerateMemberAccessInFunction) {
         }
 
         fun main(): Int {
-            var t = Test(0)!
+            var t = Test{0}!
             ret t.a!
         }
     )";
@@ -503,7 +502,7 @@ TEST_F(CodeGennerTest, GenerateMethodCall) {
         fun Test.test(): Int { ret this.a! }
 
         fun main(): Non {
-            var t = Test(0)!
+            var t = Test{0}!
             t.test()!
         }
     )";
@@ -524,6 +523,42 @@ TEST_F(CodeGennerTest, GenerateMethodCall) {
     EXPECT_EQ("Test.test", callInst->getCalledFunction()->getName().str());
 }
 
+TEST_F(CodeGennerTest, GenerateTemplateObject) {
+    const std::string input = R"(
+        obj Test<T> {
+            a: T
+        }
+
+        fun main(): Non {
+            var t = Test<Int>{0}!
+        }
+    )";
+    generate(input);
+
+    // Assuming the test function is declared in the module
+    auto testTypeList = module.getIdentifiedStructTypes();
+    ASSERT_EQ(1, testTypeList.size());
+    auto testType = testTypeList[0];
+    EXPECT_EQ("Test<Int>", testType->getName().str());
+    ASSERT_EQ(1, testType->getNumElements());
+    auto aType = testType->getElementType(0);
+    EXPECT_TRUE(aType->isIntegerTy());
+
+    // Assuming the factory function is generated
+    llvm::Function* factoryFunction = module.getFunction("Test<Int>");
+    ASSERT_NE(nullptr, factoryFunction);
+    EXPECT_EQ(1, factoryFunction->arg_size());
+
+    // Assuming the main function has a single basic block
+    llvm::BasicBlock* entryBlock = &module.getFunction("main")->getEntryBlock();
+    ASSERT_NE(nullptr, entryBlock);
+
+    // Assuming the first instruction is a call instruction
+    llvm::CallInst* callInst = llvm::dyn_cast<llvm::CallInst>(&entryBlock->front());
+    ASSERT_NE(nullptr, callInst);
+    EXPECT_EQ("Test<Int>", callInst->getCalledFunction()->getName().str());
+}
+
 TEST_F(CodeGennerTest, GenerateTraitFunction) {
     const std::string input = R"(
         obj Test {
@@ -533,7 +568,7 @@ TEST_F(CodeGennerTest, GenerateTraitFunction) {
         fun {a: Int}.test(): Int { ret this.a! }
 
         fun main(): Non {
-            var t = Test(0)!
+            var t = Test{0}!
             t.test()!
         }
     )";
