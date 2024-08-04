@@ -55,7 +55,7 @@ ddlbx::ir::NProgram* program;
 %type <program> Program
 %type <stmtvec> GlobalStatements
 %type <block> Block Statements
-%type <stmt> Statement GlobalStatement FunctionDeclaration FunctionDefinition OptStatement ForStatement ReturnStatement ObjectDeclaration MethodDeclaration
+%type <stmt> Statement GlobalStatement FunctionDeclaration FunctionDefinition OptStatement ForStatement ReturnStatement ObjectDeclaration MethodDeclaration TraitMethodDeclaration
 %type <expr> Expression Condition Calculation Term Factor Numeric Boolean String AssignExpression FunctionCallExpression DeclarationExpression FPDeclaration Primary MemberAccessExpression ObjectCreateExpression
 %type <varvec> DeclarationList
 %type <argvec> FPDeclarationList
@@ -95,6 +95,7 @@ GlobalStatement:
     | MethodDeclaration
     | FunctionDeclaration
     | ObjectDeclaration
+    | TraitMethodDeclaration
     ;
 
 FunctionDefinition:
@@ -171,6 +172,15 @@ MethodDeclaration:
         ddlbx::ir::NFunctionDeclaration *funcDecl = new ddlbx::ir::NFunctionDeclaration(
             std::shared_ptr<ddlbx::ir::NFunctionDefinition>(funcDef), std::shared_ptr<ddlbx::ir::NBlock>($10));
         $$ = new ddlbx::ir::NMethodDeclaration(*$2, std::shared_ptr<ddlbx::ir::NFunctionDeclaration>(funcDecl));
+      }
+
+TraitMethodDeclaration:
+      KW_FUNCTION LBRACE MemberDeclarationList RBRACE DOT IDENTIFIER LPAREN FPDeclarationList RPAREN COLON Type Block {
+        ddlbx::ir::NFunctionDefinition *funcDef = new ddlbx::ir::NFunctionDefinition(
+            std::shared_ptr<ddlbx::ir::NType>($11), *$6, *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>($8)));
+        ddlbx::ir::NFunctionDeclaration *funcDecl = new ddlbx::ir::NFunctionDeclaration(
+            std::shared_ptr<ddlbx::ir::NFunctionDefinition>(funcDef), std::shared_ptr<ddlbx::ir::NBlock>($12));
+        $$ = new ddlbx::ir::NTraitMethodDeclaration(*$3, std::shared_ptr<ddlbx::ir::NFunctionDeclaration>(funcDecl));
       }
 
 ReturnStatement:

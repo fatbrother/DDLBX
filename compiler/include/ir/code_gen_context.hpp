@@ -22,6 +22,7 @@ struct Type {
 
 class NTemplateObjectDeclaration;
 class NTemplateFunctionDeclaration;
+class NTraitMethodDeclaration;
 
 class CodeGenContext {
 public:
@@ -44,8 +45,10 @@ public:
     int getTypeMemberIndex(const std::string &typeName, const std::string &memberName);
     void registerTemplateObject(std::shared_ptr<NTemplateObjectDeclaration> templateObject);
     void registerTemplateFunction(std::shared_ptr<NTemplateFunctionDeclaration> templateFunction);
+    void registerTraitMethod(std::shared_ptr<NTraitMethodDeclaration> traitMethod);
     std::shared_ptr<NTemplateObjectDeclaration> getTemplateObject(const std::string &name);
     std::shared_ptr<NTemplateFunctionDeclaration> getTemplateFunction(const std::string &name);
+    std::shared_ptr<NTraitMethodDeclaration> getTraitMethod(const std::string &name);
 
 private:
     llvm::LLVMContext &context;
@@ -56,6 +59,7 @@ private:
     std::map<std::string, Variable> variables;
     std::map<std::string, std::shared_ptr<NTemplateObjectDeclaration>> templateObjects;
     std::map<std::string, std::shared_ptr<NTemplateFunctionDeclaration>> templateFunctions;
+    std::map<std::string, std::shared_ptr<NTraitMethodDeclaration>> traitMethods;
 };
 
 } // namespace ddlbx::ir

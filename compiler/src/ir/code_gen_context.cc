@@ -49,10 +49,18 @@ void CodeGenContext::registerTemplateFunction(std::shared_ptr<NTemplateFunctionD
     templateFunctions[templateFunction->definition->name] = templateFunction;
 }
 
+void CodeGenContext::registerTraitMethod(std::shared_ptr<NTraitMethodDeclaration> traitMethod) {
+    traitMethods[traitMethod->declaration->definition->name] = traitMethod;
+}
+
 std::shared_ptr<NTemplateObjectDeclaration> CodeGenContext::getTemplateObject(const std::string &name) {
     return templateObjects[name];
 }
 
 std::shared_ptr<NTemplateFunctionDeclaration> CodeGenContext::getTemplateFunction(const std::string &name) {
     return templateFunctions[name];
+}
+
+std::shared_ptr<NTraitMethodDeclaration> CodeGenContext::getTraitMethod(const std::string &name) {
+    return traitMethods[name];
 }

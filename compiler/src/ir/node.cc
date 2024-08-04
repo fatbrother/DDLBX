@@ -11,13 +11,22 @@ using namespace ddlbx::utility;
 
 llvm::Value* NProgram::codeGen(CodeGenContext& context) {
     for (auto& statement : statements) {
-        if (true == statement->isObject) {
+        if ("NTemplateObjectDeclaration" == statement->getType()) {
             std::shared_ptr<NObjectDeclaration> objectDeclaration = std::dynamic_pointer_cast<NObjectDeclaration>(statement);
-            if (true == objectDeclaration->isTemplate) {
-                std::shared_ptr<NTemplateObjectDeclaration> templateObject = std::dynamic_pointer_cast<NTemplateObjectDeclaration>(objectDeclaration);
-                context.registerTemplateObject(templateObject);
-                continue;
-            }
+            std::shared_ptr<NTemplateObjectDeclaration> templateObject = std::dynamic_pointer_cast<NTemplateObjectDeclaration>(objectDeclaration);
+            context.registerTemplateObject(templateObject);
+            continue;
+        }
+        if ("NTemplateFunctionDeclaration" == statement->getType()) {
+            std::shared_ptr<NFunctionDeclaration> functionDeclaration = std::dynamic_pointer_cast<NFunctionDeclaration>(statement);
+            std::shared_ptr<NTemplateFunctionDeclaration> templateFunction = std::dynamic_pointer_cast<NTemplateFunctionDeclaration>(functionDeclaration->definition);
+            context.registerTemplateFunction(templateFunction);
+            continue;
+        }
+        if ("NTraitMethodDeclaration" == statement->getType()) {
+            std::shared_ptr<NTraitMethodDeclaration> traitMethod = std::dynamic_pointer_cast<NTraitMethodDeclaration>(statement);
+            context.registerTraitMethod(traitMethod);
+            continue;
         }
         statement->codeGen(context);
     }
@@ -280,7 +289,16 @@ llvm::Value* NFunctionCall::codeGen(CodeGenContext& context) {
 
     llvm::Function* targetFunction = context.getModule().getFunction(fullName);
     if (!targetFunction) {
-        Logger::error("Function " + fullName + " not found");
+        Logger::info("Function " + fullName + " not found, trying to find trait method");
+        std::shared_ptr<NTraitMethodDeclaration> traitMethod = context.getTraitMethod(name);
+        if (nullptr == traitMethod) {
+            Logger::error("Trait method " + name + " not found");
+            return nullptr;
+        }
+
+        llvm::Type* parentType = parentValue->getType();
+        std::string parentTypeName = context.getTypeName(parentType);
+        traitMethod->codeGen(context, parentTypeName);
         return nullptr;
     }
 
@@ -505,6 +523,20 @@ llvm::Value* NMethodDeclaration::codeGen(CodeGenContext& context) {
     llvm::StructType* structType = llvm::cast<llvm::StructType>(context.getType(name));
     declaration->definition->arguments.push_back(std::make_shared<NArgument>(std::make_shared<NType>(name), "this"));
     declaration->definition->name = name + "." + declaration->definition->name;
+    declaration->codeGen(context);
+
+    return nullptr;
+}
+
+llvm::Value* NTraitMethodDeclaration::codeGen(CodeGenContext& context, std::string parentName) {
+    if (nullptr == context.getType(parentName)) {
+        Logger::error("Type \"" + parentName + "\" is not defined");
+        return nullptr;
+    }
+
+    llvm::StructType* structType = llvm::cast<llvm::StructType>(context.getType(parentName));
+    declaration->definition->arguments.push_back(std::make_shared<NArgument>(std::make_shared<NType>(parentName), "this"));
+    declaration->definition->name = parentName + "." + declaration->definition->name;
     declaration->codeGen(context);
 
     return nullptr;
