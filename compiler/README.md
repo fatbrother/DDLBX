@@ -24,7 +24,5 @@ chmod +x build.sh
 ## Compile DDLBX
 
 ```bash
-./build/ddlbx {source_file}
-clang -c core/build_in.c -o core/build_in.o
-clang source_file.o core/build_in.o -o {output_file}
+./ddlbx.sh -i <input_file> -o <output_file>
 ```

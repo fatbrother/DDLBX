@@ -241,7 +241,7 @@ fun a(): Int {
 You can also use `=>` to declare a function.
 
 ```ddlbx
-fun add(a: Int, b: Int ): Int => ret a + b!
+fun add(a: Int, b: Int ): Int => a + b!
 ```
 
 ## Objects
@@ -268,8 +268,8 @@ You can also use `obj` to declare an object with variables.
 
 ```ddlbx
 obj a {
-    var b: Int,
-    var c: Int
+    b: Int,
+    c: Int
 }!
 ```
 
@@ -277,8 +277,8 @@ You can add methods to objects "everywhere" in the code.
 
 ```ddlbx
 obj a {
-    var b: Int,
-    var c: Int
+    b: Int,
+    c: Int
 }!
 
 fun a.d(): Int {
@@ -292,6 +292,68 @@ You can choose some obj with specific variables.
 fun {a: Int, b: Int}.getAplusB(): Int {
     ret a + b!
 }!
+```
+
+## Templates
+
+You can use `<` and `>` to declare a template.
+
+```ddlbx
+fun a<T>(b: T): T {
+    ret b!
+}!
+```
+
+```ddlbx
+obj a<T> {
+    b: T
+}!
+```
+
+## Traits
+
+You can declare a method which can be used in objects that meet the trait.
+
+```ddlbx
+fun {a: Int, b: Int}.getAplusB(): Int {
+    ret a + b!
+}!
+
+obj Test {
+    var a: Int,
+    var b: Int
+}!
+
+fun main(): Non {
+    var test = Test(1, 3)!
+    var result = test.getAplusB()! // 4
+}!
+```
+
+We can also use trait and template together to do more things.
+
+```ddlbx
+obj Animal<T> {
+    a: T
+}
+
+obj Leg {}
+obj Wing {}
+
+fun {a: Leg}.action(): Non {
+    println('Running')!
+}
+
+fun {a: Wing}.action(): Non {
+    println('Flying')!
+}
+
+fun main(): Non {
+    var a = Animal<Leg>(Leg())!
+    var b = Animal<Wing>(Wing())!
+    a.action()! // Running
+    b.action()! // Flying
+}
 ```
 
 ## Import

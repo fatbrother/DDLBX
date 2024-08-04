@@ -1,35 +1,45 @@
-#include "ir/code_genner.hpp"
-
 #include <gtest/gtest.h>
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
 
-#include <tao/pegtl.hpp>
-#include <tao/pegtl/contrib/parse_tree.hpp>
+#include "ir/node.hpp"
+#include "ir/code_gen_context.hpp"
 
-#include "parser/grammar.hpp"
-#include "parser/selector.hpp"
-
-using namespace ddlbx::ir;
-using namespace tao::pegtl;
+extern ddlbx::ir::NProgram* program;
+typedef struct yy_buffer_state * YY_BUFFER_STATE;
+extern int yyparse();
+extern int yylineno;
+extern YY_BUFFER_STATE yy_scan_string(const char * str);
+extern YY_BUFFER_STATE yy_switch_to_buffer(YY_BUFFER_STATE buffer);
+extern void yy_delete_buffer(YY_BUFFER_STATE buffer);
 
 class CodeGennerTest : public ::testing::Test {
 protected:
     llvm::LLVMContext context;
     llvm::Module module;
-    CodeGenner codeGenner;
+    ddlbx::ir::CodeGenContext codeGenContext;
 
-    CodeGennerTest() : module("test", context), codeGenner(context, module) {}
+    CodeGennerTest() : module("test", context), codeGenContext(context, module) {}
 
     void SetUp() override {}
 
     // Helper function to generate LLVM IR code from a block
     void generate(const std::string& input) {
-        memory_input<> in(input, "test");
-        const auto root = parse_tree::parse<ddlbx::parser::Program, ddlbx::parser::Selector>(in);
-        codeGenner.generate(root->children[0]);
+        yylineno = 1;
+        YY_BUFFER_STATE my_string_buffer = yy_scan_string(input.c_str()); 
+        yy_switch_to_buffer( my_string_buffer );
+        yyparse(); 
+        yy_delete_buffer(my_string_buffer );
+
+        if (program == nullptr) {
+            FAIL() << "Failed to parse the input";
+        }
+
+        program->codeGen(codeGenContext);
+
+        delete program;
     }
 };
 
@@ -199,10 +209,38 @@ TEST_F(CodeGennerTest, OperatorPriority) {
     EXPECT_EQ(0, llvm::cast<llvm::ConstantInt>(retInst->getReturnValue())->getSExtValue());
 }
 
+TEST_F(CodeGennerTest, UnaryOperator) {
+    const std::string input = R"(
+        fun main(): Boo {
+            ret not true!
+        }
+    )";
+    generate(input);
+
+    // Assuming the test function is declared in the module
+    llvm::Function* testFunction = module.getFunction("main");
+
+    ASSERT_NE(nullptr, testFunction);
+
+    // Assuming the test function has a single basic block
+    llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
+    ASSERT_NE(nullptr, entryBlock);
+    EXPECT_EQ(1, entryBlock->size());
+
+    // Assuming the first instruction is a return instruction
+    llvm::ReturnInst* retInst = llvm::dyn_cast<llvm::ReturnInst>(&entryBlock->front());
+    ASSERT_NE(nullptr, retInst);
+
+    // Assuming the return value is false
+    EXPECT_EQ(0, llvm::cast<llvm::ConstantInt>(retInst->getReturnValue())->getSExtValue());
+}
+
 TEST_F(CodeGennerTest, GenerateConditional) {
     const std::string input = R"(
         fun main(): Int {
-            opt (1) ret 1!
+            opt (1) {
+                ret 1!
+            }
 
             ret 0!
         }
@@ -237,6 +275,14 @@ TEST_F(CodeGennerTest, GenerateConditional) {
     llvm::BasicBlock* elseBlock = branchInst->getSuccessor(1);
     ASSERT_NE(nullptr, elseBlock);
     EXPECT_EQ(1, elseBlock->size());
+
+    // Assuming the first instruction in the merge block is a return instruction
+    llvm::BasicBlock* mergeBlock = &testFunction->back();
+    ASSERT_NE(nullptr, mergeBlock);
+    EXPECT_EQ(1, mergeBlock->size());
+    llvm::ReturnInst* mergeRetInst = llvm::dyn_cast<llvm::ReturnInst>(&mergeBlock->front());
+    ASSERT_NE(nullptr, mergeRetInst);
+    EXPECT_EQ(0, llvm::cast<llvm::ConstantInt>(mergeRetInst->getReturnValue())->getSExtValue());
 }
 
 TEST_F(CodeGennerTest, GenerateLoop) {
@@ -264,7 +310,91 @@ TEST_F(CodeGennerTest, GenerateLoop) {
     // Assuming the first successor is the loop block
     llvm::BasicBlock* loopBlock = branchInst->getSuccessor(0);
     ASSERT_NE(nullptr, loopBlock);
-    EXPECT_EQ(3, loopBlock->size());
+    EXPECT_EQ(4, loopBlock->size());
+}
+
+TEST_F(CodeGennerTest, GenerateLoopWithStep) {
+    const std::string input = R"(
+        fun main(): Non {
+            for (i to 10 step 2) { 1 + 1! }
+        }
+    )";
+    generate(input);
+
+    // Assuming the test function is declared in the module
+    llvm::Function* testFunction = module.getFunction("main");
+
+    ASSERT_NE(nullptr, testFunction);
+
+    // Assuming the test function has a single basic block
+    llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
+    ASSERT_NE(nullptr, entryBlock);
+    EXPECT_EQ(3, entryBlock->size());
+
+    // Assuming the last instruction is a branch instruction
+    llvm::BranchInst* branchInst = llvm::dyn_cast<llvm::BranchInst>(&entryBlock->back());
+    ASSERT_NE(nullptr, branchInst);
+
+    // Assuming the first successor is the loop block
+    llvm::BasicBlock* loopBlock = branchInst->getSuccessor(0);
+    ASSERT_NE(nullptr, loopBlock);
+    EXPECT_EQ(4, loopBlock->size());
+}
+
+TEST_F(CodeGennerTest, GenerateLoopWithStepAndFrom) {
+    const std::string input = R"(
+        fun main(): Non {
+            for (i from 1 to 10 step 2) { 1 + 1! }
+        }
+    )";
+    generate(input);
+
+    // Assuming the test function is declared in the module
+    llvm::Function* testFunction = module.getFunction("main");
+
+    ASSERT_NE(nullptr, testFunction);
+
+    // Assuming the test function has a single basic block
+    llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
+    ASSERT_NE(nullptr, entryBlock);
+    EXPECT_EQ(3, entryBlock->size());
+
+    // Assuming the last instruction is a branch instruction
+    llvm::BranchInst* branchInst = llvm::dyn_cast<llvm::BranchInst>(&entryBlock->back());
+    ASSERT_NE(nullptr, branchInst);
+
+    // Assuming the first successor is the loop block
+    llvm::BasicBlock* loopBlock = branchInst->getSuccessor(0);
+    ASSERT_NE(nullptr, loopBlock);
+    EXPECT_EQ(4, loopBlock->size());
+}
+
+TEST_F(CodeGennerTest, GenerateLoopWithCondition) {
+    const std::string input = R"(
+        fun main(): Non {
+            for (true) { 1 + 1! }
+        }
+    )";
+    generate(input);
+
+    // Assuming the test function is declared in the module
+    llvm::Function* testFunction = module.getFunction("main");
+
+    ASSERT_NE(nullptr, testFunction);
+
+    // Assuming the test function has a single basic block
+    llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
+    ASSERT_NE(nullptr, entryBlock);
+    EXPECT_EQ(1, entryBlock->size());
+
+    // Assuming the last instruction is a branch instruction
+    llvm::BranchInst* branchInst = llvm::dyn_cast<llvm::BranchInst>(&entryBlock->back());
+    ASSERT_NE(nullptr, branchInst);
+
+    // Assuming the first successor is the loop block
+    llvm::BasicBlock* loopBlock = branchInst->getSuccessor(0);
+    ASSERT_NE(nullptr, loopBlock);
+    EXPECT_EQ(2, loopBlock->size());
 }
 
 TEST_F(CodeGennerTest, GenerateObject) {
@@ -274,7 +404,7 @@ TEST_F(CodeGennerTest, GenerateObject) {
         }
 
         fun main(): Non {
-            var t = Test(0)!
+            var t = Test{0}!
         }
     )";
     generate(input);
@@ -289,9 +419,8 @@ TEST_F(CodeGennerTest, GenerateObject) {
     EXPECT_TRUE(aType->isIntegerTy());
 
     // check if factory function is generated
-    llvm::Function* factoryFunction = module.getFunction("Test_factory");
+    llvm::Function* factoryFunction = module.getFunction("Test");
     ASSERT_NE(nullptr, factoryFunction);
-    EXPECT_EQ("Test_factory", factoryFunction->getName().str());
     EXPECT_EQ(1, factoryFunction->arg_size());
 }
 
@@ -302,14 +431,14 @@ TEST_F(CodeGennerTest, GenerateObjectWithMethod) {
         fun Test.test(): Int { ret 1! }
 
         fun main(): Non {
-            var t = Test()!
+            var t = Test{}!
             t.test()!
         }
     )";
     generate(input);
 
     // Assuming the test function is declared in the module
-    llvm::Function* testFunction = module.getFunction("Test_test");
+    llvm::Function* testFunction = module.getFunction("Test.test");
 
     ASSERT_NE(nullptr, testFunction);
 
@@ -328,14 +457,14 @@ TEST_F(CodeGennerTest, GenerateMemberAccessInMethod) {
         fun Test.test(): Int { ret this.a! }
 
         fun main(): Non {
-            var t = Test(0)!
+            var t = Test{0}!
             t.test()!
         }
     )";
     generate(input);
 
     // Assuming the test function is declared in the module
-    llvm::Function* testFunction = module.getFunction("Test_test");
+    llvm::Function* testFunction = module.getFunction("Test.test");
     ASSERT_NE(nullptr, testFunction);
 
     // Assuming the test function has a single basic block
@@ -350,7 +479,7 @@ TEST_F(CodeGennerTest, GenerateMemberAccessInFunction) {
         }
 
         fun main(): Int {
-            var t = Test(0)!
+            var t = Test{0}!
             ret t.a!
         }
     )";
@@ -373,7 +502,7 @@ TEST_F(CodeGennerTest, GenerateMethodCall) {
         fun Test.test(): Int { ret this.a! }
 
         fun main(): Non {
-            var t = Test(0)!
+            var t = Test{0}!
             t.test()!
         }
     )";
@@ -391,7 +520,43 @@ TEST_F(CodeGennerTest, GenerateMethodCall) {
     ASSERT_NE(nullptr, callInst);
 
     // Assuming the called function is Test_test
-    EXPECT_EQ("Test_test", callInst->getCalledFunction()->getName().str());
+    EXPECT_EQ("Test.test", callInst->getCalledFunction()->getName().str());
+}
+
+TEST_F(CodeGennerTest, GenerateTemplateObject) {
+    const std::string input = R"(
+        obj Test<T> {
+            a: T
+        }
+
+        fun main(): Non {
+            var t = Test<Int>{0}!
+        }
+    )";
+    generate(input);
+
+    // Assuming the test function is declared in the module
+    auto testTypeList = module.getIdentifiedStructTypes();
+    ASSERT_EQ(1, testTypeList.size());
+    auto testType = testTypeList[0];
+    EXPECT_EQ("Test<Int>", testType->getName().str());
+    ASSERT_EQ(1, testType->getNumElements());
+    auto aType = testType->getElementType(0);
+    EXPECT_TRUE(aType->isIntegerTy());
+
+    // Assuming the factory function is generated
+    llvm::Function* factoryFunction = module.getFunction("Test<Int>");
+    ASSERT_NE(nullptr, factoryFunction);
+    EXPECT_EQ(1, factoryFunction->arg_size());
+
+    // Assuming the main function has a single basic block
+    llvm::BasicBlock* entryBlock = &module.getFunction("main")->getEntryBlock();
+    ASSERT_NE(nullptr, entryBlock);
+
+    // Assuming the first instruction is a call instruction
+    llvm::CallInst* callInst = llvm::dyn_cast<llvm::CallInst>(&entryBlock->front());
+    ASSERT_NE(nullptr, callInst);
+    EXPECT_EQ("Test<Int>", callInst->getCalledFunction()->getName().str());
 }
 
 TEST_F(CodeGennerTest, GenerateTraitFunction) {
@@ -403,13 +568,13 @@ TEST_F(CodeGennerTest, GenerateTraitFunction) {
         fun {a: Int}.test(): Int { ret this.a! }
 
         fun main(): Non {
-            var t = Test(0)!
+            var t = Test{0}!
             t.test()!
         }
     )";
     generate(input);
 
-    llvm::Function* testFunction = module.getFunction("Test_test");
+    llvm::Function* testFunction = module.getFunction("Test.test");
     ASSERT_NE(nullptr, testFunction);
 
     // Assuming the test function has a single basic block
