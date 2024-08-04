@@ -180,7 +180,7 @@ TraitMethodDeclaration:
             std::shared_ptr<ddlbx::ir::NType>($11), *$6, *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>($8)));
         ddlbx::ir::NFunctionDeclaration *funcDecl = new ddlbx::ir::NFunctionDeclaration(
             std::shared_ptr<ddlbx::ir::NFunctionDefinition>(funcDef), std::shared_ptr<ddlbx::ir::NBlock>($12));
-        $$ = new ddlbx::ir::NTraitMethodDeclaration(*$3, std::shared_ptr<ddlbx::ir::NFunctionDeclaration>(funcDecl));
+        $$ = new ddlbx::ir::NTraitMethodDeclaration(*$6, std::shared_ptr<ddlbx::ir::NFunctionDeclaration>(funcDecl), *$3);
       }
 
 ReturnStatement:

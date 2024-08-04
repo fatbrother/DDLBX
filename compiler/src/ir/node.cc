@@ -529,15 +529,9 @@ llvm::Value* NMethodDeclaration::codeGen(CodeGenContext& context) {
 }
 
 llvm::Value* NTraitMethodDeclaration::codeGen(CodeGenContext& context, std::string parentName) {
-    if (nullptr == context.getType(parentName)) {
-        Logger::error("Type \"" + parentName + "\" is not defined");
-        return nullptr;
-    }
-
-    llvm::StructType* structType = llvm::cast<llvm::StructType>(context.getType(parentName));
-    declaration->definition->arguments.push_back(std::make_shared<NArgument>(std::make_shared<NType>(parentName), "this"));
-    declaration->definition->name = parentName + "." + declaration->definition->name;
-    declaration->codeGen(context);
+    name = parentName;
+    
+    NMethodDeclaration::codeGen(context);
 
     return nullptr;
 }

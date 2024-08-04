@@ -323,20 +323,15 @@ public:
     std::string name;
     std::shared_ptr<NFunctionDeclaration> declaration;
     NMethodDeclaration(std::string name, std::shared_ptr<NFunctionDeclaration> declaration) : name(name), declaration(declaration) {}
-    virtual llvm::Value* codeGen(CodeGenContext& context);
+    virtual llvm::Value* codeGen(CodeGenContext& context) override;
     virtual std::string getType() override { return "NMethodDeclaration"; }
 };
 
-class NTraitMethodDeclaration : public NStatement {
+class NTraitMethodDeclaration : public NMethodDeclaration {
 public:
     std::vector<std::shared_ptr<NMemberDeclaration>> traits;
-    std::shared_ptr<NFunctionDeclaration> declaration;
-    NTraitMethodDeclaration(std::vector<std::shared_ptr<NMemberDeclaration>> traits, std::shared_ptr<NFunctionDeclaration> declaration)
-        : traits(traits), declaration(declaration) {}
-    virtual llvm::Value* codeGen(CodeGenContext& context) {
-        Logger::error("NTraitMethodDeclaration::codeGen() should not be called");
-        return nullptr;
-    }
+    NTraitMethodDeclaration(std::string name, std::shared_ptr<NFunctionDeclaration> declaration, std::vector<std::shared_ptr<NMemberDeclaration>> traits)
+        : NMethodDeclaration(name, declaration), traits(traits) {}
     llvm::Value* codeGen(CodeGenContext& context, std::string parentName);
     virtual std::string getType() override { return "NTraitMethodDeclaration"; }
 };
