@@ -567,17 +567,48 @@ TEST_F(CodeGennerTest, GenerateTraitFunction) {
 
         fun {a: Int}.test(): Int { ret this.a! }
 
-        fun main(): Non {
-            var t = Test{0}!
-            t.test()!
+        fun main(): Int {
+            var t = Test{5}!
+            ret t.test()!
         }
     )";
     generate(input);
 
+    // Check the Test.test function
     llvm::Function* testFunction = module.getFunction("Test.test");
     ASSERT_NE(nullptr, testFunction);
+    EXPECT_TRUE(testFunction->getReturnType()->isIntegerTy());
+    EXPECT_EQ(1, testFunction->arg_size());
 
-    // Assuming the test function has a single basic block
-    llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
-    ASSERT_NE(nullptr, entryBlock);
+    // Check the main function
+    llvm::Function* mainFunction = module.getFunction("main");
+    ASSERT_NE(nullptr, mainFunction);
+    EXPECT_TRUE(mainFunction->getReturnType()->isIntegerTy());
+
+    // Check the Test.test function implementation
+    llvm::BasicBlock& testEntryBlock = testFunction->getEntryBlock();
+    ASSERT_FALSE(testEntryBlock.empty());
+
+    // Check if there's a return instruction in Test.test
+    llvm::ReturnInst* testRetInst = llvm::dyn_cast<llvm::ReturnInst>(testEntryBlock.getTerminator());
+    ASSERT_NE(nullptr, testRetInst);
+
+    // Check the main function implementation
+    llvm::BasicBlock& mainEntryBlock = mainFunction->getEntryBlock();
+    ASSERT_FALSE(mainEntryBlock.empty());
+
+    // Check if there's a call to Test.test in main
+    llvm::CallInst* callInst = nullptr;
+    for (auto& inst : mainEntryBlock) {
+        if ((callInst = llvm::dyn_cast<llvm::CallInst>(&inst))) {
+            break;
+        }
+    }
+    ASSERT_NE(nullptr, callInst);
+    EXPECT_EQ("Test.test", callInst->getCalledFunction()->getName().str());
+
+    // Check if the result of Test.test is returned in main
+    llvm::ReturnInst* mainRetInst = llvm::dyn_cast<llvm::ReturnInst>(mainEntryBlock.getTerminator());
+    ASSERT_NE(nullptr, mainRetInst);
+    EXPECT_EQ(callInst, mainRetInst->getReturnValue());
 }
