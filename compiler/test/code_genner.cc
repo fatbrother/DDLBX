@@ -600,12 +600,14 @@ TEST_F(CodeGennerTest, GenerateTraitFunction) {
     // Check if there's a call to Test.test in main
     llvm::CallInst* callInst = nullptr;
     for (auto& inst : mainEntryBlock) {
-        if ((callInst = llvm::dyn_cast<llvm::CallInst>(&inst))) {
+        callInst = llvm::dyn_cast<llvm::CallInst>(&inst);
+        if ((nullptr != callInst) && (callInst->getCalledFunction()->getName() == "Test.test")) {
             break;
         }
+
+        callInst = nullptr;
     }
     ASSERT_NE(nullptr, callInst);
-    EXPECT_EQ("Test.test", callInst->getCalledFunction()->getName().str());
 
     // Check if the result of Test.test is returned in main
     llvm::ReturnInst* mainRetInst = llvm::dyn_cast<llvm::ReturnInst>(mainEntryBlock.getTerminator());

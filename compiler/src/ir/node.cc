@@ -207,6 +207,7 @@ llvm::Value* NFunctionDeclaration::codeGen(CodeGenContext& context) {
     }
 
     llvm::BasicBlock* block = llvm::BasicBlock::Create(context.getContext(), "entry", function, 0);
+    llvm::BasicBlock* currentBlock = context.getBuilder().GetInsertBlock();
     context.getBuilder().SetInsertPoint(block);
 
     auto argIt = this->definition->arguments.begin();
@@ -228,6 +229,8 @@ llvm::Value* NFunctionDeclaration::codeGen(CodeGenContext& context) {
             return nullptr;
         }
     }
+
+    context.getBuilder().SetInsertPoint(currentBlock);
 
     return function;
 }
@@ -299,7 +302,12 @@ llvm::Value* NFunctionCall::codeGen(CodeGenContext& context) {
         llvm::Type* parentType = parentValue->getType();
         std::string parentTypeName = context.getTypeName(parentType);
         traitMethod->codeGen(context, parentTypeName);
-        return nullptr;
+
+        targetFunction = context.getModule().getFunction(fullName);
+        if (!targetFunction) {
+            Logger::error("Trait method " + name + " creation failed");
+            return nullptr;
+        }
     }
 
     if (parentValue) {
