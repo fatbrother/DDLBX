@@ -559,6 +559,65 @@ TEST_F(CodeGennerTest, GenerateTemplateObject) {
     EXPECT_EQ("Test<Int>", callInst->getCalledFunction()->getName().str());
 }
 
+TEST_F(CodeGennerTest, GenerateTemplateFunction) {
+    const std::string input = R"(
+        fun test<T>(): T { ret 0! }
+    )";
+    generate(input);
+
+    llvm::Function* testFunction = module.getFunction("test<Int>");
+    ASSERT_NE(nullptr, testFunction);
+
+    EXPECT_TRUE(testFunction->getReturnType()->isIntegerTy());
+
+    ASSERT_EQ(1, testFunction->size());
+    llvm::BasicBlock& entryBlock = testFunction->getEntryBlock();
+
+    llvm::ReturnInst* retInst = llvm::dyn_cast<llvm::ReturnInst>(entryBlock.getTerminator());
+    ASSERT_NE(nullptr, retInst);
+    EXPECT_TRUE(llvm::isa<llvm::ConstantInt>(retInst->getReturnValue()));
+    EXPECT_EQ(0, llvm::cast<llvm::ConstantInt>(retInst->getReturnValue())->getSExtValue());
+}
+
+TEST_F(CodeGennerTest, GenerateTemplateWithExpression) {
+    const std::string input = R"(
+        fun add<T>(a: T, b: T): T { ret a + b! }
+        
+        fun main(): Int {
+            ret add<Int>(3, 4)!
+        }
+    )";
+    generate(input);
+
+    // Check if the template function is generated
+    llvm::Function* addFunction = module.getFunction("add<Int>");
+    ASSERT_NE(nullptr, addFunction);
+    EXPECT_TRUE(addFunction->getReturnType()->isIntegerTy());
+    EXPECT_EQ(2, addFunction->arg_size());
+
+    // Check the main function
+    llvm::Function* mainFunction = module.getFunction("main");
+    ASSERT_NE(nullptr, mainFunction);
+    
+    llvm::BasicBlock& entryBlock = mainFunction->getEntryBlock();
+    ASSERT_FALSE(entryBlock.empty());
+
+    // Check if there's a call to add<Int>
+    llvm::CallInst* callInst = nullptr;
+    for (auto& inst : entryBlock) {
+        if ((callInst = llvm::dyn_cast<llvm::CallInst>(&inst))) {
+            break;
+        }
+    }
+    ASSERT_NE(nullptr, callInst);
+    EXPECT_EQ("add<Int>", callInst->getCalledFunction()->getName().str());
+
+    // Check if the result is returned
+    llvm::ReturnInst* retInst = llvm::dyn_cast<llvm::ReturnInst>(entryBlock.getTerminator());
+    ASSERT_NE(nullptr, retInst);
+    EXPECT_EQ(callInst, retInst->getReturnValue());
+}
+
 TEST_F(CodeGennerTest, GenerateTraitFunction) {
     const std::string input = R"(
         obj Test {
