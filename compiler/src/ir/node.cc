@@ -78,7 +78,7 @@ llvm::Value* NString::codeGen(CodeGenContext& context) {
 llvm::Value* NIdentifier::codeGen(CodeGenContext& context) {
     Variable& variable = context.getVariable(name);
     if (variable.ptr == nullptr) {
-        LOG_DEBUG("Variable \"" + name + "\" is not defined");
+        LOG_ERROR("Variable \"" + name + "\" is not defined");
         return nullptr;
     }
     return context.getBuilder().CreateLoad(variable.type, variable.ptr, name.c_str());
@@ -438,8 +438,8 @@ llvm::Value* NForStatement::codeGen(CodeGenContext& context) {
             init = std::make_shared<NInteger>(0);
         }
 
-        llvm::Value* value = iterator->codeGen(context);
-        if (nullptr == value) {
+        bool isIteratorDeclared = context.getVariable(iterator->name).ptr != nullptr;
+        if (false == isIteratorDeclared) {
             std::shared_ptr<NVariableDeclaration> declaration = std::make_shared<NVariableDeclaration>(iterator, init);
             declaration->codeGen(context);
         }
