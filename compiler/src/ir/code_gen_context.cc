@@ -13,7 +13,14 @@ llvm::LLVMContext &CodeGenContext::getContext() { return context; }
 llvm::IRBuilder<> &CodeGenContext::getBuilder() { return builder; }
 
 llvm::Type *CodeGenContext::getType(const std::string &name) {
-    return types[name].type;
+    if (types.find(name) != types.end()) {
+        return types[name].type;
+    } else if ((false == templateTypeStack.empty()) && (templateTypeStack.top().find(name) != templateTypeStack.top().end())) {
+        return templateTypeStack.top()[name].type;
+    } else {
+        Logger::debug("Type not found: " + name);
+        return nullptr;
+    }
 }
 
 void CodeGenContext::addType(const std::string &name, llvm::Type *type, const std::unordered_map<std::string, llvm::Type *> &nameTypeMap) {
@@ -51,6 +58,18 @@ void CodeGenContext::registerTemplateFunction(std::shared_ptr<NTemplateFunctionD
 
 void CodeGenContext::registerTraitMethod(std::shared_ptr<NTraitMethodDeclaration> traitMethod) {
     traitMethods[traitMethod->declaration->definition->name] = traitMethod;
+}
+
+void CodeGenContext::pushTemplateTypeStack() {
+    templateTypeStack.push({});
+}
+
+void CodeGenContext::registerTemplateType(const std::string &templateName, const std::string &type) {
+    templateTypeStack.top()[templateName] = types[type];
+}
+
+void CodeGenContext::popTemplateTypeStack() {
+    templateTypeStack.pop();
 }
 
 std::shared_ptr<NTemplateObjectDeclaration> CodeGenContext::getTemplateObject(const std::string &name) {

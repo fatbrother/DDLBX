@@ -188,12 +188,7 @@ public:
     NTemplateFunctionDefinition(std::shared_ptr<NType> type, std::string name,
                                 std::vector<std::shared_ptr<NArgument>> arguments, std::vector<std::string> templates)
         : NFunctionDefinition(type, name, arguments), templates(templates) {}
-    virtual llvm::Value* codeGen(CodeGenContext& context) override {
-        Logger::error("NTemplateFunctionDefinition::codeGen() should not be called");
-        return nullptr;
-    }
-    llvm::Value* codeGen(CodeGenContext& context, std::vector<std::shared_ptr<NType>> templateArgs);
-    virtual std::string getType() override { return "NTemplatedFunctionDefinition"; }
+    virtual std::string getType() override { return "NTemplateFunctionDefinition"; }
 };
 
 class NFunctionDeclaration : public NStatement {
@@ -207,15 +202,14 @@ public:
 
 class NTemplateFunctionDeclaration : public NFunctionDeclaration {
 public:
-    std::vector<std::string> templates;
-    NTemplateFunctionDeclaration(std::shared_ptr<NFunctionDefinition> definition, std::shared_ptr<NBlock> block, std::vector<std::string> templates)
-        : NFunctionDeclaration(definition, block), templates(templates) {}
+    NTemplateFunctionDeclaration(std::shared_ptr<NFunctionDefinition> definition, std::shared_ptr<NBlock> block)
+        : NFunctionDeclaration(definition, block) {}
     virtual llvm::Value* codeGen(CodeGenContext& context) override {
-        Logger::error("NTemplateFunctionDeclaration::codeGen() should not be called");
+        Logger::debug("NTemplateFunctionDeclaration::codeGen() should not be called");
         return nullptr;
     }
-    llvm::Value* codeGen(CodeGenContext& context, std::vector<std::shared_ptr<NType>> templateArgs);
-    virtual std::string getType() override { return "NTemplatedFunctionDeclaration"; }
+    llvm::Value* codeGen(CodeGenContext& context, std::vector<std::string> templateArgs);
+    virtual std::string getType() override { return "NTemplateFunctionDeclaration"; }
 };
 
 class NReturnStatement : public NStatement {
@@ -237,6 +231,7 @@ public:
 
 class NFunctionCall : public NExpression {
 public:
+    std::vector<std::string> templateArgs;
     std::shared_ptr<NMemberAccess> parent;
     std::string name;
     std::vector<std::shared_ptr<NExpression>> arguments;
@@ -246,6 +241,9 @@ public:
     }
     NFunctionCall(std::string name,
                   std::vector<std::shared_ptr<NExpression>> arguments) : name(name), arguments(arguments) {}
+    NFunctionCall(std::string name,
+                  std::vector<std::shared_ptr<NExpression>> arguments,
+                  std::vector<std::string> templateArgs) : name(name), arguments(arguments), templateArgs(templateArgs) {}
     virtual llvm::Value* codeGen(CodeGenContext& context) override;
     virtual std::string getType() override { return "NFunctionCall"; }
 };
@@ -277,7 +275,7 @@ public:
     std::string name;
     NMemberDeclaration(std::shared_ptr<NType> type, std::string name) : type(type), name(name) {}
     virtual llvm::Value* codeGen(CodeGenContext& context) {
-        Logger::error("NMemberDeclaration::codeGen() should not be called");
+        Logger::debug("NMemberDeclaration::codeGen() should not be called");
         return nullptr;
     }
 };
@@ -298,7 +296,7 @@ public:
     NTemplateObjectDeclaration(std::string name, std::vector<std::shared_ptr<NMemberDeclaration>> members, std::vector<std::string> templates)
         : NObjectDeclaration(name, members), templates(templates) {}
     virtual llvm::Value* codeGen(CodeGenContext& context) override {
-        Logger::error("NTemplateObjectDeclaration::codeGen() should not be called");
+        Logger::debug("NTemplateObjectDeclaration::codeGen() should not be called");
         return nullptr;
     }
     llvm::Value* codeGen(CodeGenContext& context, std::vector<std::shared_ptr<NType>> templateArgs);

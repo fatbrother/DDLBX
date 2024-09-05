@@ -55,7 +55,7 @@ ddlbx::ir::NProgram* program;
 %type <program> Program
 %type <stmtvec> GlobalStatements
 %type <block> Block Statements
-%type <stmt> Statement GlobalStatement FunctionDeclaration FunctionDefinition OptStatement ForStatement ReturnStatement ObjectDeclaration MethodDeclaration TraitMethodDeclaration
+%type <stmt> Statement GlobalStatement FunctionDeclaration FunctionDefinition OptStatement ForStatement ReturnStatement ObjectDeclaration MethodDeclaration TraitMethodDeclaration TemplateFunctionDefinition
 %type <expr> Expression Condition Calculation Term Factor Numeric Boolean String AssignExpression FunctionCallExpression DeclarationExpression FPDeclaration Primary MemberAccessExpression ObjectCreateExpression
 %type <varvec> DeclarationList
 %type <argvec> FPDeclarationList
@@ -104,7 +104,10 @@ FunctionDefinition:
                                                 *$2,
                                                 *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>($4)));
       }
-    | KW_FUNCTION IDENTIFIER TemplateDeclaration LPAREN FPDeclarationList RPAREN COLON Type {
+    ;
+
+TemplateFunctionDefinition:
+      KW_FUNCTION IDENTIFIER TemplateDeclaration LPAREN FPDeclarationList RPAREN COLON Type {
         $$ = new ddlbx::ir::NTemplateFunctionDefinition(std::shared_ptr<ddlbx::ir::NType>($8), 
                                                 *$2,
                                                 *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>($5)),
@@ -116,6 +119,10 @@ FunctionDeclaration:
       FunctionDefinition Block {
         $$ = new ddlbx::ir::NFunctionDeclaration(std::shared_ptr<ddlbx::ir::NFunctionDefinition>(dynamic_cast<ddlbx::ir::NFunctionDefinition*>($1)),
                                                  std::shared_ptr<ddlbx::ir::NBlock>($2));
+      }
+    | TemplateFunctionDefinition Block {
+        $$ = new ddlbx::ir::NTemplateFunctionDeclaration(std::shared_ptr<ddlbx::ir::NFunctionDefinition>(dynamic_cast<ddlbx::ir::NFunctionDefinition*>($1)),
+                                                         std::shared_ptr<ddlbx::ir::NBlock>($2));
       }
     ;
 
@@ -195,6 +202,9 @@ ReturnStatement:
 FunctionCallExpression:
       IDENTIFIER LPAREN FCParameterList RPAREN {
         $$ = new ddlbx::ir::NFunctionCall(*$1, std::vector<std::shared_ptr<ddlbx::ir::NExpression>>(*$3));
+      }
+    | IDENTIFIER TemplateDeclaration LPAREN FCParameterList RPAREN {
+        $$ = new ddlbx::ir::NFunctionCall(*$1, std::vector<std::shared_ptr<ddlbx::ir::NExpression>>(*$4), *$2);
       }
     | MemberAccessExpression LPAREN FCParameterList RPAREN {
         $$ = new ddlbx::ir::NFunctionCall(std::shared_ptr<ddlbx::ir::NMemberAccess>(dynamic_cast<ddlbx::ir::NMemberAccess*>($1)),

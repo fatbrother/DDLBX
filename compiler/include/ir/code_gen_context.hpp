@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <map>
+#include <stack>
 #include <memory>
 
 #include <llvm/IR/Value.h>
@@ -46,6 +47,9 @@ public:
     void registerTemplateObject(std::shared_ptr<NTemplateObjectDeclaration> templateObject);
     void registerTemplateFunction(std::shared_ptr<NTemplateFunctionDeclaration> templateFunction);
     void registerTraitMethod(std::shared_ptr<NTraitMethodDeclaration> traitMethod);
+    void pushTemplateTypeStack();
+    void registerTemplateType(const std::string &templateName, const std::string &type);
+    void popTemplateTypeStack();
     std::shared_ptr<NTemplateObjectDeclaration> getTemplateObject(const std::string &name);
     std::shared_ptr<NTemplateFunctionDeclaration> getTemplateFunction(const std::string &name);
     std::shared_ptr<NTraitMethodDeclaration> getTraitMethod(const std::string &name);
@@ -60,6 +64,7 @@ private:
     std::map<std::string, std::shared_ptr<NTemplateObjectDeclaration>> templateObjects;
     std::map<std::string, std::shared_ptr<NTemplateFunctionDeclaration>> templateFunctions;
     std::map<std::string, std::shared_ptr<NTraitMethodDeclaration>> traitMethods;
+    std::stack<std::map<std::string, Type>> templateTypeStack;
 };
 
 } // namespace ddlbx::ir
