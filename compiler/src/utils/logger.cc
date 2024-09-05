@@ -29,11 +29,7 @@ void Logger::debug(const std::string &message) {
 }
 
 void Logger::error(const std::string &message) {
-#ifdef DDLBX_DEBUG
-    if (logLevel <= LogLevel::ERROR) {
-        std::cout << "\033[" << ColorCode::FG_RED << "m[ERROR]\033[" << ColorCode::FG_DEFAULT << "m " << message << std::endl;
-    }
-#endif
+    std::cout << "\033[" << ColorCode::FG_RED << "m[ERROR]\033[" << ColorCode::FG_DEFAULT << "m " << message << std::endl;
 }
 
 } // namespace ddlbx::utility
