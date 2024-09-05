@@ -78,7 +78,7 @@ llvm::Value* NString::codeGen(CodeGenContext& context) {
 llvm::Value* NIdentifier::codeGen(CodeGenContext& context) {
     Variable& variable = context.getVariable(name);
     if (variable.ptr == nullptr) {
-        Logger::error("Variable \"" + name + "\" is not defined");
+        LOG_DEBUG("Variable \"" + name + "\" is not defined");
         return nullptr;
     }
     return context.getBuilder().CreateLoad(variable.type, variable.ptr, name.c_str());
@@ -115,7 +115,7 @@ llvm::Value* NBinaryOperator::codeGen(CodeGenContext& context) {
 
     if (lvalue->getType() != rvalue->getType()) {
         // TODO: Implement type coercion
-        Logger::error("Type mismatch");
+        LOG_ERROR("Type mismatch");
         return nullptr;
     }
 
@@ -157,7 +157,7 @@ llvm::Value* NBinaryOperator::codeGen(CodeGenContext& context) {
             result = context.getBuilder().CreateICmpSGT(lvalue, rvalue);
             break;
         default:
-            Logger::error("Invalid binary operator");
+            LOG_ERROR("Invalid binary operator");
     }
 
     return result;
@@ -172,7 +172,7 @@ llvm::Value* NUnaryOperator::codeGen(CodeGenContext& context) {
             result = context.getBuilder().CreateNot(value);
             break;
         default:
-            Logger::error("Invalid unary operator");
+            LOG_ERROR("Invalid unary operator");
     }
 
     return result;
@@ -199,7 +199,7 @@ llvm::Value* NFunctionDeclaration::codeGen(CodeGenContext& context) {
         function = context.getModule().getFunction(this->definition->name.c_str());
 
         if (!function) {
-            Logger::error("Function " + this->definition->name + " not found");
+            LOG_ERROR("Function " + this->definition->name + " not found");
             return nullptr;
         }
     }
@@ -223,7 +223,7 @@ llvm::Value* NFunctionDeclaration::codeGen(CodeGenContext& context) {
         if (function->getReturnType()->isVoidTy()) {
             context.getBuilder().CreateRetVoid();
         } else {
-            Logger::error("Function must return a value");
+            LOG_ERROR("Function must return a value");
             return nullptr;
         }
     }
@@ -238,7 +238,7 @@ llvm::Value* NTemplateFunctionDeclaration::codeGen(CodeGenContext& context, std:
 
     context.pushTemplateTypeStack();
     for (int i = 0; i < templateArgs.size(); i++) {
-        Logger::debug("Registering template type " + definition->templates[i] + " as " + templateArgs[i]);
+        LOG_DEBUG("Registering template type " + definition->templates[i] + " as " + templateArgs[i]);
         context.registerTemplateType(definition->templates[i], templateArgs[i]);
     }
 
@@ -288,7 +288,7 @@ llvm::Value* NMemberAccess::codeGen(CodeGenContext& context) {
 llvm::Value* NFunctionCall::codeGen(CodeGenContext& context) {
     if (name == "sizeof" && !parent) {
         if (arguments.size() != 1) {
-            Logger::error("Function \"sizeof\" expects 1 argument, but " + std::to_string(arguments.size()) + " were provided");
+            LOG_ERROR("Function \"sizeof\" expects 1 argument, but " + std::to_string(arguments.size()) + " were provided");
             return nullptr;
         }
         llvm::Value* value = arguments[0]->codeGen(context);
@@ -306,7 +306,7 @@ llvm::Value* NFunctionCall::codeGen(CodeGenContext& context) {
     if (parent) {
         parentValue = parent->codeGen(context);
         if (!parentValue) {
-            Logger::error("Parent value code generation failed");
+            LOG_ERROR("Parent value code generation failed");
             return nullptr;
         }
         llvm::Type* parentType = parentValue->getType();
@@ -326,21 +326,21 @@ llvm::Value* NFunctionCall::codeGen(CodeGenContext& context) {
 
     llvm::Function* targetFunction = context.getModule().getFunction(fullName);
     if (!targetFunction) {
-        Logger::debug("Function " + fullName + " not found");
+        LOG_DEBUG("Function " + fullName + " not found");
 
         if (false == templateArgs.empty()) {
-            Logger::debug("Trying to find template function " + name);
+            LOG_DEBUG("Trying to find template function " + name);
             std::shared_ptr<NTemplateFunctionDeclaration> templateFunction = context.getTemplateFunction(name);
             if (nullptr == templateFunction) {
-                Logger::error("Template function " + name + " not found");
+                LOG_ERROR("Template function " + name + " not found");
                 return nullptr;
             }
             templateFunction->codeGen(context, templateArgs);
         } else {
-            Logger::debug("Trying to find trait method " + name);
+            LOG_DEBUG("Trying to find trait method " + name);
             std::shared_ptr<NTraitMethodDeclaration> traitMethod = context.getTraitMethod(name);
             if (nullptr == traitMethod) {
-                Logger::error("Trait method " + name + " not found");
+                LOG_ERROR("Trait method " + name + " not found");
                 return nullptr;
             }
 
@@ -351,7 +351,7 @@ llvm::Value* NFunctionCall::codeGen(CodeGenContext& context) {
 
         targetFunction = context.getModule().getFunction(fullName);
         if (!targetFunction) {
-            Logger::error("Trait method " + name + " creation failed");
+            LOG_ERROR("Trait method " + name + " creation failed");
             return nullptr;
         }
     }
@@ -361,7 +361,7 @@ llvm::Value* NFunctionCall::codeGen(CodeGenContext& context) {
     }
 
     if (targetFunction->arg_size() != argValues.size()) {
-        Logger::error("Function " + fullName + " expects " + std::to_string(targetFunction->arg_size()) + " arguments, but " + std::to_string(argValues.size()) + " were provided");
+        LOG_ERROR("Function " + fullName + " expects " + std::to_string(targetFunction->arg_size()) + " arguments, but " + std::to_string(argValues.size()) + " were provided");
         return nullptr;
     }
 
@@ -382,10 +382,10 @@ llvm::Value* NObjectCreation::codeGen(CodeGenContext& context) {
     llvm::BasicBlock* currentBlock = context.getBuilder().GetInsertBlock();
     llvm::Type* type = context.getType(fullName);
     if (nullptr == type) {
-        Logger::info("Type \"" + fullName + "\" is not defined, trying to find template object");
+        LOG_INFO("Type \"" + fullName + "\" is not defined, trying to find template object");
         std::shared_ptr<NTemplateObjectDeclaration> templateObject = context.getTemplateObject(name);
         if (nullptr == templateObject) {
-            Logger::error("Template object \"" + name + "\" is not defined");
+            LOG_ERROR("Template object \"" + name + "\" is not defined");
             return nullptr;
         }
 
@@ -404,7 +404,7 @@ llvm::Value* NObjectCreation::codeGen(CodeGenContext& context) {
 
     llvm::Function* constructor = context.getModule().getFunction(fullName);
     if (nullptr == constructor) {
-        Logger::error("Constructor for type \"" + fullName + "\" is not defined");
+        LOG_ERROR("Constructor for type \"" + fullName + "\" is not defined");
         return nullptr;
     }
 
@@ -571,7 +571,7 @@ llvm::Value* NTemplateObjectDeclaration::codeGen(CodeGenContext& context, std::v
 
 llvm::Value* NMethodDeclaration::codeGen(CodeGenContext& context) {
     if (nullptr == context.getType(name)) {
-        Logger::error("Type \"" + name + "\" is not defined");
+        LOG_ERROR("Type \"" + name + "\" is not defined");
         return nullptr;
     }
 

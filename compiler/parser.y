@@ -85,7 +85,7 @@ GlobalStatements:
       }
     | GlobalStatements GlobalStatement {
         $1->push_back(std::shared_ptr<ddlbx::ir::NStatement>($2));
-      } 
+      }
     ;
 
 GlobalStatement:
@@ -100,7 +100,7 @@ GlobalStatement:
 
 FunctionDefinition:
       KW_FUNCTION IDENTIFIER LPAREN FPDeclarationList RPAREN COLON Type {
-        $$ = new ddlbx::ir::NFunctionDefinition(std::shared_ptr<ddlbx::ir::NType>($7), 
+        $$ = new ddlbx::ir::NFunctionDefinition(std::shared_ptr<ddlbx::ir::NType>($7),
                                                 *$2,
                                                 *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>($4)));
       }
@@ -108,7 +108,7 @@ FunctionDefinition:
 
 TemplateFunctionDefinition:
       KW_FUNCTION IDENTIFIER TemplateDeclaration LPAREN FPDeclarationList RPAREN COLON Type {
-        $$ = new ddlbx::ir::NTemplateFunctionDefinition(std::shared_ptr<ddlbx::ir::NType>($8), 
+        $$ = new ddlbx::ir::NTemplateFunctionDefinition(std::shared_ptr<ddlbx::ir::NType>($8),
                                                 *$2,
                                                 *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>($5)),
                                                 *$3);
@@ -303,24 +303,24 @@ Statement:
 
 ForStatement:
       KW_FOR LPAREN Identifier KW_TO Expression RPAREN Block {
-        $$ = new ddlbx::ir::NForStatement(std::shared_ptr<ddlbx::ir::NIdentifier>($3), 
+        $$ = new ddlbx::ir::NForStatement(std::shared_ptr<ddlbx::ir::NIdentifier>($3),
                                           nullptr,
-                                          std::shared_ptr<ddlbx::ir::NExpression>($5), 
-                                          nullptr, 
+                                          std::shared_ptr<ddlbx::ir::NExpression>($5),
+                                          nullptr,
                                           std::shared_ptr<ddlbx::ir::NBlock>($7));
       }
     | KW_FOR LPAREN Identifier KW_TO Expression KW_STEP Expression RPAREN Block {
-        $$ = new ddlbx::ir::NForStatement(std::shared_ptr<ddlbx::ir::NIdentifier>($3), 
-                                          nullptr, 
-                                          std::shared_ptr<ddlbx::ir::NExpression>($5), 
-                                          std::shared_ptr<ddlbx::ir::NExpression>($7), 
+        $$ = new ddlbx::ir::NForStatement(std::shared_ptr<ddlbx::ir::NIdentifier>($3),
+                                          nullptr,
+                                          std::shared_ptr<ddlbx::ir::NExpression>($5),
+                                          std::shared_ptr<ddlbx::ir::NExpression>($7),
                                           std::shared_ptr<ddlbx::ir::NBlock>($9));
       }
     | KW_FOR LPAREN Identifier KW_FROM Expression KW_TO Expression KW_STEP Expression RPAREN Block {
-        $$ = new ddlbx::ir::NForStatement(std::shared_ptr<ddlbx::ir::NIdentifier>($3), 
-                                          std::shared_ptr<ddlbx::ir::NExpression>($5), 
-                                          std::shared_ptr<ddlbx::ir::NExpression>($7), 
-                                          std::shared_ptr<ddlbx::ir::NExpression>($9), 
+        $$ = new ddlbx::ir::NForStatement(std::shared_ptr<ddlbx::ir::NIdentifier>($3),
+                                          std::shared_ptr<ddlbx::ir::NExpression>($5),
+                                          std::shared_ptr<ddlbx::ir::NExpression>($7),
+                                          std::shared_ptr<ddlbx::ir::NExpression>($9),
                                           std::shared_ptr<ddlbx::ir::NBlock>($11));
       }
     | KW_FOR LPAREN Expression RPAREN Block {
@@ -502,10 +502,10 @@ Type:
         $$ = new ddlbx::ir::NType(*$1);
       }
 
-%%  
+%%
 
 void yyerror(const char *s) {
-    ddlbx::utility::Logger::error("Error: " + std::string(s) + " at " + std::to_string(yylineno) + ":" + std::to_string(yycolumn) + " near " + std::string(yytext));
+    ddlbx::utility::LOG_ERROR("Error: " + std::string(s) + " at " + std::to_string(yylineno) + ":" + std::to_string(yycolumn) + " near " + std::string(yytext));
     return;
 }
 

@@ -18,7 +18,7 @@ llvm::Type *CodeGenContext::getType(const std::string &name) {
     } else if ((false == templateTypeStack.empty()) && (templateTypeStack.top().find(name) != templateTypeStack.top().end())) {
         return templateTypeStack.top()[name].type;
     } else {
-        Logger::debug("Type not found: " + name);
+        LOG_DEBUG("Type not found: " + name);
         return nullptr;
     }
 }
