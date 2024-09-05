@@ -28,9 +28,9 @@ protected:
     // Helper function to generate LLVM IR code from a block
     void generate(const std::string& input) {
         yylineno = 1;
-        YY_BUFFER_STATE my_string_buffer = yy_scan_string(input.c_str()); 
+        YY_BUFFER_STATE my_string_buffer = yy_scan_string(input.c_str());
         yy_switch_to_buffer( my_string_buffer );
-        yyparse(); 
+        yyparse();
         yy_delete_buffer(my_string_buffer );
 
         if (program == nullptr) {
@@ -514,7 +514,7 @@ TEST_F(CodeGennerTest, GenerateMethodCall) {
     // Assuming the test function has a single basic block
     llvm::BasicBlock* entryBlock = &testFunction->getEntryBlock();
     ASSERT_NE(nullptr, entryBlock);
-    
+
     // Assuming the last second instruction is a call instruction
     llvm::CallInst* callInst = llvm::dyn_cast<llvm::CallInst>((++entryBlock->rbegin()).operator->());
     ASSERT_NE(nullptr, callInst);
@@ -561,7 +561,11 @@ TEST_F(CodeGennerTest, GenerateTemplateObject) {
 
 TEST_F(CodeGennerTest, GenerateTemplateFunction) {
     const std::string input = R"(
-        fun test<T>(): T { ret 0! }
+        fun test<T>(): Int { ret 0! }
+
+        fun main(): Int {
+            ret test<Int>()!
+        }
     )";
     generate(input);
 
@@ -598,7 +602,7 @@ TEST_F(CodeGennerTest, GenerateTemplateWithExpression) {
     // Check the main function
     llvm::Function* mainFunction = module.getFunction("main");
     ASSERT_NE(nullptr, mainFunction);
-    
+
     llvm::BasicBlock& entryBlock = mainFunction->getEntryBlock();
     ASSERT_FALSE(entryBlock.empty());
 
