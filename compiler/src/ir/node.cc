@@ -5,6 +5,7 @@
 
 #include "parser/parser.hpp"
 #include "utils/logger.hpp"
+#include "utils/scope_guard.hpp"
 
 using namespace ddlbx::ir;
 using namespace ddlbx::utility;
@@ -87,7 +88,18 @@ llvm::Value* NIdentifier::codeGen(CodeGenContext& context) {
 llvm::Value* NAssignment::codeGen(CodeGenContext& context) {
     llvm::Value* value = rhs->codeGen(context);
     std::string name = lhs->name;
-    llvm::Value* ptr = context.getBuilder().CreateStore(value, context.getVariable(name).ptr);
+
+    if (value == nullptr) {
+        LOG_ERROR("Assignment failed");
+        return nullptr;
+    }
+
+    if (context.getVariable(name).ptr == nullptr) {
+        LOG_ERROR("Variable \"" + name + "\" is not defined");
+        return nullptr;
+    }
+
+    context.getBuilder().CreateStore(value, context.getVariable(name).ptr);
     return value;
 }
 
@@ -95,16 +107,25 @@ llvm::Value* NVariableDeclarationList::codeGen(CodeGenContext& context) {
     for (auto& declaration : declarations) {
         declaration->codeGen(context);
     }
+
     return nullptr;
 }
 
 llvm::Value* NVariableDeclaration::codeGen(CodeGenContext& context) {
     llvm::Value* value = assignmentExpr->codeGen(context);
-    llvm::Type* type = value->getType();
+    llvm::Type* type = nullptr;
     std::string name = id->name;
+
+    if (value == nullptr) {
+        LOG_ERROR("Variable declaration failed");
+        return nullptr;
+    }
+    type = value->getType();
+
     llvm::Value* ptr = context.getBuilder().CreateAlloca(type, nullptr, name.c_str());
     context.getBuilder().CreateStore(value, ptr);
     context.setVariable(name, {type, ptr});
+
     return value;
 }
 
@@ -112,6 +133,11 @@ llvm::Value* NBinaryOperator::codeGen(CodeGenContext& context) {
     llvm::Value* lvalue = lhs->codeGen(context);
     llvm::Value* rvalue = rhs->codeGen(context);
     llvm::Value* result = nullptr;
+
+    if (lvalue == nullptr || rvalue == nullptr) {
+        LOG_ERROR("Binary operator failed");
+        return nullptr;
+    }
 
     if (lvalue->getType() != rvalue->getType()) {
         // TODO: Implement type coercion
@@ -167,6 +193,11 @@ llvm::Value* NUnaryOperator::codeGen(CodeGenContext& context) {
     llvm::Value* value = expr->codeGen(context);
     llvm::Value* result = nullptr;
 
+    if (value == nullptr) {
+        LOG_ERROR("Unary operator failed");
+        return nullptr;
+    }
+
     switch (op) {
         case OP_NOT:
             result = context.getBuilder().CreateNot(value);
@@ -183,20 +214,23 @@ llvm::Value* NFunctionDefinition::codeGen(CodeGenContext& context) {
 
     for (auto arg : arguments) {
         argTypes.push_back(arg->type->codeGen(context));
+        if (argTypes.back() == nullptr) {
+            LOG_ERROR("Function argument type generation failed");
+            return nullptr;
+        }
     }
 
     llvm::FunctionType* functionType = llvm::FunctionType::get(retType->codeGen(context), argTypes, false);
     llvm::Function* function = llvm::Function::Create(functionType, llvm::Function::ExternalLinkage, name.c_str(), context.getModule());
 
-    return nullptr;
+    return function;
 }
 
 llvm::Value* NFunctionDeclaration::codeGen(CodeGenContext& context) {
     llvm::Function* function = context.getModule().getFunction(this->definition->name.c_str());
 
     if (!function) {
-        this->definition->codeGen(context);
-        function = context.getModule().getFunction(this->definition->name.c_str());
+        function = static_cast<llvm::Function*>(this->definition->codeGen(context));
 
         if (!function) {
             LOG_ERROR("Function " + this->definition->name + " not found");
@@ -207,13 +241,23 @@ llvm::Value* NFunctionDeclaration::codeGen(CodeGenContext& context) {
     llvm::BasicBlock* block = llvm::BasicBlock::Create(context.getContext(), "entry", function, 0);
     llvm::BasicBlock* currentBlock = context.getBuilder().GetInsertBlock();
     context.getBuilder().SetInsertPoint(block);
+    auto scopeGuard = makeGuard([&]() {
+        context.getBuilder().SetInsertPoint(currentBlock);
+    });
 
     auto argIt = this->definition->arguments.begin();
     for (auto it = function->arg_begin(); it != function->arg_end(); it++) {
         it->setName((*argIt)->name.c_str());
-        llvm::AllocaInst* inst = context.getBuilder().CreateAlloca((*argIt)->type->codeGen(context), nullptr, (*argIt)->name.c_str());
+
+        llvm::Type* type = (*argIt)->type->codeGen(context);
+        if (it->getType() != type) {
+            LOG_ERROR("Function argument type error");
+            return nullptr;
+        }
+
+        llvm::AllocaInst* inst = context.getBuilder().CreateAlloca(type, nullptr, (*argIt)->name.c_str());
         context.getBuilder().CreateStore(&*it, inst);
-        context.setVariable((*argIt)->name, {(*argIt)->type->codeGen(context), inst});
+        context.setVariable((*argIt)->name, {type, inst});
         argIt++;
     }
 
@@ -228,8 +272,6 @@ llvm::Value* NFunctionDeclaration::codeGen(CodeGenContext& context) {
         }
     }
 
-    context.getBuilder().SetInsertPoint(currentBlock);
-
     return function;
 }
 
@@ -237,6 +279,10 @@ llvm::Value* NTemplateFunctionDeclaration::codeGen(CodeGenContext& context, std:
     std::shared_ptr<NTemplateFunctionDefinition> definition = std::dynamic_pointer_cast<NTemplateFunctionDefinition>(this->definition);
 
     context.pushTemplateTypeStack();
+    auto popStackGuard = makeGuard([&]() {
+        context.popTemplateTypeStack();
+    });
+
     for (int i = 0; i < templateArgs.size(); i++) {
         LOG_DEBUG("Registering template type " + definition->templates[i] + " as " + templateArgs[i]);
         context.registerTemplateType(definition->templates[i], templateArgs[i]);
@@ -250,19 +296,24 @@ llvm::Value* NTemplateFunctionDeclaration::codeGen(CodeGenContext& context, std:
     }
     definition->name.pop_back();
     definition->name += ">";
+    auto resetNameGuard = makeGuard([&]() {
+        definition->name = originalName;
+    });
 
     auto func = NFunctionDeclaration::codeGen(context);
-
-    context.popTemplateTypeStack();
-
-    definition->name = originalName;
 
     return func;
 }
 
 llvm::Value* NReturnStatement::codeGen(CodeGenContext& context) {
     if (expression) {
-        return context.getBuilder().CreateRet(expression->codeGen(context));
+        llvm::Value* value = expression->codeGen(context);
+        if (value == nullptr) {
+            LOG_ERROR("Return statement failed");
+            return nullptr;
+        }
+
+        return context.getBuilder().CreateRet(value);
     } else {
         return context.getBuilder().CreateRetVoid();
     }
@@ -270,14 +321,21 @@ llvm::Value* NReturnStatement::codeGen(CodeGenContext& context) {
 
 llvm::Value* NMemberAccess::codeGen(CodeGenContext& context) {
     llvm::Value* parentValue = parent->codeGen(context);
-    llvm::Type* parentType = parentValue->getType();
+    llvm::Type* parentType = nullptr;
+
+    if (parentValue == nullptr) {
+        LOG_ERROR("Parent value error");
+        return nullptr;
+    }
+    parentType = parentValue->getType();
 
     for (const auto& id : ids) {
         llvm::StructType* structType = llvm::cast<llvm::StructType>(parentValue->getType());
         std::string typeName = context.getTypeName(parentType);
         int memberIndex = context.getTypeMemberIndex(typeName, id->name);
         if (memberIndex == -1) {
-            throw std::runtime_error(id->name + " is not a member of " + structType->getName().str());
+            LOG_ERROR("Member " + id->name + " not found in type " + typeName);
+            return nullptr;
         }
         parentValue = context.getBuilder().CreateExtractValue(parentValue, memberIndex);
     }
@@ -299,6 +357,10 @@ llvm::Value* NFunctionCall::codeGen(CodeGenContext& context) {
     std::vector<llvm::Value*> argValues;
     for (const auto& arg : arguments) {
         argValues.push_back(arg->codeGen(context));
+        if (argValues.back() == nullptr) {
+            LOG_ERROR("Function argument error");
+            return nullptr;
+        }
     }
 
     std::string fullName = name;
@@ -306,7 +368,7 @@ llvm::Value* NFunctionCall::codeGen(CodeGenContext& context) {
     if (parent) {
         parentValue = parent->codeGen(context);
         if (!parentValue) {
-            LOG_ERROR("Parent value code generation failed");
+            LOG_ERROR("Parent value error");
             return nullptr;
         }
         llvm::Type* parentType = parentValue->getType();
@@ -335,7 +397,8 @@ llvm::Value* NFunctionCall::codeGen(CodeGenContext& context) {
                 LOG_ERROR("Template function " + name + " not found");
                 return nullptr;
             }
-            templateFunction->codeGen(context, templateArgs);
+
+            targetFunction = static_cast<llvm::Function*>(templateFunction->codeGen(context, templateArgs));
         } else {
             LOG_DEBUG("Trying to find trait method " + name);
             std::shared_ptr<NTraitMethodDeclaration> traitMethod = context.getTraitMethod(name);
@@ -346,10 +409,10 @@ llvm::Value* NFunctionCall::codeGen(CodeGenContext& context) {
 
             llvm::Type* parentType = parentValue->getType();
             std::string parentTypeName = context.getTypeName(parentType);
-            traitMethod->codeGen(context, parentTypeName);
+
+            targetFunction = static_cast<llvm::Function*>(traitMethod->codeGen(context, parentTypeName));
         }
 
-        targetFunction = context.getModule().getFunction(fullName);
         if (!targetFunction) {
             LOG_ERROR("Trait method " + name + " creation failed");
             return nullptr;
@@ -380,6 +443,10 @@ llvm::Value* NObjectCreation::codeGen(CodeGenContext& context) {
     }
 
     llvm::BasicBlock* currentBlock = context.getBuilder().GetInsertBlock();
+    auto scopeGuard = makeGuard([&]() {
+        context.getBuilder().SetInsertPoint(currentBlock);
+    });
+
     llvm::Type* type = context.getType(fullName);
     if (nullptr == type) {
         LOG_INFO("Type \"" + fullName + "\" is not defined, trying to find template object");
@@ -393,13 +460,20 @@ llvm::Value* NObjectCreation::codeGen(CodeGenContext& context) {
         for (const auto& arg : templateArgs) {
             templateArgTypes.push_back(std::make_shared<NType>(arg));
         }
-        templateObject->codeGen(context, templateArgTypes);
-        type = context.getType(fullName);
+
+        type = templateObject->codeGen(context, templateArgTypes);
     }
+
+    context.getBuilder().SetInsertPoint(currentBlock);
+    scopeGuard.dismiss();
 
     std::vector<llvm::Value*> argValues;
     for (const auto& arg : arguments) {
         argValues.push_back(arg->codeGen(context));
+        if (argValues.back() == nullptr) {
+            LOG_ERROR("Object creation argument error");
+            return nullptr;
+        }
     }
 
     llvm::Function* constructor = context.getModule().getFunction(fullName);
@@ -408,7 +482,6 @@ llvm::Value* NObjectCreation::codeGen(CodeGenContext& context) {
         return nullptr;
     }
 
-    context.getBuilder().SetInsertPoint(currentBlock);
     return context.getBuilder().CreateCall(constructor, argValues);
 }
 
@@ -418,12 +491,19 @@ llvm::Value* NOptStatement::codeGen(CodeGenContext& context) {
     llvm::BasicBlock* thenBlock = llvm::BasicBlock::Create(context.getContext(), "then", function);
     llvm::BasicBlock* mergeBlock = llvm::BasicBlock::Create(context.getContext(), "ifcont", function);
 
+    if (nullptr == conditionValue) {
+        LOG_ERROR("Opt statement condition error");
+        return nullptr;
+    }
+
     context.getBuilder().CreateCondBr(conditionValue, thenBlock, mergeBlock);
 
     context.getBuilder().SetInsertPoint(thenBlock);
-    then->codeGen(context);
+    auto scopeGuard = makeGuard([&]() {
+        context.getBuilder().SetInsertPoint(mergeBlock);
+    });
 
-    context.getBuilder().SetInsertPoint(mergeBlock);
+    then->codeGen(context);
 
     return nullptr;
 }
@@ -453,9 +533,18 @@ llvm::Value* NForStatement::codeGen(CodeGenContext& context) {
 
     context.getBuilder().CreateBr(loopBlock);
     context.getBuilder().SetInsertPoint(loopBlock);
+    auto scopeGuard = makeGuard([&]() {
+        context.getBuilder().CreateBr(loopBlock);
+        context.getBuilder().SetInsertPoint(afterBlock);
+    });
 
     llvm::Value* conditionValue = condition->codeGen(context);
-    llvm::Value* condition = context.getBuilder().CreateICmpNE(conditionValue, llvm::ConstantInt::get(context.getType("Boo"), 0, true));
+    if (nullptr == conditionValue) {
+        LOG_ERROR("Loop statement condition error");
+        return nullptr;
+    }
+
+    llvm::Value* condition = context.getBuilder().CreateICmpNE(conditionValue, llvm::ConstantInt::get(llvm::Type::getInt1Ty(context.getContext()), 0, true));
 
     context.getBuilder().CreateCondBr(condition, loopBlock, afterBlock);
 
@@ -464,10 +553,6 @@ llvm::Value* NForStatement::codeGen(CodeGenContext& context) {
     if (nullptr != increment) {
         increment->codeGen(context);
     }
-
-    context.getBuilder().CreateBr(loopBlock);
-
-    context.getBuilder().SetInsertPoint(afterBlock);
 
     return nullptr;
 }
@@ -487,38 +572,47 @@ llvm::Value* NObjectDeclaration::codeGen(CodeGenContext& context) {
     context.addType(name, structType, nameTypeMap);
 
     // create constructor
-    std::vector<llvm::Type*> argTypes;
-    for (const auto& member : members) {
-        argTypes.push_back(member->type->codeGen(context));
-    }
-
-    llvm::FunctionType* constructorType = llvm::FunctionType::get(structType, argTypes, false);
-    llvm::Function* constructor = llvm::Function::Create(constructorType, llvm::Function::ExternalLinkage, name, context.getModule());
-    llvm::BasicBlock* block = llvm::BasicBlock::Create(context.getContext(), "entry", constructor, 0);
-    context.getBuilder().SetInsertPoint(block);
-    llvm::Value* structValue = context.getBuilder().CreateAlloca(structType, nullptr, name);
-
-    auto argIt = constructor->arg_begin();
-    for (auto it = memberTypes.begin(); it != memberTypes.end(); it++) {
-        llvm::Value* value = &*argIt;
-        llvm::Value* ptr = context.getBuilder().CreateStructGEP(structType, structValue, std::distance(memberTypes.begin(), it));
-        context.getBuilder().CreateStore(value, ptr);
-        argIt++;
-    }
-
-    context.getBuilder().CreateRet(structValue);
+    genConstructor(context, memberTypes);
 
     return nullptr;
 }
 
-llvm::Value* NTemplateObjectDeclaration::codeGen(CodeGenContext& context, std::vector<std::shared_ptr<NType>> templateTypes) {
-    std::string fullName = name + "<";
-    for (const auto& type : templateTypes) {
-        fullName += type->name + ",";
-    }
-    fullName.pop_back();
-    fullName += ">";
+void NObjectDeclaration::genConstructor(CodeGenContext& context, std::vector<llvm::Type*>& argTypes) {
+    llvm::StructType* structType = static_cast<llvm::StructType*>(context.getType(name));
+    llvm::FunctionType* constructorType = llvm::FunctionType::get(structType, argTypes, false);
+    llvm::Function* constructor = llvm::Function::Create(constructorType, llvm::Function::ExternalLinkage, name, context.getModule());
+    llvm::BasicBlock* block = llvm::BasicBlock::Create(context.getContext(), "entry", constructor, 0);
+    llvm::BasicBlock* currentBlock = context.getBuilder().GetInsertBlock();
+    auto scopeGuard = makeGuard([&]() {
+        context.getBuilder().SetInsertPoint(currentBlock);
+    });
 
+    context.getBuilder().SetInsertPoint(block);
+    llvm::Value* structValue = context.getBuilder().CreateAlloca(structType, nullptr, name);
+
+    auto argIt = constructor->arg_begin();
+    for (auto it = argTypes.begin(); it != argTypes.end(); it++) {
+        llvm::Value* value = &*argIt;
+        llvm::Value* ptr = context.getBuilder().CreateStructGEP(structType, structValue, std::distance(argTypes.begin(), it));
+        context.getBuilder().CreateStore(value, ptr);
+        argIt++;
+    }
+    context.getBuilder().CreateRet(structValue);
+}
+
+llvm::Type* NTemplateObjectDeclaration::codeGen(CodeGenContext& context, std::vector<std::shared_ptr<NType>> templateTypes) {
+    std::string originalName = name;
+
+    name += "<";
+    for (const auto& type : templateTypes) {
+        name += type->name + ",";
+    }
+    name.pop_back();
+    name += ">";
+
+    auto resetNameGuard = makeGuard([&]() {
+        name = originalName;
+    });
 
     std::unordered_map<std::string, llvm::Type*> nameTypeMap;
     std::unordered_map<std::string, llvm::Type*> templateNameTypeMap;
@@ -536,37 +630,15 @@ llvm::Value* NTemplateObjectDeclaration::codeGen(CodeGenContext& context, std::v
         nameTypeMap[member->name] = memberTypes.back();
     }
 
-    llvm::StructType* structType = llvm::StructType::create(context.getContext(), fullName);
+    llvm::StructType* structType = llvm::StructType::create(context.getContext(), name);
     structType->setBody(memberTypes);
 
-    context.addType(fullName, structType, nameTypeMap);
+    context.addType(name, structType, nameTypeMap);
 
     // create constructor
-    std::vector<llvm::Type*> argTypes;
-    for (const auto& member : members) {
-        if (templateNameTypeMap.find(member->type->name) != templateNameTypeMap.end()) {
-            argTypes.push_back(templateNameTypeMap[member->type->name]);
-        } else {
-            argTypes.push_back(member->type->codeGen(context));
-        }
-    }
+    genConstructor(context, memberTypes);
 
-    llvm::FunctionType* constructorType = llvm::FunctionType::get(structType, argTypes, false);
-    llvm::Function* constructor = llvm::Function::Create(constructorType, llvm::Function::ExternalLinkage, fullName, context.getModule());
-    llvm::BasicBlock* block = llvm::BasicBlock::Create(context.getContext(), "entry", constructor, 0);
-    context.getBuilder().SetInsertPoint(block);
-    llvm::Value* structValue = context.getBuilder().CreateAlloca(structType, nullptr, fullName);
-
-    auto argIt = constructor->arg_begin();
-    for (auto it = memberTypes.begin(); it != memberTypes.end(); it++) {
-        llvm::Value* value = &*argIt;
-        llvm::Value* ptr = context.getBuilder().CreateStructGEP(structType, structValue, std::distance(memberTypes.begin(), it));
-        context.getBuilder().CreateStore(value, ptr);
-        argIt++;
-    }
-    context.getBuilder().CreateRet(structValue);
-
-    return nullptr;
+    return structType;
 }
 
 llvm::Value* NMethodDeclaration::codeGen(CodeGenContext& context) {
@@ -578,15 +650,12 @@ llvm::Value* NMethodDeclaration::codeGen(CodeGenContext& context) {
     llvm::StructType* structType = llvm::cast<llvm::StructType>(context.getType(name));
     declaration->definition->arguments.push_back(std::make_shared<NArgument>(std::make_shared<NType>(name), "this"));
     declaration->definition->name = name + "." + declaration->definition->name;
-    declaration->codeGen(context);
 
-    return nullptr;
+    return declaration->codeGen(context);
 }
 
 llvm::Value* NTraitMethodDeclaration::codeGen(CodeGenContext& context, std::string parentName) {
     name = parentName;
 
-    NMethodDeclaration::codeGen(context);
-
-    return nullptr;
+    return NMethodDeclaration::codeGen(context);
 }

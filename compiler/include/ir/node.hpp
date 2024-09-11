@@ -287,6 +287,7 @@ public:
     NObjectDeclaration(std::string name, std::vector<std::shared_ptr<NMemberDeclaration>> members)
         : name(name), members(members) {}
     virtual llvm::Value* codeGen(CodeGenContext& context) override;
+    void genConstructor(CodeGenContext& context, std::vector<llvm::Type*>& argTypes);
     virtual std::string getType() override { return "NObjectDeclaration"; }
 };
 
@@ -299,7 +300,7 @@ public:
         LOG_DEBUG("NTemplateObjectDeclaration::codeGen() should not be called");
         return nullptr;
     }
-    llvm::Value* codeGen(CodeGenContext& context, std::vector<std::shared_ptr<NType>> templateArgs);
+    llvm::Type* codeGen(CodeGenContext& context, std::vector<std::shared_ptr<NType>> templateArgs);
     virtual std::string getType() override { return "NTemplateObjectDeclaration"; }
 };
 
