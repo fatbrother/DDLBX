@@ -3,6 +3,11 @@
 #include <iostream>
 #include <vector>
 #include "ir/node.hpp"
+#include "ir/block.hpp"
+#include "ir/statement.hpp"
+#include "ir/expression.hpp"
+#include "ir/object.hpp"
+#include "ir/function.hpp"
 #include "utils/logger.hpp"
 #include "parser/parser.hpp"
 

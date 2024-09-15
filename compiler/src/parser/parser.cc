@@ -16,6 +16,11 @@ typedef int Yshort;
 #include <iostream>
 #include <vector>
 #include "ir/node.hpp"
+#include "ir/block.hpp"
+#include "ir/statement.hpp"
+#include "ir/expression.hpp"
+#include "ir/object.hpp"
+#include "ir/function.hpp"
 #include "utils/logger.hpp"
 #include "parser/parser.hpp"
 
@@ -36,8 +41,8 @@ extern int yycolumn;
 extern char* yytext;
 ddlbx::ir::NProgram* program;
 
-#line 28 "parser.y"
-#line 41 "y.tab.c"
+#line 33 "parser.y"
+#line 46 "y.tab.c"
 static int yylhs[] = {                                        -1,
     0,    1,    1,    5,    5,    5,    5,    5,    7,   14,
     6,    6,   31,   31,   31,   26,   11,   11,   36,   35,
@@ -548,7 +553,7 @@ yyparsestate *YYNewState(int size);
 void YYFreeState(yyparsestate *p);
 
 
-#line 506 "parser.y"
+#line 511 "parser.y"
 
 void yyerror(const char *s) {
     ddlbx::utility::LOG_ERROR("Error: " + std::string(s) + " at " + std::to_string(yylineno) + ":" + std::to_string(yycolumn) + " near " + std::string(yytext));
@@ -561,7 +566,7 @@ void parseText(const char* text) {
     yy_delete_buffer(buffer);
     return;
 }
-#line 602 "y.tab.c"
+#line 607 "y.tab.c"
 #line 186 "btyaccpa.ske"
 
 
@@ -951,163 +956,163 @@ yyreduce:
 
 case 1:
   if (!yytrial)
-#line 74 "parser.y"
+#line 79 "parser.y"
 {
         yyval.program = new ddlbx::ir::NProgram();
         yyval.program->statements = *yyvsp[0].stmtvec;
         program = yyval.program;
       }
-#line 998 "y.tab.c"
+#line 1003 "y.tab.c"
 break;
 case 2:
   if (!yytrial)
-#line 82 "parser.y"
+#line 87 "parser.y"
 {
         yyval.stmtvec = new std::vector<std::shared_ptr<ddlbx::ir::NStatement>>();
         yyval.stmtvec->push_back(std::shared_ptr<ddlbx::ir::NStatement>(yyvsp[0].stmt));
       }
-#line 1007 "y.tab.c"
+#line 1012 "y.tab.c"
 break;
 case 3:
   if (!yytrial)
-#line 86 "parser.y"
+#line 91 "parser.y"
 {
         yyvsp[-1].stmtvec->push_back(std::shared_ptr<ddlbx::ir::NStatement>(yyvsp[0].stmt));
       }
-#line 1015 "y.tab.c"
+#line 1020 "y.tab.c"
 break;
 case 4:
   if (!yytrial)
-#line 92 "parser.y"
+#line 97 "parser.y"
 {
         yyval.stmt = yyvsp[-1].stmt;
       }
-#line 1023 "y.tab.c"
+#line 1028 "y.tab.c"
 break;
 case 9:
   if (!yytrial)
-#line 102 "parser.y"
+#line 107 "parser.y"
 {
         yyval.stmt = new ddlbx::ir::NFunctionDefinition(std::shared_ptr<ddlbx::ir::NType>(yyvsp[0].type),
                                                 *yyvsp[-5].string,
                                                 *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>(yyvsp[-3].argvec)));
       }
-#line 1033 "y.tab.c"
+#line 1038 "y.tab.c"
 break;
 case 10:
   if (!yytrial)
-#line 110 "parser.y"
+#line 115 "parser.y"
 {
         yyval.stmt = new ddlbx::ir::NTemplateFunctionDefinition(std::shared_ptr<ddlbx::ir::NType>(yyvsp[0].type),
                                                 *yyvsp[-6].string,
                                                 *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>(yyvsp[-3].argvec)),
                                                 *yyvsp[-5].stringvec);
       }
-#line 1044 "y.tab.c"
+#line 1049 "y.tab.c"
 break;
 case 11:
   if (!yytrial)
-#line 119 "parser.y"
+#line 124 "parser.y"
 {
         yyval.stmt = new ddlbx::ir::NFunctionDeclaration(std::shared_ptr<ddlbx::ir::NFunctionDefinition>(dynamic_cast<ddlbx::ir::NFunctionDefinition*>(yyvsp[-1].stmt)),
                                                  std::shared_ptr<ddlbx::ir::NBlock>(yyvsp[0].block));
       }
-#line 1053 "y.tab.c"
+#line 1058 "y.tab.c"
 break;
 case 12:
   if (!yytrial)
-#line 123 "parser.y"
+#line 128 "parser.y"
 {
         yyval.stmt = new ddlbx::ir::NTemplateFunctionDeclaration(std::shared_ptr<ddlbx::ir::NFunctionDefinition>(dynamic_cast<ddlbx::ir::NFunctionDefinition*>(yyvsp[-1].stmt)),
                                                          std::shared_ptr<ddlbx::ir::NBlock>(yyvsp[0].block));
       }
-#line 1062 "y.tab.c"
+#line 1067 "y.tab.c"
 break;
 case 13:
   if (!yytrial)
-#line 130 "parser.y"
+#line 135 "parser.y"
 {
         yyval.argvec = new std::vector<std::shared_ptr<ddlbx::ir::NArgument>>();
       }
-#line 1070 "y.tab.c"
+#line 1075 "y.tab.c"
 break;
 case 14:
   if (!yytrial)
-#line 133 "parser.y"
+#line 138 "parser.y"
 {
         yyvsp[-2].argvec->push_back(std::shared_ptr<ddlbx::ir::NArgument>(dynamic_cast<ddlbx::ir::NArgument*>(yyvsp[0].expr)));
       }
-#line 1078 "y.tab.c"
+#line 1083 "y.tab.c"
 break;
 case 15:
   if (!yytrial)
-#line 136 "parser.y"
+#line 141 "parser.y"
 {
         yyval.argvec = new std::vector<std::shared_ptr<ddlbx::ir::NArgument>>();
         yyval.argvec->push_back(std::shared_ptr<ddlbx::ir::NArgument>(dynamic_cast<ddlbx::ir::NArgument*>(yyvsp[0].expr)));
       }
-#line 1087 "y.tab.c"
+#line 1092 "y.tab.c"
 break;
 case 16:
   if (!yytrial)
-#line 143 "parser.y"
+#line 148 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NArgument(std::shared_ptr<ddlbx::ir::NType>(yyvsp[0].type), *yyvsp[-2].string);
       }
-#line 1095 "y.tab.c"
+#line 1100 "y.tab.c"
 break;
 case 17:
   if (!yytrial)
-#line 149 "parser.y"
+#line 154 "parser.y"
 {
         yyval.stmt = new ddlbx::ir::NObjectDeclaration(*yyvsp[-3].string, *yyvsp[-1].membervec);
       }
-#line 1103 "y.tab.c"
+#line 1108 "y.tab.c"
 break;
 case 18:
   if (!yytrial)
-#line 152 "parser.y"
+#line 157 "parser.y"
 {
         yyval.stmt = new ddlbx::ir::NTemplateObjectDeclaration(*yyvsp[-4].string, *yyvsp[-1].membervec, *yyvsp[-3].stringvec);
       }
-#line 1111 "y.tab.c"
+#line 1116 "y.tab.c"
 break;
 case 19:
   if (!yytrial)
-#line 157 "parser.y"
+#line 162 "parser.y"
 {
         yyval.member = new ddlbx::ir::NMemberDeclaration(std::make_shared<ddlbx::ir::NType>(*yyvsp[0].string), *yyvsp[-2].string);
       }
-#line 1119 "y.tab.c"
+#line 1124 "y.tab.c"
 break;
 case 20:
   if (!yytrial)
-#line 163 "parser.y"
+#line 168 "parser.y"
 {
         yyval.membervec = new std::vector<std::shared_ptr<ddlbx::ir::NMemberDeclaration>>();
       }
-#line 1127 "y.tab.c"
+#line 1132 "y.tab.c"
 break;
 case 21:
   if (!yytrial)
-#line 166 "parser.y"
+#line 171 "parser.y"
 {
         yyvsp[-2].membervec->push_back(std::shared_ptr<ddlbx::ir::NMemberDeclaration>(yyvsp[0].member));
       }
-#line 1135 "y.tab.c"
+#line 1140 "y.tab.c"
 break;
 case 22:
   if (!yytrial)
-#line 169 "parser.y"
+#line 174 "parser.y"
 {
         yyval.membervec = new std::vector<std::shared_ptr<ddlbx::ir::NMemberDeclaration>>();
         yyval.membervec->push_back(std::shared_ptr<ddlbx::ir::NMemberDeclaration>(yyvsp[0].member));
       }
-#line 1144 "y.tab.c"
+#line 1149 "y.tab.c"
 break;
 case 23:
   if (!yytrial)
-#line 176 "parser.y"
+#line 181 "parser.y"
 {
         ddlbx::ir::NFunctionDefinition *funcDef = new ddlbx::ir::NFunctionDefinition(
             std::shared_ptr<ddlbx::ir::NType>(yyvsp[-1].type), *yyvsp[-6].string, *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>(yyvsp[-4].argvec)));
@@ -1115,11 +1120,11 @@ case 23:
             std::shared_ptr<ddlbx::ir::NFunctionDefinition>(funcDef), std::shared_ptr<ddlbx::ir::NBlock>(yyvsp[0].block));
         yyval.stmt = new ddlbx::ir::NMethodDeclaration(*yyvsp[-8].string, std::shared_ptr<ddlbx::ir::NFunctionDeclaration>(funcDecl));
       }
-#line 1156 "y.tab.c"
+#line 1161 "y.tab.c"
 break;
 case 24:
   if (!yytrial)
-#line 185 "parser.y"
+#line 190 "parser.y"
 {
         ddlbx::ir::NFunctionDefinition *funcDef = new ddlbx::ir::NFunctionDefinition(
             std::shared_ptr<ddlbx::ir::NType>(yyvsp[-1].type), *yyvsp[-6].string, *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>(yyvsp[-4].argvec)));
@@ -1127,222 +1132,222 @@ case 24:
             std::shared_ptr<ddlbx::ir::NFunctionDefinition>(funcDef), std::shared_ptr<ddlbx::ir::NBlock>(yyvsp[0].block));
         yyval.stmt = new ddlbx::ir::NTraitMethodDeclaration(*yyvsp[-6].string, std::shared_ptr<ddlbx::ir::NFunctionDeclaration>(funcDecl), *yyvsp[-9].membervec);
       }
-#line 1168 "y.tab.c"
+#line 1173 "y.tab.c"
 break;
 case 25:
   if (!yytrial)
-#line 194 "parser.y"
+#line 199 "parser.y"
 {
         yyval.stmt = new ddlbx::ir::NReturnStatement(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-1].expr));
       }
-#line 1176 "y.tab.c"
+#line 1181 "y.tab.c"
 break;
 case 26:
   if (!yytrial)
-#line 197 "parser.y"
+#line 202 "parser.y"
 {
         yyval.stmt = new ddlbx::ir::NReturnStatement();
       }
-#line 1184 "y.tab.c"
+#line 1189 "y.tab.c"
 break;
 case 27:
   if (!yytrial)
-#line 203 "parser.y"
+#line 208 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NFunctionCall(*yyvsp[-3].string, std::vector<std::shared_ptr<ddlbx::ir::NExpression>>(*yyvsp[-1].exprvec));
       }
-#line 1192 "y.tab.c"
+#line 1197 "y.tab.c"
 break;
 case 28:
   if (!yytrial)
-#line 206 "parser.y"
+#line 211 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NFunctionCall(*yyvsp[-4].string, std::vector<std::shared_ptr<ddlbx::ir::NExpression>>(*yyvsp[-1].exprvec), *yyvsp[-3].stringvec);
       }
-#line 1200 "y.tab.c"
+#line 1205 "y.tab.c"
 break;
 case 29:
   if (!yytrial)
-#line 209 "parser.y"
+#line 214 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NFunctionCall(std::shared_ptr<ddlbx::ir::NMemberAccess>(dynamic_cast<ddlbx::ir::NMemberAccess*>(yyvsp[-3].expr)),
                                                           std::vector<std::shared_ptr<ddlbx::ir::NExpression>>(*yyvsp[-1].exprvec));
       }
-#line 1209 "y.tab.c"
+#line 1214 "y.tab.c"
 break;
 case 30:
   if (!yytrial)
-#line 216 "parser.y"
+#line 221 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NObjectCreation(*yyvsp[-3].string, std::vector<std::shared_ptr<ddlbx::ir::NExpression>>(*yyvsp[-1].exprvec));
       }
-#line 1217 "y.tab.c"
+#line 1222 "y.tab.c"
 break;
 case 31:
   if (!yytrial)
-#line 219 "parser.y"
+#line 224 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NObjectCreation(*yyvsp[-4].string, std::vector<std::shared_ptr<ddlbx::ir::NExpression>>(*yyvsp[-1].exprvec), *yyvsp[-3].stringvec);
       }
-#line 1225 "y.tab.c"
+#line 1230 "y.tab.c"
 break;
 case 32:
   if (!yytrial)
-#line 225 "parser.y"
+#line 230 "parser.y"
 {
         yyval.stringvec = yyvsp[-1].stringvec;
       }
-#line 1233 "y.tab.c"
+#line 1238 "y.tab.c"
 break;
 case 33:
   if (!yytrial)
-#line 231 "parser.y"
+#line 236 "parser.y"
 {
         yyval.stringvec = new std::vector<std::string>();
       }
-#line 1241 "y.tab.c"
+#line 1246 "y.tab.c"
 break;
 case 34:
   if (!yytrial)
-#line 234 "parser.y"
+#line 239 "parser.y"
 {
         yyvsp[-2].stringvec->push_back(yyvsp[0].type->name);
       }
-#line 1249 "y.tab.c"
+#line 1254 "y.tab.c"
 break;
 case 35:
   if (!yytrial)
-#line 237 "parser.y"
+#line 242 "parser.y"
 {
         yyval.stringvec = new std::vector<std::string>();
         yyval.stringvec->push_back(yyvsp[0].type->name);
       }
-#line 1258 "y.tab.c"
+#line 1263 "y.tab.c"
 break;
 case 36:
   if (!yytrial)
-#line 244 "parser.y"
+#line 249 "parser.y"
 {
         yyval.exprvec = new std::vector<std::shared_ptr<ddlbx::ir::NExpression>>();
       }
-#line 1266 "y.tab.c"
+#line 1271 "y.tab.c"
 break;
 case 37:
   if (!yytrial)
-#line 247 "parser.y"
+#line 252 "parser.y"
 {
         yyvsp[-2].exprvec->push_back(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1274 "y.tab.c"
+#line 1279 "y.tab.c"
 break;
 case 38:
   if (!yytrial)
-#line 250 "parser.y"
+#line 255 "parser.y"
 {
         yyval.exprvec = new std::vector<std::shared_ptr<ddlbx::ir::NExpression>>();
         yyval.exprvec->push_back(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1283 "y.tab.c"
+#line 1288 "y.tab.c"
 break;
 case 39:
   if (!yytrial)
-#line 257 "parser.y"
+#line 262 "parser.y"
 {
         dynamic_cast<ddlbx::ir::NMemberAccess*>(yyvsp[-2].expr)->ids.push_back(std::shared_ptr<ddlbx::ir::NIdentifier>(yyvsp[0].identifier));
       }
-#line 1291 "y.tab.c"
+#line 1296 "y.tab.c"
 break;
 case 40:
   if (!yytrial)
-#line 260 "parser.y"
+#line 265 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NMemberAccess(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), {std::shared_ptr<ddlbx::ir::NIdentifier>(yyvsp[0].identifier)});
       }
-#line 1299 "y.tab.c"
+#line 1304 "y.tab.c"
 break;
 case 41:
   if (!yytrial)
-#line 266 "parser.y"
+#line 271 "parser.y"
 {
         yyval.expr = yyvsp[0].identifier;
       }
-#line 1307 "y.tab.c"
+#line 1312 "y.tab.c"
 break;
 case 42:
   if (!yytrial)
-#line 269 "parser.y"
+#line 274 "parser.y"
 {
         yyval.expr = yyvsp[0].expr;
       }
-#line 1315 "y.tab.c"
+#line 1320 "y.tab.c"
 break;
 case 43:
   if (!yytrial)
-#line 272 "parser.y"
+#line 277 "parser.y"
 {
         yyval.expr = yyvsp[0].expr;
       }
-#line 1323 "y.tab.c"
+#line 1328 "y.tab.c"
 break;
 case 44:
   if (!yytrial)
-#line 275 "parser.y"
+#line 280 "parser.y"
 {
         yyval.expr = yyvsp[0].expr;
       }
-#line 1331 "y.tab.c"
+#line 1336 "y.tab.c"
 break;
 case 45:
   if (!yytrial)
-#line 278 "parser.y"
+#line 283 "parser.y"
 {
         yyval.expr = yyvsp[-1].expr;
       }
-#line 1339 "y.tab.c"
+#line 1344 "y.tab.c"
 break;
 case 46:
   if (!yytrial)
-#line 281 "parser.y"
+#line 286 "parser.y"
 {
         yyval.expr = yyvsp[0].expr;
       }
-#line 1347 "y.tab.c"
+#line 1352 "y.tab.c"
 break;
 case 47:
   if (!yytrial)
-#line 284 "parser.y"
+#line 289 "parser.y"
 {
         yyval.expr = yyvsp[0].expr;
       }
-#line 1355 "y.tab.c"
+#line 1360 "y.tab.c"
 break;
 case 48:
   if (!yytrial)
-#line 290 "parser.y"
+#line 295 "parser.y"
 {
         yyval.stmt = new ddlbx::ir::NExpressionStatement(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-1].expr));
       }
-#line 1363 "y.tab.c"
+#line 1368 "y.tab.c"
 break;
 case 49:
   if (!yytrial)
-#line 293 "parser.y"
+#line 298 "parser.y"
 {
         yyval.stmt = new ddlbx::ir::NExpressionStatement(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-1].expr));
       }
-#line 1371 "y.tab.c"
+#line 1376 "y.tab.c"
 break;
 case 50:
   if (!yytrial)
-#line 296 "parser.y"
+#line 301 "parser.y"
 {
         yyval.stmt = new ddlbx::ir::NExpressionStatement(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-1].expr));
       }
-#line 1379 "y.tab.c"
+#line 1384 "y.tab.c"
 break;
 case 54:
   if (!yytrial)
-#line 305 "parser.y"
+#line 310 "parser.y"
 {
         yyval.stmt = new ddlbx::ir::NForStatement(std::shared_ptr<ddlbx::ir::NIdentifier>(yyvsp[-4].identifier),
                                           nullptr,
@@ -1350,11 +1355,11 @@ case 54:
                                           nullptr,
                                           std::shared_ptr<ddlbx::ir::NBlock>(yyvsp[0].block));
       }
-#line 1391 "y.tab.c"
+#line 1396 "y.tab.c"
 break;
 case 55:
   if (!yytrial)
-#line 312 "parser.y"
+#line 317 "parser.y"
 {
         yyval.stmt = new ddlbx::ir::NForStatement(std::shared_ptr<ddlbx::ir::NIdentifier>(yyvsp[-6].identifier),
                                           nullptr,
@@ -1362,11 +1367,11 @@ case 55:
                                           std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr),
                                           std::shared_ptr<ddlbx::ir::NBlock>(yyvsp[0].block));
       }
-#line 1403 "y.tab.c"
+#line 1408 "y.tab.c"
 break;
 case 56:
   if (!yytrial)
-#line 319 "parser.y"
+#line 324 "parser.y"
 {
         yyval.stmt = new ddlbx::ir::NForStatement(std::shared_ptr<ddlbx::ir::NIdentifier>(yyvsp[-8].identifier),
                                           std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-6].expr),
@@ -1374,349 +1379,349 @@ case 56:
                                           std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr),
                                           std::shared_ptr<ddlbx::ir::NBlock>(yyvsp[0].block));
       }
-#line 1415 "y.tab.c"
+#line 1420 "y.tab.c"
 break;
 case 57:
   if (!yytrial)
-#line 326 "parser.y"
+#line 331 "parser.y"
 {
         yyval.stmt = new ddlbx::ir::NForStatement(nullptr, nullptr, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), nullptr, std::shared_ptr<ddlbx::ir::NBlock>(yyvsp[0].block));
       }
-#line 1423 "y.tab.c"
+#line 1428 "y.tab.c"
 break;
 case 58:
   if (!yytrial)
-#line 332 "parser.y"
+#line 337 "parser.y"
 {
         yyval.stmt = new ddlbx::ir::NOptStatement(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), std::shared_ptr<ddlbx::ir::NBlock>(yyvsp[0].block));
       }
-#line 1431 "y.tab.c"
+#line 1436 "y.tab.c"
 break;
 case 59:
   if (!yytrial)
-#line 338 "parser.y"
+#line 343 "parser.y"
 {
         yyval.block = yyvsp[-1].block;
       }
-#line 1439 "y.tab.c"
+#line 1444 "y.tab.c"
 break;
 case 60:
   if (!yytrial)
-#line 344 "parser.y"
+#line 349 "parser.y"
 {
         yyval.block = new ddlbx::ir::NBlock();
       }
-#line 1447 "y.tab.c"
+#line 1452 "y.tab.c"
 break;
 case 61:
   if (!yytrial)
-#line 347 "parser.y"
+#line 352 "parser.y"
 {
         yyvsp[-1].block->statements.push_back(yyvsp[0].stmt);
       }
-#line 1455 "y.tab.c"
+#line 1460 "y.tab.c"
 break;
 case 62:
   if (!yytrial)
-#line 353 "parser.y"
+#line 358 "parser.y"
 {
         std::vector<std::shared_ptr<ddlbx::ir::NVariableDeclaration>> *varList = yyvsp[0].varvec;
         yyval.expr = new ddlbx::ir::NVariableDeclarationList(*varList);
       }
-#line 1464 "y.tab.c"
+#line 1469 "y.tab.c"
 break;
 case 63:
   if (!yytrial)
-#line 360 "parser.y"
+#line 365 "parser.y"
 {
         yyvsp[-2].varvec->push_back(std::make_shared<ddlbx::ir::NVariableDeclaration>(std::shared_ptr<ddlbx::ir::NIdentifier>(yyvsp[0].identifier), nullptr));
       }
-#line 1472 "y.tab.c"
+#line 1477 "y.tab.c"
 break;
 case 64:
   if (!yytrial)
-#line 363 "parser.y"
+#line 368 "parser.y"
 {
         yyvsp[-2].varvec->push_back(std::make_shared<ddlbx::ir::NVariableDeclaration>(std::shared_ptr<ddlbx::ir::NAssignment>(dynamic_cast<ddlbx::ir::NAssignment*>(yyvsp[0].expr))));
       }
-#line 1480 "y.tab.c"
+#line 1485 "y.tab.c"
 break;
 case 65:
   if (!yytrial)
-#line 366 "parser.y"
+#line 371 "parser.y"
 {
         yyval.varvec = new std::vector<std::shared_ptr<ddlbx::ir::NVariableDeclaration>>();
         yyval.varvec->push_back(std::make_shared<ddlbx::ir::NVariableDeclaration>(std::shared_ptr<ddlbx::ir::NAssignment>(dynamic_cast<ddlbx::ir::NAssignment*>(yyvsp[0].expr))));
       }
-#line 1489 "y.tab.c"
+#line 1494 "y.tab.c"
 break;
 case 66:
   if (!yytrial)
-#line 370 "parser.y"
+#line 375 "parser.y"
 {
         yyval.varvec = new std::vector<std::shared_ptr<ddlbx::ir::NVariableDeclaration>>();
         yyval.varvec->push_back(std::make_shared<ddlbx::ir::NVariableDeclaration>(std::shared_ptr<ddlbx::ir::NIdentifier>(yyvsp[0].identifier), nullptr));
       }
-#line 1498 "y.tab.c"
+#line 1503 "y.tab.c"
 break;
 case 67:
   if (!yytrial)
-#line 377 "parser.y"
+#line 382 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NAssignment(std::shared_ptr<ddlbx::ir::NIdentifier>(yyvsp[-2].identifier), std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1506 "y.tab.c"
+#line 1511 "y.tab.c"
 break;
 case 68:
   if (!yytrial)
-#line 383 "parser.y"
+#line 388 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1514 "y.tab.c"
+#line 1519 "y.tab.c"
 break;
 case 69:
   if (!yytrial)
-#line 386 "parser.y"
+#line 391 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1522 "y.tab.c"
+#line 1527 "y.tab.c"
 break;
 case 70:
   if (!yytrial)
-#line 389 "parser.y"
+#line 394 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NUnaryOperator(yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1530 "y.tab.c"
+#line 1535 "y.tab.c"
 break;
 case 71:
   if (!yytrial)
-#line 392 "parser.y"
+#line 397 "parser.y"
 {
         yyval.expr = yyvsp[0].expr;
       }
-#line 1538 "y.tab.c"
+#line 1543 "y.tab.c"
 break;
 case 72:
   if (!yytrial)
-#line 398 "parser.y"
+#line 403 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1546 "y.tab.c"
+#line 1551 "y.tab.c"
 break;
 case 73:
   if (!yytrial)
-#line 401 "parser.y"
+#line 406 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1554 "y.tab.c"
+#line 1559 "y.tab.c"
 break;
 case 74:
   if (!yytrial)
-#line 404 "parser.y"
+#line 409 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1562 "y.tab.c"
+#line 1567 "y.tab.c"
 break;
 case 75:
   if (!yytrial)
-#line 407 "parser.y"
+#line 412 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1570 "y.tab.c"
+#line 1575 "y.tab.c"
 break;
 case 76:
   if (!yytrial)
-#line 410 "parser.y"
+#line 415 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1578 "y.tab.c"
+#line 1583 "y.tab.c"
 break;
 case 77:
   if (!yytrial)
-#line 413 "parser.y"
+#line 418 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1586 "y.tab.c"
+#line 1591 "y.tab.c"
 break;
 case 78:
   if (!yytrial)
-#line 416 "parser.y"
+#line 421 "parser.y"
 {
         yyval.expr = yyvsp[0].expr;
       }
-#line 1594 "y.tab.c"
+#line 1599 "y.tab.c"
 break;
 case 79:
   if (!yytrial)
-#line 422 "parser.y"
+#line 427 "parser.y"
 {
         yyval.expr = yyvsp[0].expr;
       }
-#line 1602 "y.tab.c"
+#line 1607 "y.tab.c"
 break;
 case 80:
   if (!yytrial)
-#line 425 "parser.y"
+#line 430 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1610 "y.tab.c"
+#line 1615 "y.tab.c"
 break;
 case 81:
   if (!yytrial)
-#line 428 "parser.y"
+#line 433 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1618 "y.tab.c"
+#line 1623 "y.tab.c"
 break;
 case 82:
   if (!yytrial)
-#line 434 "parser.y"
+#line 439 "parser.y"
 {
         yyval.expr = yyvsp[0].expr;
       }
-#line 1626 "y.tab.c"
+#line 1631 "y.tab.c"
 break;
 case 83:
   if (!yytrial)
-#line 437 "parser.y"
+#line 442 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1634 "y.tab.c"
+#line 1639 "y.tab.c"
 break;
 case 84:
   if (!yytrial)
-#line 440 "parser.y"
+#line 445 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1642 "y.tab.c"
+#line 1647 "y.tab.c"
 break;
 case 85:
   if (!yytrial)
-#line 446 "parser.y"
+#line 451 "parser.y"
 {
         yyval.expr = yyvsp[0].identifier;
       }
-#line 1650 "y.tab.c"
+#line 1655 "y.tab.c"
 break;
 case 86:
   if (!yytrial)
-#line 449 "parser.y"
+#line 454 "parser.y"
 {
         yyval.expr = yyvsp[0].expr;
       }
-#line 1658 "y.tab.c"
+#line 1663 "y.tab.c"
 break;
 case 87:
   if (!yytrial)
-#line 452 "parser.y"
+#line 457 "parser.y"
 {
         yyval.expr = yyvsp[0].expr;
       }
-#line 1666 "y.tab.c"
+#line 1671 "y.tab.c"
 break;
 case 88:
   if (!yytrial)
-#line 455 "parser.y"
+#line 460 "parser.y"
 {
         yyval.expr = yyvsp[0].expr;
       }
-#line 1674 "y.tab.c"
+#line 1679 "y.tab.c"
 break;
 case 89:
   if (!yytrial)
-#line 458 "parser.y"
+#line 463 "parser.y"
 {
         yyval.expr = yyvsp[-1].expr;
       }
-#line 1682 "y.tab.c"
+#line 1687 "y.tab.c"
 break;
 case 90:
   if (!yytrial)
-#line 461 "parser.y"
+#line 466 "parser.y"
 {
         yyval.expr = yyvsp[0].expr;
       }
-#line 1690 "y.tab.c"
+#line 1695 "y.tab.c"
 break;
 case 91:
   if (!yytrial)
-#line 464 "parser.y"
+#line 469 "parser.y"
 {
         yyval.expr = yyvsp[0].expr;
       }
-#line 1698 "y.tab.c"
+#line 1703 "y.tab.c"
 break;
 case 92:
   if (!yytrial)
-#line 467 "parser.y"
+#line 472 "parser.y"
 {
         yyval.expr = yyvsp[0].expr;
       }
-#line 1706 "y.tab.c"
+#line 1711 "y.tab.c"
 break;
 case 93:
   if (!yytrial)
-#line 473 "parser.y"
+#line 478 "parser.y"
 {
         yyval.identifier = new ddlbx::ir::NIdentifier(*(yyvsp[0].string));
         delete yyvsp[0].string;
       }
-#line 1715 "y.tab.c"
+#line 1720 "y.tab.c"
 break;
 case 94:
   if (!yytrial)
-#line 480 "parser.y"
+#line 485 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NInteger(atol(yyvsp[0].string->c_str()));
       }
-#line 1723 "y.tab.c"
+#line 1728 "y.tab.c"
 break;
 case 95:
   if (!yytrial)
-#line 483 "parser.y"
+#line 488 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NFloat(atof(yyvsp[0].string->c_str()));
       }
-#line 1731 "y.tab.c"
+#line 1736 "y.tab.c"
 break;
 case 96:
   if (!yytrial)
-#line 489 "parser.y"
+#line 494 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NBoolean(*yyvsp[0].string);
       }
-#line 1739 "y.tab.c"
+#line 1744 "y.tab.c"
 break;
 case 97:
   if (!yytrial)
-#line 495 "parser.y"
+#line 500 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NString(*yyvsp[0].string);
       }
-#line 1747 "y.tab.c"
+#line 1752 "y.tab.c"
 break;
 case 98:
   if (!yytrial)
-#line 501 "parser.y"
+#line 506 "parser.y"
 {
         yyval.type = new ddlbx::ir::NType(*yyvsp[0].string);
       }
-#line 1755 "y.tab.c"
+#line 1760 "y.tab.c"
 break;
-#line 1757 "y.tab.c"
+#line 1762 "y.tab.c"
 #line 573 "btyaccpa.ske"
 
   default:

@@ -3,6 +3,8 @@
 #include <iostream>
 
 #include "ir/node.hpp"
+#include "ir/object.hpp"
+#include "ir/function.hpp"
 
 using namespace ddlbx::ir;
 
