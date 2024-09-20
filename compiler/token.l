@@ -2,7 +2,6 @@
 #include <string>
 #include <iostream>
 #include "ir/node.hpp"
-#include "ir/block.hpp"
 #include "ir/object.hpp"
 #include "ir/function.hpp"
 #include "ir/statement.hpp"

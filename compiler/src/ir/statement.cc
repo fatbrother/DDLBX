@@ -3,7 +3,6 @@
 #include "utils/logger.hpp"
 #include "utils/scope_guard.hpp"
 #include "ir/function.hpp"
-#include "ir/block.hpp"
 #include "parser/parser.hpp"
 
 using namespace ddlbx::ir;
@@ -20,6 +19,13 @@ llvm::Value* NReturnStatement::codeGen(CodeGenContext& context) {
     } else {
         return context.getBuilder().CreateRetVoid();
     }
+}
+
+llvm::Value* NBlock::codeGen(CodeGenContext& context) {
+    for (auto& statement : statements) {
+        statement->codeGen(context);
+    }
+    return nullptr;
 }
 
 llvm::Value* NOptStatement::codeGen(CodeGenContext& context) {

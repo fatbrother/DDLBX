@@ -540,7 +540,6 @@ char *yytext;
 #include <string>
 #include <iostream>
 #include "ir/node.hpp"
-#include "ir/block.hpp"
 #include "ir/object.hpp"
 #include "ir/function.hpp"
 #include "ir/statement.hpp"
@@ -556,9 +555,9 @@ extern int yylineno;
 extern char* yytext;
 int yycolumn = 1;
 
-#line 560 "src/parser/token.cc"
+#line 559 "src/parser/token.cc"
 
-#line 562 "src/parser/token.cc"
+#line 561 "src/parser/token.cc"
 
 #define INITIAL 0
 #define COMMENT 1
@@ -777,10 +776,10 @@ YY_DECL
 		}
 
 	{
-#line 29 "token.l"
+#line 28 "token.l"
 
 
-#line 784 "src/parser/token.cc"
+#line 783 "src/parser/token.cc"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -849,255 +848,255 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 31 "token.l"
+#line 30 "token.l"
 { BEGIN COMMENT; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 32 "token.l"
+#line 31 "token.l"
 { ; }
 	YY_BREAK
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 33 "token.l"
+#line 32 "token.l"
 { BEGIN 0; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 35 "token.l"
+#line 34 "token.l"
 { BEGIN MULTI_COMMENT; }
 	YY_BREAK
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
-#line 36 "token.l"
+#line 35 "token.l"
 { ; }
 	YY_BREAK
 case 6:
 /* rule 6 can match eol */
 YY_RULE_SETUP
-#line 37 "token.l"
+#line 36 "token.l"
 { ; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 38 "token.l"
+#line 37 "token.l"
 { BEGIN 0; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 40 "token.l"
+#line 39 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: KW_OPT");      TOKEN(KW_OPT); }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 41 "token.l"
+#line 40 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: KW_FOR");      TOKEN(KW_FOR); }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 42 "token.l"
+#line 41 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: KW_RETURN");   TOKEN(KW_RETURN); }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 43 "token.l"
+#line 42 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: KW_FUNCTION"); TOKEN(KW_FUNCTION); }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 44 "token.l"
+#line 43 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: KW_VAR");      TOKEN(KW_VAR); }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 45 "token.l"
+#line 44 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: KW_OBJECT");   TOKEN(KW_OBJECT); }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 47 "token.l"
+#line 46 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: AND");  TOKEN(OP_AND); }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 48 "token.l"
+#line 47 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: OR");   TOKEN(OP_OR);  }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 49 "token.l"
+#line 48 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: NOT");  TOKEN(OP_NOT); }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 51 "token.l"
+#line 50 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: FROM");  TOKEN(KW_FROM); }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 52 "token.l"
+#line 51 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: TO");    TOKEN(KW_TO); }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 53 "token.l"
+#line 52 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: STEP");  TOKEN(KW_STEP); }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 55 "token.l"
+#line 54 "token.l"
 { SAVE_TOKEN;     ddlbx::utility::LOG_INFO("TOKEN: BOOL " + YYTEXT_STR);         return BOOL; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 56 "token.l"
+#line 55 "token.l"
 { SAVE_TOKEN;     ddlbx::utility::LOG_INFO("TOKEN: BOOL " + YYTEXT_STR);         return BOOL; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 57 "token.l"
+#line 56 "token.l"
 { SAVE_TOKEN;     ddlbx::utility::LOG_INFO("TOKEN: BOOL " + YYTEXT_STR);         return BOOL; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 58 "token.l"
+#line 57 "token.l"
 { SAVE_TOKEN;     ddlbx::utility::LOG_INFO("TOKEN: INT " + YYTEXT_STR);          return NUMBER; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 59 "token.l"
+#line 58 "token.l"
 { SAVE_TOKEN;     ddlbx::utility::LOG_INFO("TOKEN: FLOAT " + YYTEXT_STR);        return FRAC_NUMBER; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 60 "token.l"
+#line 59 "token.l"
 { SAVE_TOKEN;     ddlbx::utility::LOG_INFO("TOKEN: IDENTIFIER " + YYTEXT_STR);   return IDENTIFIER; }
 	YY_BREAK
 case 26:
 /* rule 26 can match eol */
 YY_RULE_SETUP
-#line 61 "token.l"
+#line 60 "token.l"
 { SAVE_TOKEN;     ddlbx::utility::LOG_INFO("TOKEN: STRING " + YYTEXT_STR);       return STRING; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 64 "token.l"
+#line 63 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: EQ");   TOKEN(COM_EQ); }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 65 "token.l"
+#line 64 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: LE");   TOKEN(COM_LE); }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 66 "token.l"
+#line 65 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: GE");   TOKEN(COM_GE); }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 67 "token.l"
+#line 66 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: NE");   TOKEN(COM_NE); }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 69 "token.l"
+#line 68 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: '<'");  TOKEN(COM_LT);  }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 70 "token.l"
+#line 69 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: '>'");  TOKEN(COM_GT);  }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 72 "token.l"
+#line 71 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: '='");  TOKEN(OP_ASSIGN); }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 73 "token.l"
+#line 72 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: '+'");  TOKEN(OP_PLUS);   }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 74 "token.l"
+#line 73 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: '-'");  TOKEN(OP_MINUS);  }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 75 "token.l"
+#line 74 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: '*'");  TOKEN(OP_MULT);   }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 76 "token.l"
+#line 75 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: '/'");  TOKEN(OP_DIV);    }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 78 "token.l"
+#line 77 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: '('");  TOKEN(LPAREN); }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 79 "token.l"
+#line 78 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: ')'");  TOKEN(RPAREN); }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 80 "token.l"
+#line 79 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: '{'");  TOKEN(LBRACE); }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 81 "token.l"
+#line 80 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: '}'");  TOKEN(RBRACE); }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 83 "token.l"
+#line 82 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: ','");  TOKEN(COMMA);    }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 84 "token.l"
+#line 83 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: ':'");  TOKEN(COLON); }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 85 "token.l"
+#line 84 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: '!'");  TOKEN(SEMICOLON); }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 86 "token.l"
+#line 85 "token.l"
 { ddlbx::utility::LOG_INFO("TOKEN: '.'");  TOKEN(DOT); }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 88 "token.l"
+#line 87 "token.l"
 { ; }
 	YY_BREAK
 case 47:
 /* rule 47 can match eol */
 YY_RULE_SETUP
-#line 89 "token.l"
+#line 88 "token.l"
 { yycolumn = 1; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 91 "token.l"
+#line 90 "token.l"
 { ddlbx::utility::LOG_INFO("unknown token: " + YYTEXT_STR + "\n"); yyterminate(); }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 93 "token.l"
+#line 92 "token.l"
 ECHO;
 	YY_BREAK
-#line 1101 "src/parser/token.cc"
+#line 1100 "src/parser/token.cc"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(COMMENT):
 case YY_STATE_EOF(MULTI_COMMENT):
@@ -2116,5 +2115,5 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 93 "token.l"
+#line 92 "token.l"
 

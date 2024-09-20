@@ -2,7 +2,6 @@
 
 #include "ir/node.hpp"
 #include "ir/expression.hpp"
-#include "ir/block.hpp"
 
 #include <string>
 #include <memory>
@@ -15,6 +14,14 @@ public:
     NReturnStatement(std::shared_ptr<NExpression> expression = nullptr) : expression(expression) {}
     virtual llvm::Value* codeGen(CodeGenContext& context) override;
     virtual std::string getType() override { return "NReturnStatement"; }
+};
+
+class NBlock : public NStatement {
+public:
+    std::vector<NStatement*> statements;
+    NBlock() {}
+    virtual llvm::Value* codeGen(CodeGenContext& context) override;
+    virtual std::string getType() override { return "NBlock"; }
 };
 
 class NForStatement : public NStatement {

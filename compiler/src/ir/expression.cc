@@ -1,6 +1,5 @@
 #include "ir/expression.hpp"
 
-#include "ir/block.hpp"
 #include "ir/statement.hpp"
 #include "ir/function.hpp"
 #include "ir/object.hpp"

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ir/node.hpp"
-#include "ir/block.hpp"
 #include "ir/statement.hpp"
 
 #include <string>
