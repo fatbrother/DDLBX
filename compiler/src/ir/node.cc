@@ -13,7 +13,7 @@
 using namespace ddlbx::ir;
 using namespace ddlbx::utility;
 
-llvm::Value* NProgram::codeGen(CodeGenContext& context) {
+Value NProgram::codeGen(CodeGenContext& context) {
     for (auto& statement : statements) {
         if ("NTemplateObjectDeclaration" == statement->getType()) {
             std::shared_ptr<NObjectDeclaration> objectDeclaration = std::dynamic_pointer_cast<NObjectDeclaration>(statement);
@@ -34,7 +34,7 @@ llvm::Value* NProgram::codeGen(CodeGenContext& context) {
         }
         statement->codeGen(context);
     }
-    return nullptr;
+    return Value::null();
 }
 
 llvm::Type* NType::codeGen(CodeGenContext& context) {

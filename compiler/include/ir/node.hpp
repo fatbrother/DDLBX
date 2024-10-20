@@ -15,21 +15,21 @@ namespace ddlbx::ir {
 
 class Node {
 public:
-    virtual llvm::Value* codeGen(CodeGenContext& context) = 0;
+    virtual Value codeGen(CodeGenContext& context) = 0;
     virtual std::string getType() { return "Node"; }
 };
 
 class NExpression : public Node {
 public:
     NExpression() {}
-    virtual llvm::Value* codeGen(CodeGenContext& context) override { return nullptr; }
+    virtual Value codeGen(CodeGenContext& context) override { return Value::null(); }
     virtual std::string getType() override { return "NExpression"; }
 };
 
 class NStatement : public Node {
 public:
     NStatement() {}
-    virtual llvm::Value* codeGen(CodeGenContext& context) override { return nullptr; }
+    virtual Value codeGen(CodeGenContext& context) override { return Value::null(); }
     virtual std::string getType() override { return "NStatement"; }
 };
 
@@ -37,7 +37,7 @@ class NProgram : public Node {
 public:
     std::vector<std::shared_ptr<NStatement>> statements;
     NProgram() {}
-    virtual llvm::Value* codeGen(CodeGenContext& context) override;
+    virtual Value codeGen(CodeGenContext& context) override;
     virtual std::string getType() override { return "NProgram"; }
 };
 

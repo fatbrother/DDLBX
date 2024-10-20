@@ -29,13 +29,6 @@ void CodeGenContext::addType(const std::string &name, llvm::Type *type, const st
     types[name] = {name, type, nameTypeMap};
 }
 
-std::string CodeGenContext::getTypeName(llvm::Type *type) {
-    for (auto &[name, t] : types) {
-        if (t.type == type) return t.name;
-    }
-    return "";
-}
-
 Variable &CodeGenContext::getVariable(const std::string &name) {
     return variables[name];
 }
@@ -62,6 +55,10 @@ void CodeGenContext::registerTraitMethod(std::shared_ptr<NTraitMethodDeclaration
     traitMethods[traitMethod->declaration->definition->name] = traitMethod;
 }
 
+void CodeGenContext::registerFunction(const std::string &name, const std::string &returnType) {
+    functions[name] = {name, returnType};
+}
+
 void CodeGenContext::pushTemplateTypeStack() {
     templateTypeStack.push({});
 }
@@ -84,4 +81,8 @@ std::shared_ptr<NTemplateFunctionDeclaration> CodeGenContext::getTemplateFunctio
 
 std::shared_ptr<NTraitMethodDeclaration> CodeGenContext::getTraitMethod(const std::string &name) {
     return traitMethods[name];
+}
+
+Function &CodeGenContext::getFunction(const std::string &name) {
+    return functions[name];
 }

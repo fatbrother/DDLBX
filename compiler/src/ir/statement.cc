@@ -7,36 +7,38 @@
 
 using namespace ddlbx::ir;
 
-llvm::Value* NReturnStatement::codeGen(CodeGenContext& context) {
+Value NReturnStatement::codeGen(CodeGenContext& context) {
     if (expression) {
-        llvm::Value* value = expression->codeGen(context);
-        if (value == nullptr) {
+        Value value = expression->codeGen(context);
+        if (value.llvmValue == nullptr) {
             LOG_ERROR("Return statement failed");
-            return nullptr;
+            return Value::null();
         }
 
-        return context.getBuilder().CreateRet(value);
+        context.getBuilder().CreateRet(value.llvmValue);
     } else {
-        return context.getBuilder().CreateRetVoid();
+        context.getBuilder().CreateRetVoid();
     }
+
+    return Value::null();
 }
 
-llvm::Value* NBlock::codeGen(CodeGenContext& context) {
+Value NBlock::codeGen(CodeGenContext& context) {
     for (auto& statement : statements) {
         statement->codeGen(context);
     }
-    return nullptr;
+    return Value::null();
 }
 
-llvm::Value* NOptStatement::codeGen(CodeGenContext& context) {
-    llvm::Value* conditionValue = condition->codeGen(context);
+Value NOptStatement::codeGen(CodeGenContext& context) {
+    llvm::Value* conditionValue = condition->codeGen(context).llvmValue;
     llvm::Function* function = context.getBuilder().GetInsertBlock()->getParent();
     llvm::BasicBlock* thenBlock = llvm::BasicBlock::Create(context.getContext(), "then", function);
     llvm::BasicBlock* mergeBlock = llvm::BasicBlock::Create(context.getContext(), "ifcont", function);
 
     if (nullptr == conditionValue) {
         LOG_ERROR("Opt statement condition error");
-        return nullptr;
+        return Value::null();
     }
 
     context.getBuilder().CreateCondBr(conditionValue, thenBlock, mergeBlock);
@@ -48,10 +50,10 @@ llvm::Value* NOptStatement::codeGen(CodeGenContext& context) {
 
     then->codeGen(context);
 
-    return nullptr;
+    return Value::null();
 }
 
-llvm::Value* NForStatement::codeGen(CodeGenContext& context) {
+Value NForStatement::codeGen(CodeGenContext& context) {
     llvm::Function* function = context.getBuilder().GetInsertBlock()->getParent();
     llvm::BasicBlock* loopBlock = llvm::BasicBlock::Create(context.getContext(), "loop", function);
     llvm::BasicBlock* afterBlock = llvm::BasicBlock::Create(context.getContext(), "afterloop", function);
@@ -81,10 +83,10 @@ llvm::Value* NForStatement::codeGen(CodeGenContext& context) {
         context.getBuilder().SetInsertPoint(afterBlock);
     });
 
-    llvm::Value* conditionValue = condition->codeGen(context);
+    llvm::Value* conditionValue = condition->codeGen(context).llvmValue;
     if (nullptr == conditionValue) {
         LOG_ERROR("Loop statement condition error");
-        return nullptr;
+        return Value::null();
     }
 
     llvm::Value* condition = context.getBuilder().CreateICmpNE(conditionValue, llvm::ConstantInt::get(llvm::Type::getInt1Ty(context.getContext()), 0, true));
@@ -97,5 +99,5 @@ llvm::Value* NForStatement::codeGen(CodeGenContext& context) {
         increment->codeGen(context);
     }
 
-    return nullptr;
+    return Value::null();
 }

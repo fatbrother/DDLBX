@@ -6,7 +6,7 @@
 
 using namespace ddlbx::ir;
 
-llvm::Value* NObjectDeclaration::codeGen(CodeGenContext& context) {
+Value NObjectDeclaration::codeGen(CodeGenContext& context) {
     llvm::StructType* structType = llvm::StructType::create(context.getContext(), name);
     std::unordered_map<std::string, llvm::Type*> nameTypeMap;
     std::vector<llvm::Type*> memberTypes;
@@ -23,7 +23,7 @@ llvm::Value* NObjectDeclaration::codeGen(CodeGenContext& context) {
     // create constructor
     genConstructor(context, memberTypes);
 
-    return nullptr;
+    return Value::null();
 }
 
 void NObjectDeclaration::genConstructor(CodeGenContext& context, std::vector<llvm::Type*>& argTypes) {
@@ -41,7 +41,7 @@ void NObjectDeclaration::genConstructor(CodeGenContext& context, std::vector<llv
 
     auto argIt = constructor->arg_begin();
     for (auto it = argTypes.begin(); it != argTypes.end(); it++) {
-        llvm::Value* value = &*argIt;
+        llvm::Value* value = argIt;
         llvm::Value* ptr = context.getBuilder().CreateStructGEP(structType, structValue, std::distance(argTypes.begin(), it));
         context.getBuilder().CreateStore(value, ptr);
         argIt++;
@@ -90,7 +90,7 @@ llvm::Type* NTemplateObjectDeclaration::codeGen(CodeGenContext& context, std::ve
     return structType;
 }
 
-llvm::Value* NObjectCreation::codeGen(CodeGenContext& context) {
+Value NObjectCreation::codeGen(CodeGenContext& context) {
     std::string fullName = name;
     if (!templateArgs.empty()) {
         fullName += "<";
@@ -112,7 +112,7 @@ llvm::Value* NObjectCreation::codeGen(CodeGenContext& context) {
         std::shared_ptr<NTemplateObjectDeclaration> templateObject = context.getTemplateObject(name);
         if (nullptr == templateObject) {
             LOG_ERROR("Template object \"" + name + "\" is not defined");
-            return nullptr;
+            return Value::null();
         }
 
         std::vector<std::shared_ptr<NType>> templateArgTypes;
@@ -128,18 +128,18 @@ llvm::Value* NObjectCreation::codeGen(CodeGenContext& context) {
 
     std::vector<llvm::Value*> argValues;
     for (const auto& arg : arguments) {
-        argValues.push_back(arg->codeGen(context));
+        argValues.push_back(arg->codeGen(context).llvmValue);
         if (argValues.back() == nullptr) {
             LOG_ERROR("Object creation argument error");
-            return nullptr;
+            return Value::null();
         }
     }
 
     llvm::Function* constructor = context.getModule().getFunction(fullName);
     if (nullptr == constructor) {
         LOG_ERROR("Constructor for type \"" + fullName + "\" is not defined");
-        return nullptr;
+        return Value::null();
     }
 
-    return context.getBuilder().CreateCall(constructor, argValues);
+    return Value::create(fullName, context.getBuilder().CreateCall(constructor, argValues));
 }

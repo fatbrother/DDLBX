@@ -14,9 +14,9 @@ public:
     std::shared_ptr<NType> type;
     std::string name;
     NArgument(std::shared_ptr<NType> type, std::string name) : type(type), name(name) {}
-    virtual llvm::Value* codeGen(CodeGenContext& context) override {
+    virtual Value codeGen(CodeGenContext& context) override {
         LOG_DEBUG("NArgument::codeGen() should not be called");
-        return nullptr;
+        return Value::null();
     }
     virtual std::string getType() override { return "NArgument"; }
 };
@@ -28,7 +28,7 @@ public:
     std::vector<std::shared_ptr<NArgument>> arguments;
     NFunctionDefinition(std::shared_ptr<NType> type, std::string name, std::vector<std::shared_ptr<NArgument>> arguments)
         : retType(type), name(name), arguments(arguments) {}
-    virtual llvm::Value* codeGen(CodeGenContext& context) override;
+    virtual Value codeGen(CodeGenContext& context) override;
     virtual std::string getType() override { return "NFunctionDeclaration"; }
 };
 
@@ -46,7 +46,7 @@ public:
     std::shared_ptr<NFunctionDefinition> definition;
     std::shared_ptr<NBlock> block;
     NFunctionDeclaration(std::shared_ptr<NFunctionDefinition> definition, std::shared_ptr<NBlock> block) : definition(definition), block(block) {}
-    virtual llvm::Value* codeGen(CodeGenContext& context) override;
+    virtual Value codeGen(CodeGenContext& context) override;
     virtual std::string getType() override { return "NFunctionDefinition"; }
 };
 
@@ -54,11 +54,11 @@ class NTemplateFunctionDeclaration : public NFunctionDeclaration {
 public:
     NTemplateFunctionDeclaration(std::shared_ptr<NFunctionDefinition> definition, std::shared_ptr<NBlock> block)
         : NFunctionDeclaration(definition, block) {}
-    virtual llvm::Value* codeGen(CodeGenContext& context) override {
+    virtual Value codeGen(CodeGenContext& context) override {
         LOG_DEBUG("NTemplateFunctionDeclaration::codeGen() should not be called");
-        return nullptr;
+        return Value::null();
     }
-    llvm::Value* codeGen(CodeGenContext& context, std::vector<std::string> templateArgs);
+    Value codeGen(CodeGenContext& context, std::vector<std::string> templateArgs);
     virtual std::string getType() override { return "NTemplateFunctionDeclaration"; }
 };
 
@@ -77,7 +77,7 @@ public:
     NFunctionCall(std::string name,
                   std::vector<std::shared_ptr<NExpression>> arguments,
                   std::vector<std::string> templateArgs) : name(name), arguments(arguments), templateArgs(templateArgs) {}
-    virtual llvm::Value* codeGen(CodeGenContext& context) override;
+    virtual Value codeGen(CodeGenContext& context) override;
     virtual std::string getType() override { return "NFunctionCall"; }
 };
 
@@ -86,7 +86,7 @@ public:
     std::string name;
     std::shared_ptr<NFunctionDeclaration> declaration;
     NMethodDeclaration(std::string name, std::shared_ptr<NFunctionDeclaration> declaration) : name(name), declaration(declaration) {}
-    virtual llvm::Value* codeGen(CodeGenContext& context) override;
+    virtual Value codeGen(CodeGenContext& context) override;
     virtual std::string getType() override { return "NMethodDeclaration"; }
 };
 
@@ -95,7 +95,7 @@ public:
     std::vector<std::shared_ptr<NMemberDeclaration>> traits;
     NTraitMethodDeclaration(std::string name, std::shared_ptr<NFunctionDeclaration> declaration, std::vector<std::shared_ptr<NMemberDeclaration>> traits)
         : NMethodDeclaration(name, declaration), traits(traits) {}
-    llvm::Value* codeGen(CodeGenContext& context, std::string parentName);
+    Value codeGen(CodeGenContext& context, std::string parentName);
     virtual std::string getType() override { return "NTraitMethodDeclaration"; }
 };
 
