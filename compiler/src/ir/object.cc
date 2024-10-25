@@ -28,7 +28,7 @@ Value NObjectDeclaration::codeGen(CodeGenContext& context) {
 
 void NObjectDeclaration::genConstructor(CodeGenContext& context, std::vector<llvm::Type*>& argTypes) {
     llvm::StructType* structType = static_cast<llvm::StructType*>(context.getType(name).type);
-    llvm::FunctionType* constructorType = llvm::FunctionType::get(structType, argTypes, false);
+    llvm::FunctionType* constructorType = llvm::FunctionType::get(llvm::PointerType::get(structType, 0), argTypes, false);
     llvm::Function* constructor = llvm::Function::Create(constructorType, llvm::Function::ExternalLinkage, name, context.getModule());
     llvm::BasicBlock* block = llvm::BasicBlock::Create(context.getContext(), "entry", constructor, 0);
     llvm::BasicBlock* currentBlock = context.getBuilder().GetInsertBlock();
