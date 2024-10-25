@@ -124,7 +124,7 @@ Value NBinaryOperator::codeGen(CodeGenContext& context) {
 
     if (lvalue.ddlbxTypeName != rvalue.ddlbxTypeName) {
         // TODO: Implement type coercion
-        LOG_ERROR("Type mismatch");
+        LOG_ERROR("Lvalue(" + lvalue.ddlbxTypeName + ") and rvalue(" + rvalue.ddlbxTypeName + ") type mismatch");
         return Value::null();
     }
 

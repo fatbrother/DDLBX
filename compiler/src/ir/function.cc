@@ -18,6 +18,7 @@ Value NFunctionDefinition::codeGen(CodeGenContext& context) {
 
     llvm::FunctionType* functionType = llvm::FunctionType::get(retType->codeGen(context), argTypes, false);
     llvm::Function* function = llvm::Function::Create(functionType, llvm::Function::ExternalLinkage, name.c_str(), context.getModule());
+    context.registerFunction(name, retType->name);
 
     return Value::create(DDLBX_TYPE_FUN, function);
 }
@@ -72,8 +73,6 @@ Value NFunctionDeclaration::codeGen(CodeGenContext& context) {
             return Value::null();
         }
     }
-
-    context.registerFunction(this->definition->name, this->definition->retType->name);
 
     return Value::create(DDLBX_TYPE_FUN, function);
 }

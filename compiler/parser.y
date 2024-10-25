@@ -190,6 +190,7 @@ MemberDeclarationList:
 MethodDefinition:
       KW_FUNCTION IDENTIFIER DOT IDENTIFIER LPAREN FPDeclarationList RPAREN COLON Type {
         std::string name = *$2 + "." + *$4;
+        $6->push_back(std::make_shared<ddlbx::ir::NArgument>(std::make_shared<ddlbx::ir::NType>(*$2), "this"));
         $$ = new ddlbx::ir::NFunctionDefinition(
             std::shared_ptr<ddlbx::ir::NType>($9), name, *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>($6)));
       }
