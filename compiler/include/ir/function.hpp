@@ -26,8 +26,8 @@ public:
     std::shared_ptr<NType> retType;
     std::string name;
     std::vector<std::shared_ptr<NArgument>> arguments;
-    NFunctionDefinition(std::shared_ptr<NType> type, std::string name, std::vector<std::shared_ptr<NArgument>> arguments)
-        : retType(type), name(name), arguments(arguments) {}
+    NFunctionDefinition(std::shared_ptr<NType> retType, std::string funcName, std::vector<std::shared_ptr<NArgument>> arguments)
+        : retType(retType), name(funcName), arguments(arguments) {}
     virtual Value codeGen(CodeGenContext& context) override;
     virtual std::string getType() override { return "NFunctionDeclaration"; }
 };
@@ -83,9 +83,9 @@ public:
 
 class NMethodDeclaration : public NStatement {
 public:
-    std::string name;
+    std::string parentName;
     std::shared_ptr<NFunctionDeclaration> declaration;
-    NMethodDeclaration(std::string name, std::shared_ptr<NFunctionDeclaration> declaration) : name(name), declaration(declaration) {}
+    NMethodDeclaration(std::string parentName, std::shared_ptr<NFunctionDeclaration> declaration) : parentName(parentName), declaration(declaration) {}
     virtual Value codeGen(CodeGenContext& context) override;
     virtual std::string getType() override { return "NMethodDeclaration"; }
 };
@@ -93,8 +93,8 @@ public:
 class NTraitMethodDeclaration : public NMethodDeclaration {
 public:
     std::vector<std::shared_ptr<NMemberDeclaration>> traits;
-    NTraitMethodDeclaration(std::string name, std::shared_ptr<NFunctionDeclaration> declaration, std::vector<std::shared_ptr<NMemberDeclaration>> traits)
-        : NMethodDeclaration(name, declaration), traits(traits) {}
+    NTraitMethodDeclaration(std::string parentName, std::shared_ptr<NFunctionDeclaration> declaration, std::vector<std::shared_ptr<NMemberDeclaration>> traits)
+        : NMethodDeclaration(parentName, declaration), traits(traits) {}
     Value codeGen(CodeGenContext& context, std::string parentName);
     virtual std::string getType() override { return "NTraitMethodDeclaration"; }
 };

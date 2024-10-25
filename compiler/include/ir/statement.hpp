@@ -59,4 +59,12 @@ public:
     virtual std::string getType() override { return "NOptStatement"; }
 };
 
+class NGetModule : public NStatement {
+public:
+    std::string file;
+    NGetModule(std::string file) : file(file.begin() + 1, file.end() - 1) {}
+    virtual Value codeGen(CodeGenContext& context);
+    virtual std::string getType() override { return "NGetModule"; }
+};
+
 }  // namespace ddlbx::ir

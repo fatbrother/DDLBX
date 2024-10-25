@@ -7,14 +7,7 @@
 
 #include "ir/node.hpp"
 #include "ir/code_gen_context.hpp"
-
-extern ddlbx::ir::NProgram* program;
-typedef struct yy_buffer_state * YY_BUFFER_STATE;
-extern int yyparse();
-extern int yylineno;
-extern YY_BUFFER_STATE yy_scan_string(const char * str);
-extern YY_BUFFER_STATE yy_switch_to_buffer(YY_BUFFER_STATE buffer);
-extern void yy_delete_buffer(YY_BUFFER_STATE buffer);
+#include "parser/parse_file.hpp"
 
 class CodeGennerTest : public ::testing::Test {
 protected:
@@ -28,19 +21,13 @@ protected:
 
     // Helper function to generate LLVM IR code from a block
     void generate(const std::string& input) {
-        yylineno = 1;
-        YY_BUFFER_STATE my_string_buffer = yy_scan_string(input.c_str());
-        yy_switch_to_buffer( my_string_buffer );
-        yyparse();
-        yy_delete_buffer(my_string_buffer );
+        ddlbx::parser::parseContent(input);
 
-        if (program == nullptr) {
+        if (1 > programs.size() || nullptr == programs.back()) {
             FAIL() << "Failed to parse the input";
         }
 
-        program->codeGen(codeGenContext);
-
-        delete program;
+        programs.back()->codeGen(codeGenContext);
     }
 };
 
@@ -677,6 +664,23 @@ TEST_F(CodeGennerTest, GenerateTraitFunction) {
     llvm::ReturnInst* mainRetInst = llvm::dyn_cast<llvm::ReturnInst>(mainEntryBlock.getTerminator());
     ASSERT_NE(nullptr, mainRetInst);
     EXPECT_EQ(callInst, mainRetInst->getReturnValue());
+}
+
+TEST_F(CodeGennerTest, GetModule) {
+    const std::string input = R"(
+        get 'core/core_lib.ddlbx'!
+
+        fun main(): Int {
+            println('Hello, World!')!
+            ret 0!
+        }
+    )";
+    generate(input);
+
+    // Check if the core module is included
+    // Find "print" function in the module
+    llvm::Function* printFunction = module.getFunction("print");
+    ASSERT_NE(nullptr, printFunction);
 }
 
 int main(int argc, char **argv) {

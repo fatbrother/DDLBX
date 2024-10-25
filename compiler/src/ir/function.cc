@@ -29,9 +29,14 @@ Value NFunctionDeclaration::codeGen(CodeGenContext& context) {
         function = static_cast<llvm::Function*>(this->definition->codeGen(context).llvmValue);
 
         if (!function) {
-            LOG_ERROR("Function " + this->definition->name + " not found");
+            LOG_ERROR("Function " + this->definition->name + " creation failed");
             return Value::null();
         }
+    }
+
+    if (!block) {
+        LOG_DEBUG("Function " + this->definition->name + " has no block");
+        return Value::create(DDLBX_TYPE_FUN, function);
     }
 
     llvm::BasicBlock* block = llvm::BasicBlock::Create(context.getContext(), "entry", function, 0);
@@ -152,27 +157,27 @@ Value NFunctionCall::codeGen(CodeGenContext& context) {
         if (false == templateArgs.empty()) {
             LOG_DEBUG("Trying to find template function " + name);
             std::shared_ptr<NTemplateFunctionDeclaration> templateFunction = context.getTemplateFunction(name);
-            if (nullptr == templateFunction) {
-                LOG_ERROR("Template function " + name + " not found");
-                return Value::null();
+            if (nullptr != templateFunction) {
+                targetFunction = static_cast<llvm::Function*>(templateFunction->codeGen(context, templateArgs).llvmValue);
+                returnType = templateFunction->definition->retType->name;
+                LOG_DEBUG("Template function " + fullName + " created");
+            } else {
+                LOG_DEBUG("Template function " + name + " creation failed");
             }
-
-            targetFunction = static_cast<llvm::Function*>(templateFunction->codeGen(context, templateArgs).llvmValue);
-            returnType = templateFunction->definition->retType->name;
         } else {
             LOG_DEBUG("Trying to find trait method " + name);
             std::shared_ptr<NTraitMethodDeclaration> traitMethod = context.getTraitMethod(name);
-            if (nullptr == traitMethod) {
-                LOG_ERROR("Trait method " + name + " not found");
-                return Value::null();
+            if (nullptr != traitMethod) {
+                targetFunction = static_cast<llvm::Function*>(traitMethod->codeGen(context, parentValue.ddlbxTypeName).llvmValue);
+                returnType = traitMethod->declaration->definition->retType->name;
+                LOG_DEBUG("Trait method " + fullName + " created");
+            } else {
+                LOG_DEBUG("Trait method " + name + " creation failed");
             }
-
-            targetFunction = static_cast<llvm::Function*>(traitMethod->codeGen(context, parentValue.ddlbxTypeName).llvmValue);
-            returnType = traitMethod->declaration->definition->retType->name;
         }
 
-        if (!targetFunction) {
-            LOG_ERROR("Trait method " + name + " creation failed");
+        if (nullptr == targetFunction) {
+            LOG_ERROR("Function " + fullName + " creation failed");
             return Value::null();
         }
     }
@@ -190,20 +195,20 @@ Value NFunctionCall::codeGen(CodeGenContext& context) {
 }
 
 Value NMethodDeclaration::codeGen(CodeGenContext& context) {
-    if (nullptr == context.getType(name)) {
-        LOG_ERROR("Type \"" + name + "\" is not defined");
+    if (nullptr == context.getType(parentName)) {
+        LOG_ERROR("Type \"" + parentName + "\" is not defined");
         return Value::null();
     }
 
-    llvm::StructType* structType = llvm::cast<llvm::StructType>(context.getType(name));
-    declaration->definition->arguments.push_back(std::make_shared<NArgument>(std::make_shared<NType>(name), "this"));
-    declaration->definition->name = name + "." + declaration->definition->name;
+    llvm::StructType* structType = llvm::cast<llvm::StructType>(context.getType(parentName));
+    declaration->definition->arguments.push_back(std::make_shared<NArgument>(std::make_shared<NType>(parentName), "this"));
 
     return declaration->codeGen(context);
 }
 
 Value NTraitMethodDeclaration::codeGen(CodeGenContext& context, std::string parentName) {
-    name = parentName;
+    this->parentName = parentName;
+    declaration->definition->name = parentName + "." + declaration->definition->name;
 
     return NMethodDeclaration::codeGen(context);
 }

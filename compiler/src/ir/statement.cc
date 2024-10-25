@@ -4,8 +4,10 @@
 #include "utils/scope_guard.hpp"
 #include "ir/function.hpp"
 #include "parser/parser.hpp"
+#include "parser/parse_file.hpp"
 
 using namespace ddlbx::ir;
+using namespace ddlbx::utility;
 
 Value NReturnStatement::codeGen(CodeGenContext& context) {
     if (expression) {
@@ -98,6 +100,27 @@ Value NForStatement::codeGen(CodeGenContext& context) {
     if (nullptr != increment) {
         increment->codeGen(context);
     }
+
+    return Value::null();
+}
+
+Value NGetModule::codeGen(CodeGenContext& context) {
+    if (parser::parseFile(file) == false) {
+        LOG_ERROR("Failed to parse file: " + file);
+        return Value::null();
+    }
+
+    if (1 > programs.size() || nullptr == programs.back()) {
+        LOG_ERROR("Failed to parse file: " + file);
+        return Value::null();
+    }
+
+    auto currPos = context.getBuilder().saveIP();
+    auto scopeGuard = makeGuard([&]() {
+        context.getBuilder().restoreIP(currPos);
+    });
+
+    programs.back()->codeGen(context);
 
     return Value::null();
 }

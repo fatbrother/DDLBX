@@ -25,8 +25,7 @@ extern void yy_delete_buffer(YY_BUFFER_STATE buffer);
 extern int yylineno;
 extern int yycolumn;
 extern char* yytext;
-ddlbx::ir::NProgram* program;
-
+std::vector<std::shared_ptr<ddlbx::ir::NProgram>> programs;
 %}
 
 %union {
@@ -48,8 +47,7 @@ ddlbx::ir::NProgram* program;
 }
 
 %token <string> NUMBER FRAC_NUMBER IDENTIFIER STRING BOOL
-%token <token>  KW_RETURN KW_FUNCTION KW_VAR KW_OPT KW_FOR KW_OBJECT
-
+%token <token>  KW_RETURN KW_FUNCTION KW_VAR KW_OPT KW_FOR KW_OBJECT KW_GET
 %token <token> COM_EQ COM_NE COM_LE COM_GE COM_LT COM_GT
 %token <token> OP_ASSIGN OP_PLUS OP_MINUS OP_MULT OP_DIV OP_AND OP_OR OP_NOT
 %token <token> LPAREN RPAREN LBRACE RBRACE
@@ -59,7 +57,7 @@ ddlbx::ir::NProgram* program;
 %type <program> Program
 %type <stmtvec> GlobalStatements
 %type <block> Block Statements
-%type <stmt> Statement GlobalStatement FunctionDeclaration FunctionDefinition OptStatement ForStatement ReturnStatement ObjectDeclaration MethodDeclaration TraitMethodDeclaration TemplateFunctionDefinition
+%type <stmt> Statement GlobalStatement GetModule FunctionDeclaration FunctionDefinition OptStatement ForStatement ReturnStatement ObjectDeclaration MethodDefinition MethodDeclaration TraitMethodDeclaration TemplateFunctionDefinition
 %type <expr> Expression Condition Calculation Term Factor Numeric Boolean String AssignExpression FunctionCallExpression DeclarationExpression FPDeclaration Primary MemberAccessExpression ObjectCreateExpression
 %type <varvec> DeclarationList
 %type <argvec> FPDeclarationList
@@ -78,7 +76,7 @@ Program:
       GlobalStatements {
         $$ = new ddlbx::ir::NProgram();
         $$->statements = *$1;
-        program = $$;
+        programs.push_back(std::shared_ptr<ddlbx::ir::NProgram>($$));
       }
     ;
 
@@ -96,10 +94,23 @@ GlobalStatement:
       FunctionDefinition SEMICOLON {
         $$ = $1;
       }
+    | TemplateFunctionDefinition SEMICOLON {
+        $$ = $1;
+      }
+    | MethodDefinition SEMICOLON {
+        $$ = $1;
+      }
     | MethodDeclaration
     | FunctionDeclaration
     | ObjectDeclaration
     | TraitMethodDeclaration
+    | GetModule
+    ;
+
+GetModule:
+      KW_GET STRING SEMICOLON {
+        $$ = new ddlbx::ir::NGetModule(*$2);
+      }
     ;
 
 FunctionDefinition:
@@ -176,10 +187,18 @@ MemberDeclarationList:
       }
     ;
 
+MethodDefinition:
+      KW_FUNCTION IDENTIFIER DOT IDENTIFIER LPAREN FPDeclarationList RPAREN COLON Type {
+        std::string name = *$2 + "." + *$4;
+        $$ = new ddlbx::ir::NFunctionDefinition(
+            std::shared_ptr<ddlbx::ir::NType>($9), name, *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>($6)));
+      }
+
 MethodDeclaration:
       KW_FUNCTION IDENTIFIER DOT IDENTIFIER LPAREN FPDeclarationList RPAREN COLON Type Block {
+        std::string name = *$2 + "." + *$4;
         ddlbx::ir::NFunctionDefinition *funcDef = new ddlbx::ir::NFunctionDefinition(
-            std::shared_ptr<ddlbx::ir::NType>($9), *$4, *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>($6)));
+            std::shared_ptr<ddlbx::ir::NType>($9), name, *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>($6)));
         ddlbx::ir::NFunctionDeclaration *funcDecl = new ddlbx::ir::NFunctionDeclaration(
             std::shared_ptr<ddlbx::ir::NFunctionDefinition>(funcDef), std::shared_ptr<ddlbx::ir::NBlock>($10));
         $$ = new ddlbx::ir::NMethodDeclaration(*$2, std::shared_ptr<ddlbx::ir::NFunctionDeclaration>(funcDecl));

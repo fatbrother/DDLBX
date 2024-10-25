@@ -36,6 +36,7 @@ int yycolumn = 1;
 <MULTI_COMMENT>\*+[^*/]* { ; }
 <MULTI_COMMENT>\*+\/ { BEGIN 0; }
 
+"get"           { ddlbx::utility::LOG_INFO("TOKEN: KW_GET");      TOKEN(KW_GET); }
 "opt"           { ddlbx::utility::LOG_INFO("TOKEN: KW_OPT");      TOKEN(KW_OPT); }
 "for"           { ddlbx::utility::LOG_INFO("TOKEN: KW_FOR");      TOKEN(KW_FOR); }
 "ret"           { ddlbx::utility::LOG_INFO("TOKEN: KW_RETURN");   TOKEN(KW_RETURN); }
@@ -57,7 +58,7 @@ int yycolumn = 1;
 [0-9]+                   { SAVE_TOKEN;     ddlbx::utility::LOG_INFO("TOKEN: INT " + YYTEXT_STR);          return NUMBER; }
 [0-9]+"."[0-9]*          { SAVE_TOKEN;     ddlbx::utility::LOG_INFO("TOKEN: FLOAT " + YYTEXT_STR);        return FRAC_NUMBER; }
 [A-Za-z_][A-Za-z0-9_]*   { SAVE_TOKEN;     ddlbx::utility::LOG_INFO("TOKEN: IDENTIFIER " + YYTEXT_STR);   return IDENTIFIER; }
-\'[^"]*\'                { SAVE_TOKEN;     ddlbx::utility::LOG_INFO("TOKEN: STRING " + YYTEXT_STR);       return STRING; }
+\'[^']*\'                { SAVE_TOKEN;     ddlbx::utility::LOG_INFO("TOKEN: STRING " + YYTEXT_STR);       return STRING; }
 
 
 "=="            { ddlbx::utility::LOG_INFO("TOKEN: EQ");   TOKEN(COM_EQ); }
