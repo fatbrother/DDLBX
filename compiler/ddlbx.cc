@@ -10,7 +10,6 @@
 
 #include "ir/node.hpp"
 #include "ir/code_gen_context.hpp"
-#include "pass/object_genner.hpp"
 #include "parser/parse_file.hpp"
 
 #include <iostream>
@@ -66,22 +65,18 @@ int main(int argc, char** argv) {
 
     programs.back()->codeGen(codeGenContext);
 
-    // optimize module
-    llvm::legacy::PassManager passManager;
-    passManager.add(llvm::createPromoteMemoryToRegisterPass());
-    passManager.add(llvm::createInstructionCombiningPass());
-    passManager.add(llvm::createReassociatePass());
-    passManager.add(llvm::createGVNPass());
-    passManager.add(llvm::createCFGSimplificationPass());
-    passManager.run(module);
+    std::string outStr;
+    llvm::raw_string_ostream out(outStr);
+    module.print(out, nullptr);
 
-    // print module
+    std::fstream file;
+    file.open("output.ll", std::ios::out);
+    file << out.str();
+    file.close();
+
     if (emitLL) {
-        module.print(llvm::errs(), nullptr);
-        return 0;
+        std::cout << out.str();
     }
 
-    // generate object file
-    ddlbx::pass::ObjectGenner objectGenner;
-    objectGenner.generate(module);
+    return 0;
 }

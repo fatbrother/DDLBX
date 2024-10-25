@@ -91,14 +91,22 @@ Value NForStatement::codeGen(CodeGenContext& context) {
         return Value::null();
     }
 
-    llvm::Value* condition = context.getBuilder().CreateICmpNE(conditionValue, llvm::ConstantInt::get(llvm::Type::getInt1Ty(context.getContext()), 0, true));
+    llvm::Value* condition = nullptr;
+    if (nullptr != iterator) {
+        llvm::Value* iterationValue = nullptr;
+        Variable iteratorVariable = context.getVariable(iterator->name);
+        iterationValue = context.getBuilder().CreateLoad(context.getType(iteratorVariable.ddlbxTypeName).type, iteratorVariable.ptr);
+        condition = context.getBuilder().CreateICmpNE(conditionValue, iterationValue);
+    } else {
+        condition = context.getBuilder().CreateICmpNE(conditionValue, llvm::ConstantInt::get(llvm::Type::getInt1Ty(context.getContext()), 0, true));
+    }
 
     context.getBuilder().CreateCondBr(condition, loopBlock, afterBlock);
 
     block->codeGen(context);
 
     if (nullptr != increment) {
-        increment->codeGen(context);
+        context.getBuilder().CreateStore(increment->codeGen(context).llvmValue, context.getVariable(iterator->name).ptr);
     }
 
     return Value::null();

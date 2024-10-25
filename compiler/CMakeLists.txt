@@ -8,13 +8,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/lib)
 
-# if llvm-project has not been built, build it with CMakeLists.txt in llvm-project/llvm
-if(NOT EXISTS ${CMAKE_SOURCE_DIR}/lib/llvm-project/llvm/build)
-    message(STATUS "Building llvm-project")
-    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" -S ${CMAKE_SOURCE_DIR}/lib/llvm-project/llvm -B ${CMAKE_SOURCE_DIR}/lib/llvm-project/llvm/build -D CMAKE_BUILD_TYPE=Release)
-    execute_process(COMMAND ${CMAKE_COMMAND} --build ${CMAKE_SOURCE_DIR}/lib/llvm-project/llvm/build)
-endif()
-
 # if gtest has not been built, build it with CMakeLists.txt in googletest
 if(NOT EXISTS ${CMAKE_SOURCE_DIR}/lib/googletest/build)
     message(STATUS "Building googletest")
@@ -28,8 +21,7 @@ enable_testing()
 include_directories(${CMAKE_SOURCE_DIR}/lib/googletest/googletest/include)
 
 # llvm
-set(LLVM_DIR ${CMAKE_SOURCE_DIR}/lib/llvm-project/llvm/build/lib/cmake/llvm)
-find_package(LLVM REQUIRED CONFIG PATHS ${LLVM_DIR})
+find_package(LLVM REQUIRED CONFIG)
 llvm_map_components_to_libnames(llvm_libs ${LLVM_TARGETS_TO_BUILD})
 
 # if BUILD_TYPE is Debug, add DDLBX_DEBUG
