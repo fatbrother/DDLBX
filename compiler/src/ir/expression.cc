@@ -50,6 +50,10 @@ Value NIdentifier::codeGen(CodeGenContext& context) {
     }
 
     type = context.getType(variable.ddlbxTypeName);
+    if (type == nullptr) {
+        LOG_ERROR("Type \"" + variable.ddlbxTypeName + "\" is not defined");
+        return Value::null();
+    }
     return Value::create(
         variable.ddlbxTypeName,
         context.getBuilder().CreateLoad(type, variable.ptr, name.c_str())
@@ -94,7 +98,12 @@ Value NVariableDeclaration::codeGen(CodeGenContext& context) {
         LOG_ERROR("Variable declaration failed");
         return value;
     }
+
     type = context.getType(value.ddlbxTypeName);
+    if (type == nullptr) {
+        LOG_ERROR("Type \"" + value.ddlbxTypeName + "\" is not defined");
+        return Value::null();
+    }
 
     llvm::Value* ptr = context.getBuilder().CreateAlloca(type, nullptr, name.c_str());
     context.getBuilder().CreateStore(value.llvmValue, ptr);
@@ -193,6 +202,10 @@ Value NMemberAccess::codeGen(CodeGenContext& context) {
     }
 
     parentType = context.getType(parentTypeName);
+    if (parentType == nullptr) {
+        LOG_ERROR("Type \"" + parentTypeName + "\" is not defined");
+        return Value::null();
+    }
 
     for (const auto& id : ids) {
         llvm::StructType* structType = llvm::cast<llvm::StructType>(parentType);

@@ -116,6 +116,10 @@ Value NFunctionCall::codeGen(CodeGenContext& context) {
         }
         Value value = arguments[0]->codeGen(context);
         llvm::Type* type = context.getType(value.ddlbxTypeName);
+        if (type == nullptr) {
+            LOG_ERROR("Type \"" + value.ddlbxTypeName + "\" is not defined");
+            return Value::null();
+        }
         return Value::create(DDLBX_TYPE_INT, context.getBuilder().getInt32(type->getPrimitiveSizeInBits() / 8));
     }
 
@@ -195,15 +199,18 @@ Value NFunctionCall::codeGen(CodeGenContext& context) {
 }
 
 Value NMethodDeclaration::codeGen(CodeGenContext& context) {
-    if (nullptr == context.getType(parentName)) {
+    llvm::Type* parentType = context.getType(parentName);
+    if (nullptr == parentType) {
         LOG_ERROR("Type \"" + parentName + "\" is not defined");
         return Value::null();
     }
 
-    llvm::StructType* structType = llvm::cast<llvm::StructType>(context.getType(parentName));
+    llvm::StructType* structType = llvm::cast<llvm::StructType>(parentType);
     declaration->definition->arguments.push_back(std::make_shared<NArgument>(std::make_shared<NType>(parentName), "this"));
+    auto res = declaration->codeGen(context);
+    declaration->definition->arguments.pop_back();
 
-    return declaration->codeGen(context);
+    return res;
 }
 
 Value NTraitMethodDeclaration::codeGen(CodeGenContext& context, std::string parentName) {

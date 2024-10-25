@@ -47,6 +47,8 @@ void NObjectDeclaration::genConstructor(CodeGenContext& context, std::vector<llv
         argIt++;
     }
     context.getBuilder().CreateRet(structValue);
+
+    context.registerFunction(name, name);
 }
 
 llvm::Type* NTemplateObjectDeclaration::codeGen(CodeGenContext& context, std::vector<std::shared_ptr<NType>> templateTypes) {
