@@ -115,7 +115,7 @@ Value NFunctionCall::codeGen(CodeGenContext& context) {
             return Value::null();
         }
         Value value = arguments[0]->codeGen(context);
-        llvm::Type* type = context.getType(value.ddlbxTypeName);
+        llvm::Type* type = context.getType(value.ddlbxTypeName).type;
         if (type == nullptr) {
             LOG_ERROR("Type \"" + value.ddlbxTypeName + "\" is not defined");
             return Value::null();
@@ -199,7 +199,7 @@ Value NFunctionCall::codeGen(CodeGenContext& context) {
 }
 
 Value NMethodDeclaration::codeGen(CodeGenContext& context) {
-    llvm::Type* parentType = context.getType(parentName);
+    llvm::Type* parentType = context.getType(parentName).type;
     if (nullptr == parentType) {
         LOG_ERROR("Type \"" + parentName + "\" is not defined");
         return Value::null();

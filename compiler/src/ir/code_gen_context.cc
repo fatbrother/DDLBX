@@ -14,19 +14,23 @@ llvm::LLVMContext &CodeGenContext::getContext() { return context; }
 
 llvm::IRBuilder<> &CodeGenContext::getBuilder() { return builder; }
 
-llvm::Type *CodeGenContext::getType(const std::string &name) {
+Type& CodeGenContext::getType(const std::string &name) {
     if (types.find(name) != types.end()) {
-        return types[name].type;
+        return types[name];
     } else if ((false == templateTypeStack.empty()) && (templateTypeStack.top().find(name) != templateTypeStack.top().end())) {
-        return templateTypeStack.top()[name].type;
+        return templateTypeStack.top()[name];
     } else {
         LOG_DEBUG("Type not found: " + name);
-        return nullptr;
+        return types[DDLBX_TYPE_ERR];
     }
 }
 
-void CodeGenContext::addType(const std::string &name, llvm::Type *type, const std::unordered_map<std::string, llvm::Type *> &nameTypeMap) {
-    types[name] = {name, type, nameTypeMap};
+void CodeGenContext::addType(const std::string &name, llvm::Type *type, const std::unordered_map<std::string, std::string> &nameTypeMap) {
+    types[name] = {
+        .name = name,
+        .type = type,
+        .nameTypeMap = nameTypeMap
+    };
 }
 
 Variable &CodeGenContext::getVariable(const std::string &name) {

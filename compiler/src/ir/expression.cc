@@ -8,7 +8,7 @@
 using namespace ddlbx::ir;
 
 Value NInteger::codeGen(CodeGenContext& context) {
-    return Value::create(DDLBX_TYPE_INT, llvm::ConstantInt::get(context.getType(DDLBX_TYPE_INT), value));
+    return Value::create(DDLBX_TYPE_INT, llvm::ConstantInt::get(context.getType(DDLBX_TYPE_INT).type, value));
 }
 
 NBoolean::NBoolean(std::string value) {
@@ -24,11 +24,11 @@ NBoolean::NBoolean(std::string value) {
 }
 
 Value NBoolean::codeGen(CodeGenContext& context) {
-    return Value::create(DDLBX_TYPE_BOO, llvm::ConstantInt::get(context.getType(DDLBX_TYPE_BOO), value));
+    return Value::create(DDLBX_TYPE_BOO, llvm::ConstantInt::get(context.getType(DDLBX_TYPE_BOO).type, value));
 }
 
 Value NFloat::codeGen(CodeGenContext& context) {
-    return Value::create(DDLBX_TYPE_FLT, llvm::ConstantFP::get(context.getType(DDLBX_TYPE_FLT), value));
+    return Value::create(DDLBX_TYPE_FLT, llvm::ConstantFP::get(context.getType(DDLBX_TYPE_FLT).type, value));
 }
 
 Value NString::codeGen(CodeGenContext& context) {
@@ -37,7 +37,7 @@ Value NString::codeGen(CodeGenContext& context) {
                                                                true, llvm::GlobalValue::PrivateLinkage, strConstant);
     return Value::create(
         DDLBX_TYPE_STR,
-        context.getBuilder().CreatePointerCast(strGlobal, context.getType(DDLBX_TYPE_STR)));
+        context.getBuilder().CreatePointerCast(strGlobal, context.getType(DDLBX_TYPE_STR).type));
 }
 
 Value NIdentifier::codeGen(CodeGenContext& context) {
@@ -49,7 +49,7 @@ Value NIdentifier::codeGen(CodeGenContext& context) {
         return Value::null();
     }
 
-    type = context.getType(variable.ddlbxTypeName);
+    type = context.getType(variable.ddlbxTypeName).type;
     if (type == nullptr) {
         LOG_ERROR("Type \"" + variable.ddlbxTypeName + "\" is not defined");
         return Value::null();
@@ -99,7 +99,7 @@ Value NVariableDeclaration::codeGen(CodeGenContext& context) {
         return value;
     }
 
-    type = context.getType(value.ddlbxTypeName);
+    type = context.getType(value.ddlbxTypeName).type;
     if (type == nullptr) {
         LOG_ERROR("Type \"" + value.ddlbxTypeName + "\" is not defined");
         return Value::null();
@@ -201,7 +201,7 @@ Value NMemberAccess::codeGen(CodeGenContext& context) {
         return Value::null();
     }
 
-    parentType = context.getType(parentTypeName);
+    parentType = context.getType(parentTypeName).type;
     if (parentType == nullptr) {
         LOG_ERROR("Type \"" + parentTypeName + "\" is not defined");
         return Value::null();
@@ -215,6 +215,7 @@ Value NMemberAccess::codeGen(CodeGenContext& context) {
             return Value::null();
         }
         parentValue = context.getBuilder().CreateExtractValue(parentValue, memberIndex);
+        parentTypeName = context.getType(parentTypeName).nameTypeMap[id->name];
     }
 
     return Value::create(parentTypeName, parentValue);

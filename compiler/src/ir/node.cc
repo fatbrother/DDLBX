@@ -38,5 +38,5 @@ Value NProgram::codeGen(CodeGenContext& context) {
 }
 
 llvm::Type* NType::codeGen(CodeGenContext& context) {
-    return context.getType(name);
+    return context.getType(name).type;
 }
