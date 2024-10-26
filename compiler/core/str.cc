@@ -11,7 +11,7 @@ float Str_toFloat(char* str) {
     return atof(str);
 }
 
-char* Str_substring(char* str, int start, int end) {
+char* Str_subString(int start, int end, char* str) {
     char* substr = (char*)malloc(end - start + 1);
     strncpy(substr, str + start, end - start);
     substr[end - start] = '\0';
