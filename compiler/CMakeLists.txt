@@ -27,6 +27,7 @@ llvm_map_components_to_libnames(llvm_libs ${LLVM_TARGETS_TO_BUILD})
 # if BUILD_TYPE is Debug, add DDLBX_DEBUG
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_definitions(-DDDLBX_DEBUG)
+    set(CMAKE_BUILD_TYPE "Release")
 endif()
 
 file(GLOB SOURCES src/**/*.cc src/*.cc)

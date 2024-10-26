@@ -71,7 +71,7 @@ lib_paths="./build/core/libddlbx_core.a"
 llc -filetype=obj -relocation-model=pic output.ll -o output.o -opaque-pointers
 
 # link output file
-clang output.o $lib_paths -o $output_file
+clang output.o $lib_paths -o $output_file -lm
 
 # remove temporary files
 rm output.o

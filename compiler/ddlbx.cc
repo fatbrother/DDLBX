@@ -2,12 +2,6 @@
 #include <iostream>
 #include <string>
 
-#include <llvm/IR/LegacyPassManager.h>
-#include <llvm/Transforms/Utils.h>
-#include <llvm/Transforms/InstCombine/InstCombine.h>
-#include <llvm/Transforms/Scalar.h>
-#include <llvm/Transforms/Scalar/GVN.h>
-
 #include "ir/node.hpp"
 #include "ir/code_gen_context.hpp"
 #include "parser/parse_file.hpp"

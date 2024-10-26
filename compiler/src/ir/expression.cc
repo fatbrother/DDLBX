@@ -123,23 +123,45 @@ Value NBinaryOperator::codeGen(CodeGenContext& context) {
     }
 
     if (lvalue.ddlbxTypeName != rvalue.ddlbxTypeName) {
-        // TODO: Implement type coercion
-        LOG_ERROR("Lvalue(" + lvalue.ddlbxTypeName + ") and rvalue(" + rvalue.ddlbxTypeName + ") type mismatch");
-        return Value::null();
+        if (lvalue.ddlbxTypeName == DDLBX_TYPE_FLT && rvalue.ddlbxTypeName == DDLBX_TYPE_INT) {
+            rvalue.llvmValue = context.getBuilder().CreateSIToFP(rvalue.llvmValue, context.getType(DDLBX_TYPE_FLT).type);
+        } else if (lvalue.ddlbxTypeName == DDLBX_TYPE_INT && rvalue.ddlbxTypeName == DDLBX_TYPE_FLT) {
+            lvalue.llvmValue = context.getBuilder().CreateSIToFP(lvalue.llvmValue, context.getType(DDLBX_TYPE_FLT).type);
+        } else {
+            // TODO: Implement custom operator overloading
+            LOG_ERROR("Binary operator type mismatch");
+            return Value::null();
+        }
     }
 
     switch (op) {
         case OP_PLUS:
-            result = context.getBuilder().CreateAdd(lvalue.llvmValue, rvalue.llvmValue);
+            if (lvalue.ddlbxTypeName == DDLBX_TYPE_INT) {
+                result = context.getBuilder().CreateAdd(lvalue.llvmValue, rvalue.llvmValue);
+            } else if (lvalue.ddlbxTypeName == DDLBX_TYPE_FLT) {
+                result = context.getBuilder().CreateFAdd(lvalue.llvmValue, rvalue.llvmValue);
+            }
             break;
         case OP_MINUS:
-            result = context.getBuilder().CreateSub(lvalue.llvmValue, rvalue.llvmValue);
+            if (lvalue.ddlbxTypeName == DDLBX_TYPE_INT) {
+                result = context.getBuilder().CreateSub(lvalue.llvmValue, rvalue.llvmValue);
+            } else if (lvalue.ddlbxTypeName == DDLBX_TYPE_FLT) {
+                result = context.getBuilder().CreateFSub(lvalue.llvmValue, rvalue.llvmValue);
+            }
             break;
         case OP_MULT:
-            result = context.getBuilder().CreateMul(lvalue.llvmValue, rvalue.llvmValue);
+            if (lvalue.ddlbxTypeName == DDLBX_TYPE_INT) {
+                result = context.getBuilder().CreateMul(lvalue.llvmValue, rvalue.llvmValue);
+            } else if (lvalue.ddlbxTypeName == DDLBX_TYPE_FLT) {
+                result = context.getBuilder().CreateFMul(lvalue.llvmValue, rvalue.llvmValue);
+            }
             break;
         case OP_DIV:
-            result = context.getBuilder().CreateSDiv(lvalue.llvmValue, rvalue.llvmValue);
+            if (lvalue.ddlbxTypeName == DDLBX_TYPE_INT) {
+                result = context.getBuilder().CreateSDiv(lvalue.llvmValue, rvalue.llvmValue);
+            } else if (lvalue.ddlbxTypeName == DDLBX_TYPE_FLT) {
+                result = context.getBuilder().CreateFDiv(lvalue.llvmValue, rvalue.llvmValue);
+            }
             break;
         case OP_AND:
             result = context.getBuilder().CreateAnd(lvalue.llvmValue, rvalue.llvmValue);
@@ -148,22 +170,46 @@ Value NBinaryOperator::codeGen(CodeGenContext& context) {
             result = context.getBuilder().CreateOr(lvalue.llvmValue, rvalue.llvmValue);
             break;
         case COM_EQ:
-            result = context.getBuilder().CreateICmpEQ(lvalue.llvmValue, rvalue.llvmValue);
+            if (lvalue.ddlbxTypeName == DDLBX_TYPE_INT) {
+                result = context.getBuilder().CreateICmpEQ(lvalue.llvmValue, rvalue.llvmValue);
+            } else if (lvalue.ddlbxTypeName == DDLBX_TYPE_FLT) {
+                result = context.getBuilder().CreateFCmpOEQ(lvalue.llvmValue, rvalue.llvmValue);
+            }
             break;
         case COM_NE:
-            result = context.getBuilder().CreateICmpNE(lvalue.llvmValue, rvalue.llvmValue);
+            if (lvalue.ddlbxTypeName == DDLBX_TYPE_INT) {
+                result = context.getBuilder().CreateICmpNE(lvalue.llvmValue, rvalue.llvmValue);
+            } else if (lvalue.ddlbxTypeName == DDLBX_TYPE_FLT) {
+                result = context.getBuilder().CreateFCmpONE(lvalue.llvmValue, rvalue.llvmValue);
+            }
             break;
         case COM_LE:
-            result = context.getBuilder().CreateICmpSLE(lvalue.llvmValue, rvalue.llvmValue);
+            if (lvalue.ddlbxTypeName == DDLBX_TYPE_INT) {
+                result = context.getBuilder().CreateICmpSLE(lvalue.llvmValue, rvalue.llvmValue);
+            } else if (lvalue.ddlbxTypeName == DDLBX_TYPE_FLT) {
+                result = context.getBuilder().CreateFCmpOLE(lvalue.llvmValue, rvalue.llvmValue);
+            }
             break;
         case COM_GE:
-            result = context.getBuilder().CreateICmpSGE(lvalue.llvmValue, rvalue.llvmValue);
+            if (lvalue.ddlbxTypeName == DDLBX_TYPE_INT) {
+                result = context.getBuilder().CreateICmpSGE(lvalue.llvmValue, rvalue.llvmValue);
+            } else if (lvalue.ddlbxTypeName == DDLBX_TYPE_FLT) {
+                result = context.getBuilder().CreateFCmpOGE(lvalue.llvmValue, rvalue.llvmValue);
+            }
             break;
         case COM_LT:
-            result = context.getBuilder().CreateICmpSLT(lvalue.llvmValue, rvalue.llvmValue);
+            if (lvalue.ddlbxTypeName == DDLBX_TYPE_INT) {
+                result = context.getBuilder().CreateICmpSLT(lvalue.llvmValue, rvalue.llvmValue);
+            } else if (lvalue.ddlbxTypeName == DDLBX_TYPE_FLT) {
+                result = context.getBuilder().CreateFCmpOLT(lvalue.llvmValue, rvalue.llvmValue);
+            }
             break;
         case COM_GT:
-            result = context.getBuilder().CreateICmpSGT(lvalue.llvmValue, rvalue.llvmValue);
+            if (lvalue.ddlbxTypeName == DDLBX_TYPE_INT) {
+                result = context.getBuilder().CreateICmpSGT(lvalue.llvmValue, rvalue.llvmValue);
+            } else if (lvalue.ddlbxTypeName == DDLBX_TYPE_FLT) {
+                result = context.getBuilder().CreateFCmpOGT(lvalue.llvmValue, rvalue.llvmValue);
+            }
             break;
         default:
             LOG_ERROR("Invalid binary operator");
