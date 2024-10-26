@@ -1,0 +1,37 @@
+fun print(s: Str): Non!
+fun println(s: Str): Non!
+fun read(): Str!
+fun readln(): Str!
+
+fun abs(x: Int): Int!
+fun abs(x: Flt): Flt!
+fun sqrt(x: Flt): Flt!
+fun pow(x: Flt, y: Flt): Flt!
+fun sin(x: Flt): Flt!
+fun cos(x: Flt): Flt!
+fun tan(x: Flt): Flt!
+fun asin(x: Flt): Flt!
+fun acos(x: Flt): Flt!
+fun atan(x: Flt): Flt!
+fun log(x: Flt): Flt!
+
+fun Int_toString(x: Int): Str!
+fun Int.toString(): Str {
+    ret Int_toString(this)!
+}
+fun Flt_toString(x: Flt): Str!
+fun Flt.toString(): Str {
+    ret Flt_toString(this)!
+}
+fun Str_toInt(x: Str): Int!
+fun Str.toInt(): Int {
+    ret Str_toInt(this)!
+}
+fun Str_toFloat(x: Str): Flt!
+fun Str.toFlt(): Flt {
+    ret Str_toFloat(this)!
+}
+fun Str_subString(start: Int, end: Int, x: Str): Str!
+fun Str.subString(start: Int, end: Int): Str {
+    ret Str_subString(start, end, this)!
+}

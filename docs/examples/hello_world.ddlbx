@@ -1,3 +1,5 @@
+get 'core/core_lib.ddlbx'!
+
 fun main(): Int {
     println('Hello, World!')!
     ret 0!

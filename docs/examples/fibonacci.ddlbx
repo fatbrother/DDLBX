@@ -1,5 +1,9 @@
+get 'core/core_lib.ddlbx'!
+
 fun fib(a: Int): Int {
-    opt (a <= 1) ret 1!
+    opt (a <= 1) {
+        ret 1!
+    }
     ret fib(a - 1) + fib(a - 2)!
 }
 

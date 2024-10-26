@@ -1,3 +1,5 @@
+get 'core/core_lib.ddlbx'!
+
 obj Test {
     a: Int,
     b: Int
