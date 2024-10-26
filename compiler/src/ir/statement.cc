@@ -58,6 +58,7 @@ Value NOptStatement::codeGen(CodeGenContext& context) {
 Value NForStatement::codeGen(CodeGenContext& context) {
     llvm::Function* function = context.getBuilder().GetInsertBlock()->getParent();
     llvm::BasicBlock* loopBlock = llvm::BasicBlock::Create(context.getContext(), "loop", function);
+    llvm::BasicBlock* conditionBlock = llvm::BasicBlock::Create(context.getContext(), "condition", function);
     llvm::BasicBlock* afterBlock = llvm::BasicBlock::Create(context.getContext(), "afterloop", function);
 
     if (nullptr != iterator) {
@@ -78,10 +79,10 @@ Value NForStatement::codeGen(CodeGenContext& context) {
         }
     }
 
-    context.getBuilder().CreateBr(loopBlock);
-    context.getBuilder().SetInsertPoint(loopBlock);
-    auto scopeGuard = makeGuard([&]() {
-        context.getBuilder().CreateBr(loopBlock);
+    context.getBuilder().CreateBr(conditionBlock);
+    context.getBuilder().SetInsertPoint(conditionBlock);
+    auto conditionScopeGuard = makeGuard([&]() {
+        context.getBuilder().CreateBr(conditionBlock);
         context.getBuilder().SetInsertPoint(afterBlock);
     });
 
@@ -103,11 +104,20 @@ Value NForStatement::codeGen(CodeGenContext& context) {
 
     context.getBuilder().CreateCondBr(condition, loopBlock, afterBlock);
 
+    conditionScopeGuard.dismiss();
+
+    context.getBuilder().SetInsertPoint(loopBlock);
+    auto loopScopeGuard = makeGuard([&]() {
+        context.getBuilder().SetInsertPoint(afterBlock);
+    });
+
     block->codeGen(context);
 
     if (nullptr != increment) {
         context.getBuilder().CreateStore(increment->codeGen(context).llvmValue, context.getVariable(iterator->name).ptr);
     }
+
+    context.getBuilder().CreateBr(conditionBlock);
 
     return Value::null();
 }
