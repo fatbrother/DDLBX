@@ -15,7 +15,7 @@ jobs:
 
       - name: Build
         run: |
-          apt install -y clang
+          sudo apt install -y clang
           git submodule update --init --recursive compiler/lib/googletest
           cd compiler
           chmod +x ./build.sh
