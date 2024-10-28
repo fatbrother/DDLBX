@@ -1,0 +1,7 @@
+get 'core/core_lib.ddlbx'!
+
+fun main(): Int {
+    var a = 'Hello, World!'!
+    println(a)!
+    ret 0!
+}

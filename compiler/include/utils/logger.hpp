@@ -4,6 +4,13 @@
 
 namespace ddlbx::utility {
 
+#define STRINGIZING(x) #x
+#define STR(x) STRINGIZING(x)
+#define FILE_LINE __FILE__ ":" STR(__LINE__)
+#define LOG_INFO(message) Logger::info(message, FILE_LINE)
+#define LOG_DEBUG(message) Logger::debug(message, FILE_LINE)
+#define LOG_ERROR(message) Logger::error(message, FILE_LINE)
+
 enum LogLevel {
     INFO,
     DEBUG,
@@ -24,11 +31,11 @@ public:
         logLevel = level;
     }
 
-    static void info(const std::string &message);
+    static void info(const std::string &message, const std::string &location);
 
-    static void debug(const std::string &message);
+    static void debug(const std::string &message, const std::string &location);
 
-    static void error(const std::string &message);
+    static void error(const std::string &message, const std::string &location);
 
 private:
     static LogLevel logLevel;

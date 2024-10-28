@@ -10,6 +10,7 @@ C++ Standard: 17
 ### Install Dependencies
 
 ```bash
+sudo apt install -y clang
 sudo apt install -y libzstd-dev
 sudo apt install -y libedit-dev
 ```

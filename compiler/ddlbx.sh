@@ -1,9 +1,11 @@
+#!/bin/bash
+
 # exit on error
 set -e
 
 # default values
 input_file=""
-output_file_name="a.out"
+output_file="a.out"
 
 is_emit_llvm=false
 is_emit_ast=false
@@ -66,11 +68,14 @@ fi
 
 lib_paths="./build/core/libddlbx_core.a"
 
+llc -filetype=obj -relocation-model=pic output.ll -o output.o -opaque-pointers
+
 # link output file
 clang output.o $lib_paths -o $output_file -lm
 
-# remove output.o
+# remove temporary files
 rm output.o
+rm output.ll
 
 # done
 exit 0

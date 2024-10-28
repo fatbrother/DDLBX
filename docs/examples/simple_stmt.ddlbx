@@ -1,5 +1,7 @@
+get 'core/core_lib.ddlbx'!
+
 fun main(): Non {
-    var x = read().toInt()!
+    var x = 10!
     var a = (1+2+x)*(x+(1+2))!
     println(a.toString())!
 }

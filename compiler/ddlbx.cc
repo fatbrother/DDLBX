@@ -2,25 +2,12 @@
 #include <iostream>
 #include <string>
 
-#include <llvm/IR/LegacyPassManager.h>
-#include <llvm/Transforms/Utils.h>
-#include <llvm/Transforms/InstCombine/InstCombine.h>
-#include <llvm/Transforms/Scalar.h>
-#include <llvm/Transforms/Scalar/GVN.h>
-
 #include "ir/node.hpp"
 #include "ir/code_gen_context.hpp"
-#include "pass/object_genner.hpp"
+#include "parser/parse_file.hpp"
 
 #include <iostream>
 #include <memory>
-
-extern ddlbx::ir::NProgram* program;
-typedef struct yy_buffer_state * YY_BUFFER_STATE;
-extern int yyparse();
-extern YY_BUFFER_STATE yy_scan_string(const char * str);
-extern YY_BUFFER_STATE yy_switch_to_buffer(YY_BUFFER_STATE buffer);
-extern void yy_delete_buffer(YY_BUFFER_STATE buffer);
 
 void printHelp() {
     std::cout << "Usage: ddlbx <file>" << std::endl;
@@ -56,48 +43,34 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    std::ifstream file(fileName);
-    if (!file) {
-        std::cout << "file not found" << std::endl;
-        return 1;
-    }
-    std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-
-    YY_BUFFER_STATE my_string_buffer = yy_scan_string(content.c_str()); 
-    yy_switch_to_buffer( my_string_buffer ); // switch flex to the buffer we just created
-    yyparse(); 
-    yy_delete_buffer(my_string_buffer );
-
-    file.close();
-
-    if (nullptr == program) {
-        return 1;
-    }
-
     llvm::LLVMContext context;
     llvm::Module module("main", context);
     ddlbx::ir::CodeGenContext codeGenContext(context, module);
 
-    program->codeGen(codeGenContext);
-
-    delete program;
-
-    // optimize module
-    llvm::legacy::PassManager passManager;
-    passManager.add(llvm::createPromoteMemoryToRegisterPass());
-    passManager.add(llvm::createInstructionCombiningPass());
-    passManager.add(llvm::createReassociatePass());
-    passManager.add(llvm::createGVNPass());
-    passManager.add(llvm::createCFGSimplificationPass());
-    passManager.run(module);
-
-    // print module
-    if (emitLL) {
-        module.print(llvm::errs(), nullptr);
-        return 0;
+    if (false == ddlbx::parser::parseFile(fileName)) {
+        LOG_ERROR("Failed to parse file: " + fileName);
+        return 1;
     }
 
-    // generate object file
-    ddlbx::pass::ObjectGenner objectGenner;
-    objectGenner.generate(module);
+    if (1 > programs.size() || nullptr == programs.back()) {
+        LOG_ERROR("Failed to parse file: " + fileName);
+        return 1;
+    }
+
+    programs.back()->codeGen(codeGenContext);
+
+    std::string outStr;
+    llvm::raw_string_ostream out(outStr);
+    module.print(out, nullptr);
+
+    std::fstream file;
+    file.open("output.ll", std::ios::out);
+    file << out.str();
+    file.close();
+
+    if (emitLL) {
+        std::cout << out.str();
+    }
+
+    return 0;
 }

@@ -1,3 +1,5 @@
+get 'core/core_lib.ddlbx'!
+
 fun main(): Non {
     var a = 1.234!
     var b = 2.345!
@@ -6,10 +8,7 @@ fun main(): Non {
     var e = 5.678!
     var res = 0.0!
 
-    for (i to 5000000) {
-        res = res + (a * sin(b) + cos(c) * tan(d) - sqrt(e))!
-        res = res - (log(a) + pow(c, d))!
-        res = res * (sin(res) + cos(res) * tan(res) - sqrt(res + 1.0))!
-        res = res / (log(res + 2.0) + pow(res, 1.5))!
-    }
+    res = a * sin(b) + cos(c) * tan(d) - sqrt(e)!
+
+    println(res.toString())!
 }

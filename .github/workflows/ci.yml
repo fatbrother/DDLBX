@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches: [ "develop", "feature/compiler" ]
-    
+
   workflow_dispatch:
 
 jobs:
@@ -15,9 +15,8 @@ jobs:
 
       - name: Build
         run: |
+          apt install -y clang
           git submodule update --init --recursive compiler/lib/googletest
-          git submodule update --init --recursive compiler/lib/llvm-project
-          git submodule update --init --recursive compiler/lib/PEGTL
           cd compiler
           chmod +x ./build.sh
           ./build.sh

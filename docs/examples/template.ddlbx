@@ -1,3 +1,5 @@
+get 'core/core_lib.ddlbx'!
+
 obj Animal<T> {
     a: T
 }
@@ -9,7 +11,7 @@ fun {a: Leg}.run(): Non {
 }
 
 fun main(): Non {
-    var l = Leg()!
-    var a = Animal<Leg>(l)!
+    var l = Leg{}!
+    var a = Animal<Leg>{l}!
     a.run()!
 }
