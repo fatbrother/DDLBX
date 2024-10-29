@@ -23,6 +23,6 @@ jobs:
 
       - name: Test
         run: |
-          compiler/build/bin/ddlbx_test
           cd compiler
+          build/bin/ddlbx_test
           python3 test/integration_test.py
