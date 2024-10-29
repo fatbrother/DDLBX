@@ -125,14 +125,18 @@ Value NBinaryOperator::codeGen(CodeGenContext& context) {
     if (lvalue.ddlbxTypeName != rvalue.ddlbxTypeName) {
         if (lvalue.ddlbxTypeName == DDLBX_TYPE_FLT && rvalue.ddlbxTypeName == DDLBX_TYPE_INT) {
             rvalue.llvmValue = context.getBuilder().CreateSIToFP(rvalue.llvmValue, context.getType(DDLBX_TYPE_FLT).type);
+            rvalue.ddlbxTypeName = DDLBX_TYPE_FLT;
         } else if (lvalue.ddlbxTypeName == DDLBX_TYPE_INT && rvalue.ddlbxTypeName == DDLBX_TYPE_FLT) {
             lvalue.llvmValue = context.getBuilder().CreateSIToFP(lvalue.llvmValue, context.getType(DDLBX_TYPE_FLT).type);
+            lvalue.ddlbxTypeName = DDLBX_TYPE_FLT;
         } else {
             // TODO: Implement custom operator overloading
             LOG_ERROR("Binary operator type mismatch");
             return Value::null();
         }
     }
+
+    LOG_DEBUG("ltype: " + lvalue.ddlbxTypeName + ", rtype: " + rvalue.ddlbxTypeName);
 
     switch (op) {
         case OP_PLUS:
@@ -215,6 +219,10 @@ Value NBinaryOperator::codeGen(CodeGenContext& context) {
             LOG_ERROR("Invalid binary operator");
     }
 
+    if (result == nullptr) {
+        LOG_ERROR("Binary operator failed");
+        return Value::null();
+    }
     return Value::create(lvalue.ddlbxTypeName, result);
 }
 
