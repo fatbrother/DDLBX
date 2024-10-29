@@ -295,10 +295,35 @@ TEST_F(CodeGennerTest, GenerateLoop) {
     llvm::BranchInst* branchInst = llvm::dyn_cast<llvm::BranchInst>(&entryBlock->back());
     ASSERT_NE(nullptr, branchInst);
 
+    // Assuming the first successor is the condition block
+    llvm::BasicBlock* conditionBlock = branchInst->getSuccessor(0);
+    ASSERT_NE(nullptr, conditionBlock);
+    // 1 for load instruction, 1 for compare instruction, 1 for branch instruction
+    EXPECT_EQ(3, conditionBlock->size());
+
+    // Assuming the third instruction is a branch instruction
+    llvm::BranchInst* conditionBranchInst = llvm::dyn_cast<llvm::BranchInst>(&conditionBlock->back());
+    ASSERT_NE(nullptr, conditionBranchInst);
+
     // Assuming the first successor is the loop block
-    llvm::BasicBlock* loopBlock = branchInst->getSuccessor(0);
+    llvm::BasicBlock* loopBlock = conditionBranchInst->getSuccessor(0);
     ASSERT_NE(nullptr, loopBlock);
+    // 1 for load instruction, 1 for add instruction, 1 for store instruction, 1 for branch instruction
     EXPECT_EQ(4, loopBlock->size());
+
+    // Assuming the last instruction in the loop block is a branch instruction
+    llvm::BranchInst* loopBranchInst = llvm::dyn_cast<llvm::BranchInst>(&loopBlock->back());
+    ASSERT_NE(nullptr, loopBranchInst);
+
+    // Assuming the first successor is the condition block
+    llvm::BasicBlock* conditionBlock2 = loopBranchInst->getSuccessor(0);
+    ASSERT_NE(nullptr, conditionBlock2);
+    EXPECT_EQ(conditionBlock, conditionBlock2);
+
+    // Assuming the second successor of the conditionBranchInst is the afterloop block
+    llvm::BasicBlock* afterLoopBlock = conditionBranchInst->getSuccessor(1);
+    ASSERT_NE(nullptr, afterLoopBlock);
+    EXPECT_EQ(0, afterLoopBlock->size());
 }
 
 TEST_F(CodeGennerTest, GenerateLoopWithStep) {
@@ -323,10 +348,35 @@ TEST_F(CodeGennerTest, GenerateLoopWithStep) {
     llvm::BranchInst* branchInst = llvm::dyn_cast<llvm::BranchInst>(&entryBlock->back());
     ASSERT_NE(nullptr, branchInst);
 
+    // Assuming the first successor is the condition block
+    llvm::BasicBlock* conditionBlock = branchInst->getSuccessor(0);
+    ASSERT_NE(nullptr, conditionBlock);
+    // 1 for load instruction, 1 for compare instruction, 1 for branch instruction
+    EXPECT_EQ(3, conditionBlock->size());
+
+    // Assuming the third instruction is a branch instruction
+    llvm::BranchInst* conditionBranchInst = llvm::dyn_cast<llvm::BranchInst>(&conditionBlock->back());
+    ASSERT_NE(nullptr, conditionBranchInst);
+
     // Assuming the first successor is the loop block
-    llvm::BasicBlock* loopBlock = branchInst->getSuccessor(0);
+    llvm::BasicBlock* loopBlock = conditionBranchInst->getSuccessor(0);
     ASSERT_NE(nullptr, loopBlock);
+    // 1 for load instruction, 1 for add instruction, 1 for store instruction, 1 for branch instruction
     EXPECT_EQ(4, loopBlock->size());
+
+    // Assuming the last instruction in the loop block is a branch instruction
+    llvm::BranchInst* loopBranchInst = llvm::dyn_cast<llvm::BranchInst>(&loopBlock->back());
+    ASSERT_NE(nullptr, loopBranchInst);
+
+    // Assuming the first successor is the condition block
+    llvm::BasicBlock* conditionBlock2 = loopBranchInst->getSuccessor(0);
+    ASSERT_NE(nullptr, conditionBlock2);
+    EXPECT_EQ(conditionBlock, conditionBlock2);
+
+    // Assuming the second successor of the conditionBranchInst is the afterloop block
+    llvm::BasicBlock* afterLoopBlock = conditionBranchInst->getSuccessor(1);
+    ASSERT_NE(nullptr, afterLoopBlock);
+    EXPECT_EQ(0, afterLoopBlock->size());
 }
 
 TEST_F(CodeGennerTest, GenerateLoopWithStepAndFrom) {
@@ -352,9 +402,34 @@ TEST_F(CodeGennerTest, GenerateLoopWithStepAndFrom) {
     ASSERT_NE(nullptr, branchInst);
 
     // Assuming the first successor is the loop block
-    llvm::BasicBlock* loopBlock = branchInst->getSuccessor(0);
+    llvm::BasicBlock* conditionBlock = branchInst->getSuccessor(0);
+    ASSERT_NE(nullptr, conditionBlock);
+    // 1 for load instruction, 1 for compare instruction, 1 for branch instruction
+    EXPECT_EQ(3, conditionBlock->size());
+
+    // Assuming the third instruction is a branch instruction
+    llvm::BranchInst* conditionBranchInst = llvm::dyn_cast<llvm::BranchInst>(&conditionBlock->back());
+    ASSERT_NE(nullptr, conditionBranchInst);
+
+    // Assuming the first successor is the loop block
+    llvm::BasicBlock* loopBlock = conditionBranchInst->getSuccessor(0);
     ASSERT_NE(nullptr, loopBlock);
+    // 1 for load instruction, 1 for add instruction, 1 for store instruction, 1 for branch instruction
     EXPECT_EQ(4, loopBlock->size());
+
+    // Assuming the last instruction in the loop block is a branch instruction
+    llvm::BranchInst* loopBranchInst = llvm::dyn_cast<llvm::BranchInst>(&loopBlock->back());
+    ASSERT_NE(nullptr, loopBranchInst);
+
+    // Assuming the first successor is the condition block
+    llvm::BasicBlock* conditionBlock2 = loopBranchInst->getSuccessor(0);
+    ASSERT_NE(nullptr, conditionBlock2);
+    EXPECT_EQ(conditionBlock, conditionBlock2);
+
+    // Assuming the second successor of the conditionBranchInst is the afterloop block
+    llvm::BasicBlock* afterLoopBlock = conditionBranchInst->getSuccessor(1);
+    ASSERT_NE(nullptr, afterLoopBlock);
+    EXPECT_EQ(0, afterLoopBlock->size());
 }
 
 TEST_F(CodeGennerTest, GenerateLoopWithCondition) {
@@ -380,9 +455,32 @@ TEST_F(CodeGennerTest, GenerateLoopWithCondition) {
     ASSERT_NE(nullptr, branchInst);
 
     // Assuming the first successor is the loop block
-    llvm::BasicBlock* loopBlock = branchInst->getSuccessor(0);
+    llvm::BasicBlock* conditionBlock = branchInst->getSuccessor(0);
+    ASSERT_NE(nullptr, conditionBlock);
+    EXPECT_EQ(1, conditionBlock->size());
+
+    // Assuming the first instruction in the condition block is a branch instruction
+    llvm::BranchInst* conditionBranchInst = llvm::dyn_cast<llvm::BranchInst>(&conditionBlock->front());
+    ASSERT_NE(nullptr, conditionBranchInst);
+
+    // Assuming the first successor is the loop block
+    llvm::BasicBlock* loopBlock = conditionBranchInst->getSuccessor(0);
     ASSERT_NE(nullptr, loopBlock);
-    EXPECT_EQ(2, loopBlock->size());
+    EXPECT_EQ(1, loopBlock->size());
+
+    // Assuming the first instruction in the loop block is a branch instruction
+    llvm::BranchInst* loopBranchInst = llvm::dyn_cast<llvm::BranchInst>(&loopBlock->front());
+    ASSERT_NE(nullptr, loopBranchInst);
+
+    // Assuming the first successor is the condition block
+    llvm::BasicBlock* conditionBlock2 = loopBranchInst->getSuccessor(0);
+    ASSERT_NE(nullptr, conditionBlock2);
+    EXPECT_EQ(conditionBlock, conditionBlock2);
+
+    // Assuming the second successor of the conditionBranchInst is the afterloop block
+    llvm::BasicBlock* afterLoopBlock = conditionBranchInst->getSuccessor(1);
+    ASSERT_NE(nullptr, afterLoopBlock);
+    EXPECT_EQ(0, afterLoopBlock->size());
 }
 
 TEST_F(CodeGennerTest, GenerateObject) {
