@@ -16,6 +16,7 @@ jobs:
       - name: Build
         run: |
           sudo apt install -y clang
+          sudo apt install -y llvm
           git submodule update --init --recursive compiler/lib/googletest
           cd compiler
           chmod +x ./build.sh
