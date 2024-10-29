@@ -9,14 +9,14 @@ Value NFunctionDefinition::codeGen(CodeGenContext& context) {
     std::vector<llvm::Type*> argTypes;
 
     for (auto arg : arguments) {
-        argTypes.push_back(arg->type->codeGen(context));
+        argTypes.push_back(arg->type->codeGen(context).type);
         if (argTypes.back() == nullptr) {
             LOG_ERROR("Function argument type generation failed");
             return Value::null();
         }
     }
 
-    llvm::FunctionType* functionType = llvm::FunctionType::get(retType->codeGen(context), argTypes, false);
+    llvm::FunctionType* functionType = llvm::FunctionType::get(retType->codeGen(context).type, argTypes, false);
     llvm::Function* function = llvm::Function::Create(functionType, llvm::Function::ExternalLinkage, name.c_str(), context.getModule());
     context.registerFunction(name, retType->name);
 
@@ -51,7 +51,7 @@ Value NFunctionDeclaration::codeGen(CodeGenContext& context) {
     for (auto it = function->arg_begin(); it != function->arg_end(); it++) {
         it->setName((*argIt)->name.c_str());
 
-        llvm::Type* type = (*argIt)->type->codeGen(context);
+        auto [typeName, type, _] = (*argIt)->type->codeGen(context);
         if (it->getType() != type) {
             LOG_ERROR("Function argument type error");
             return Value::null();
@@ -59,7 +59,7 @@ Value NFunctionDeclaration::codeGen(CodeGenContext& context) {
 
         llvm::AllocaInst* inst = context.getBuilder().CreateAlloca(type, nullptr, (*argIt)->name.c_str());
         context.getBuilder().CreateStore(&*it, inst);
-        context.setVariable((*argIt)->name, {(*argIt)->type->name, inst});
+        context.setVariable((*argIt)->name, {typeName, inst});
         argIt++;
     }
 

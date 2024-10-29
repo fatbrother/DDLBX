@@ -12,8 +12,9 @@ Value NObjectDeclaration::codeGen(CodeGenContext& context) {
     std::vector<llvm::Type*> memberTypes;
 
     for (const auto& member : members) {
-        memberTypes.push_back(member->type->codeGen(context));
-        nameTypeMap[member->name] = member->type->name;
+        auto [typeName, type, _] = member->type->codeGen(context);
+        memberTypes.push_back(type);
+        nameTypeMap[member->name] = typeName;
     }
 
     structType->setBody(memberTypes);
@@ -68,15 +69,16 @@ llvm::Type* NTemplateObjectDeclaration::codeGen(CodeGenContext& context, std::ve
     std::unordered_map<std::string, std::string> nameTypeMap;
     std::unordered_map<std::string, llvm::Type*> templateNameTypeMap;
     for (int i = 0; i < templates.size(); i++) {
-        templateNameTypeMap[templates[i]] = templateTypes[i]->codeGen(context);
+        templateNameTypeMap[templates[i]] = templateTypes[i]->codeGen(context).type;
     }
 
     std::vector<llvm::Type*> memberTypes;
     for (const auto& member : members) {
+
         if (templateNameTypeMap.find(member->type->name) != templateNameTypeMap.end()) {
             memberTypes.push_back(templateNameTypeMap[member->type->name]);
         } else {
-            memberTypes.push_back(member->type->codeGen(context));
+            memberTypes.push_back(member->type->codeGen(context).type);
         }
         nameTypeMap[member->name] = member->type->name;
     }

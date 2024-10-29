@@ -45,7 +45,7 @@ class NType {
 public:
     std::string name;
     NType(std::string name) : name(name) {}
-    virtual llvm::Type* codeGen(CodeGenContext& context);
+    virtual Type& codeGen(CodeGenContext& context);
     virtual std::string getType() { return "NType"; }
 };
 
