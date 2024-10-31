@@ -4,3 +4,6 @@
 [submodule "ddlbx_web"]
 	path = ddlbx_web
 	url = git@github.com:ianian4302/DDLBX_Web.git
+[submodule "vscode-syntax-extension"]
+	path = vscode-syntax-extension
+	url = https://github.com/ianian4302/vscode-syntax-extension.git
