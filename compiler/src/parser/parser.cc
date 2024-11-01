@@ -43,104 +43,108 @@ std::vector<std::shared_ptr<ddlbx::ir::NProgram>> programs;
 #line 44 "y.tab.c"
 static int yylhs[] = {                                        -1,
     0,    1,    1,    5,    5,    5,    5,    5,    5,    5,
-    5,    6,    8,   16,    7,    7,   33,   33,   33,   28,
-   12,   12,   38,   37,   37,   37,   13,   14,   15,   11,
-   11,   26,   26,   26,   31,   31,   36,   35,   35,   35,
-   34,   34,   34,   30,   30,   29,   29,   29,   29,   29,
-   29,   29,    4,    4,    4,    4,    4,    4,   10,   10,
-   10,   10,    9,    2,    3,    3,   27,   32,   32,   32,
-   32,   25,   17,   17,   17,   17,   18,   18,   18,   18,
-   18,   18,   18,   19,   19,   19,   20,   20,   20,   21,
-   21,   21,   21,   21,   21,   21,   21,   39,   22,   22,
-   23,   24,   40,
+    5,    5,    5,    6,    8,   16,    7,    7,   35,   35,
+   35,   30,   12,   12,   40,   39,   39,   39,   13,   14,
+   17,   18,   15,   11,   11,   28,   28,   28,   33,   33,
+   38,   37,   37,   37,   36,   36,   36,   32,   32,   31,
+   31,   31,   31,   31,   31,   31,    4,    4,    4,    4,
+    4,    4,   10,   10,   10,   10,    9,    2,    3,    3,
+   29,   34,   34,   34,   34,   27,   19,   19,   19,   19,
+   20,   20,   20,   20,   20,   20,   20,   21,   21,   21,
+   22,   22,   22,   23,   23,   23,   23,   23,   23,   23,
+   23,   41,   24,   24,   25,   26,   42,
 };
 static int yylen[] = {                                         2,
-    1,    1,    2,    2,    2,    2,    1,    1,    1,    1,
-    1,    3,    7,    8,    2,    2,    0,    3,    1,    3,
-    5,    6,    3,    0,    3,    1,    9,    2,   12,    3,
-    2,    4,    5,    4,    4,    5,    3,    0,    3,    1,
-    0,    3,    1,    3,    3,    1,    1,    1,    1,    3,
-    1,    1,    2,    2,    2,    1,    1,    1,    7,    9,
-   11,    5,    5,    3,    0,    2,    2,    3,    3,    1,
-    1,    3,    3,    3,    2,    1,    3,    3,    3,    3,
-    3,    3,    1,    1,    3,    3,    1,    3,    3,    1,
-    1,    1,    1,    3,    1,    1,    1,    1,    1,    1,
-    1,    1,    1,
+    1,    1,    2,    2,    2,    2,    2,    1,    1,    1,
+    1,    1,    1,    3,    7,    8,    2,    2,    0,    3,
+    1,    3,    5,    6,    3,    0,    3,    1,    9,    2,
+   10,    2,   12,    3,    2,    4,    5,    4,    4,    5,
+    3,    0,    3,    1,    0,    3,    1,    3,    3,    1,
+    1,    1,    1,    3,    1,    1,    2,    2,    2,    1,
+    1,    1,    7,    9,   11,    5,    5,    3,    0,    2,
+    2,    3,    3,    1,    1,    3,    3,    3,    2,    1,
+    3,    3,    3,    3,    3,    3,    1,    1,    3,    3,
+    1,    3,    3,    1,    1,    1,    1,    3,    1,    1,
+    1,    1,    1,    1,    1,    1,    1,
 };
 static int yydefred[] = {                                      0,
-    0,    0,    0,    0,    0,    2,   11,    8,    0,    9,
-    0,    7,   10,    0,    0,    0,    0,    0,    3,   65,
-    4,   15,    6,   28,    5,   16,    0,    0,    0,    0,
-    0,    0,   26,    0,    0,   12,    0,  103,    0,   40,
-    0,   19,    0,    0,    0,    0,    0,    0,    0,    0,
-   99,  100,    0,  102,  101,    0,    0,    0,    0,    0,
-    0,   64,   66,   56,   57,   58,    0,    0,    0,    0,
-   87,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,   37,    0,    0,    0,    0,    0,    0,   23,    0,
-   25,   21,    0,    0,    0,    0,   31,    0,    0,   98,
-   70,    0,    0,    0,    0,   75,    0,   53,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-   55,   54,    0,    0,    0,    0,   39,   20,    0,   18,
-    0,    0,    0,   22,   43,    0,    0,    0,    0,   30,
-    0,    0,    0,    0,    0,   73,   74,    0,    0,    0,
-    0,    0,    0,    0,    0,   88,   89,   45,    0,   44,
-   72,   13,    0,    0,    0,   32,    0,   35,    0,    0,
-   69,    0,    0,    0,    0,    0,   34,    0,   14,    0,
-   42,   33,   36,   63,   62,    0,    0,   27,    0,    0,
-    0,    0,    0,    0,   59,    0,    0,    0,    0,   29,
-    0,   60,    0,   61,
+    0,    0,    0,    0,    0,    2,   13,   10,    0,   11,
+    0,    8,   12,    0,    0,    9,    0,    0,    0,    0,
+    3,   69,    4,   17,    6,   30,    5,   18,    7,   32,
+    0,    0,    0,    0,    0,    0,   28,    0,    0,   14,
+    0,  107,    0,   44,    0,   21,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,  103,  104,    0,  106,  105,
+    0,    0,    0,    0,    0,    0,   68,   70,   60,   61,
+   62,    0,    0,    0,    0,   91,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,   41,    0,    0,    0,
+    0,    0,    0,    0,   25,    0,   27,   23,    0,    0,
+    0,    0,   35,    0,    0,  102,   74,    0,    0,    0,
+    0,   79,    0,   57,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,   59,   58,    0,    0,
+    0,    0,   43,   22,    0,   20,    0,    0,    0,    0,
+   24,   47,    0,    0,    0,    0,   34,    0,    0,    0,
+    0,    0,   77,   78,    0,    0,    0,    0,    0,    0,
+    0,    0,   92,   93,   49,    0,   48,   76,   15,    0,
+    0,    0,    0,   36,    0,   39,    0,    0,   73,    0,
+    0,    0,    0,    0,   38,    0,   16,    0,    0,   46,
+   37,   40,   67,   66,    0,    0,   29,    0,    0,    0,
+    0,    0,   31,    0,    0,   63,    0,    0,    0,    0,
+   33,    0,   64,    0,   65,
 };
 static int yydgoto[] = {                                       4,
-    5,   22,   37,   63,    6,    7,    8,    9,   64,   65,
-   66,   10,   11,   12,   13,   14,  135,   68,   69,   70,
-   71,   72,   73,   74,   75,   76,   77,   42,   78,   79,
-   80,  102,   43,  136,   39,   30,   32,   33,   99,   40,
+    5,   24,   41,   68,    6,    7,    8,    9,   69,   70,
+   71,   10,   11,   12,   13,   14,   15,   16,  142,   73,
+   74,   75,   76,   77,   78,   79,   80,   81,   82,   46,
+   83,   84,   85,  108,   47,  143,   43,   34,   36,   37,
+  105,   44,
 };
-static int yysindex[] = {                                   -143,
- -235, -225, -173,    0, -143,    0,    0,    0, -256,    0,
- -220,    0,    0, -219, -258, -167, -204, -183,    0,    0,
-    0,    0,    0,    0,    0,    0, -162, -118, -114, -164,
- -139, -213,    0, -167, -127,    0, -203,    0, -214,    0,
- -136,    0, -199, -119, -118,  -87, -111, -167,  -54, -167,
-    0,    0, -201,    0,    0, -247,  -77,  -92,  -59, -241,
- -241,    0,    0,    0,    0,    0,  -90, -168,  269, -152,
-    0,    0,    0,    0,  -56,    0,  -38,  -16, -257,    0,
-  -10,    0, -162, -162,   -8, -118, -118, -190,    0,   40,
-    0,    0,  -48, -241, -241,    5,    0,   28,    0,    0,
-    0,   36,  -10, -212, -241,    0,   56,    0, -241, -241,
- -212, -212, -212, -212, -212, -212, -212, -212, -212, -212,
-    0,    0,  -77, -241,  -77, -241,    0,    0, -162,    0,
- -179,   60,   73,    0,    0, -140,   -4, -241, -241,    0,
-  -77,   90,   97,  -85,    0,    0,    0,  -20,  -20,  -20,
-  -20,  -20,  -20, -152, -152,    0,    0,    0, -137,    0,
-    0,    0,  101, -162, -118,    0, -241,    0,  -75,   71,
-    0,  -10,  114,  114, -241, -241,    0, -162,    0,  -25,
-    0,    0,    0,    0,    0,  115, -254,    0,  117, -241,
-  114, -241, -162,  116,    0,  129,  114, -241,  114,    0,
-  130,    0,  114,    0,
+static int yysindex[] = {                                   -235,
+ -250, -186, -237,    0, -235,    0,    0,    0, -236,    0,
+  -94,    0,    0,  -67,  -41,    0, -256, -182, -255, -225,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+ -179, -176, -128, -216, -195, -113,    0, -182, -143,    0,
+ -201,    0, -222,    0, -138,    0, -264, -116, -176,  -85,
+  -76,  -88, -182,  -36, -182,    0,    0,   17,    0,    0,
+ -245,  -51,  -66,  -59, -214, -214,    0,    0,    0,    0,
+    0,  -58, -240,  291, -171,    0,    0,    0,    0,  -26,
+    0,  -12,  -54, -211,    0,  -32,    0, -179, -179,  -21,
+ -176, -176, -198,   -6,    0,   27,    0,    0,  -17, -214,
+ -214,   42,    0,    6,    0,    0,    0,   23,  -32, -158,
+ -214,    0,   34,    0, -214, -214, -158, -158, -158, -158,
+ -158, -158, -158, -158, -158, -158,    0,    0,  -51, -214,
+  -51, -214,    0,    0, -179,    0, -197,   47, -176,   60,
+    0,    0, -191,    8, -214, -214,    0,  -51,   77,   87,
+ -133,    0,    0,    0,   92,   92,   92,   92,   92,   92,
+ -171, -171,    0,    0,    0, -174,    0,    0,    0,   88,
+ -179, -165, -176,    0, -214,    0, -154,   33,    0,  -32,
+   90,   90, -214, -214,    0, -179,    0,   97, -123,    0,
+    0,    0,    0,    0,  104, -262,    0, -179,  122, -214,
+   90, -214,    0, -179,  109,    0,  137,   90, -214,   90,
+    0,  141,    0,   90,    0,
 };
 static int yyrindex[] = {                                      0,
-    0,    0,    0,    0,  415,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,   77,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0, -210,   25,    0,    0,
-    0,    0,    0,   77,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,   25,    0,    0,    0,    0,   77,
-    0,    0,  -76,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0, -132, -185,  124,
-    0, -103,  -51,  -26,    0,   -1,    0,    0,   99,   24,
- -141,    0,    0,    0,    0,    0,   25,    0,    0,    0,
-    0,    0,    0,   50,   96,    0,    0,    0,   49,    0,
-    0,  137,   19,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,  426,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,   58,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,   50,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,   50,   96,    0,
-    0,    0,    0,  199,   74,    0,    0, -170,  204,  214,
-  224,  234,  244,  149,  174,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,   25,    0,    0,    0,    0,    0,
-    0,   44,    0,    0,    0,    0,    0,    0,    0,    0,
+ -204, -120,    0,    0,    0,    0,    0,   58,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0, -120,    0,
+    0,    0,    0,    0,   58,    0,    0,  -65,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,  266, -175,  136,    0,  -92,  -39,  -14,    0,
+   11,    0,    0,  111,   36, -124,    0,    0,    0,    0,
+    0, -120,    0,    0,    0,    0,    0,    0,    0, -112,
+   64,    0,    0,    0,   61,    0,    0,  140,  106,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0, -112,
+    0,    0,    0,    0,    0,    0,    0,    0, -120,    0,
+    0,    0,    0,    0, -112,   64,    0,    0,    0,    0,
+  211,   86,    0,    0, -160,  216,  226,  236,  246,  256,
+  161,  186,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0, -120,    0,    0,    0,    0,    0,    0,  113,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,
 };
 static int yycindex[] = {                                      0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
@@ -148,7 +152,7 @@ static int yycindex[] = {                                      0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,  154,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,  163,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
@@ -163,133 +167,137 @@ static int yycindex[] = {                                      0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,
 };
 static int yygindex[] = {                                      0,
-    0,  -11,    0,    0,  423,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,  -33,  327,  436,  271,
-  283,    0,    0,    0,  -50,    0,    0,  346,    0,    0,
-    0,    0,  -44,  -86,    0,   -9,  -13,  386,  -35,  -78,
+    0,  -11,    0,    0,  434,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,  -40,  330,
+   19,  295,  289,    0,    0,    0,  -60,    0,    0,  352,
+    0,    0,    0,    0,  -44,  -91,    0,   -8,  -19,  391,
+  -33,  -82,
 };
-#define YYTABLESIZE 552
-static int yytable[] = {                                      24,
-   88,   81,   26,   67,  127,  128,  101,   35,  137,   51,
-   52,   53,   54,   55,   27,   51,   52,   53,   54,   55,
-   49,  103,   98,   15,   28,  124,  106,  107,   20,  191,
-   21,   29,  125,   17,   60,   61,   93,  159,  192,   97,
-   60,   61,  131,   96,   51,   52,   53,   54,   55,   16,
-  162,  169,  170,   51,   52,   53,   54,   55,   56,   82,
-   57,   58,   59,   38,   20,   20,   23,   25,   27,  144,
-   61,  143,   47,   83,   48,  146,  147,   38,   60,   61,
-   34,   94,   62,   95,   85,  179,   18,  158,   86,  160,
-  171,   31,  161,  132,   83,   83,   38,   86,   83,  188,
-   83,   83,   83,   36,  163,  172,   83,   83,   86,   79,
-   79,  109,  110,   79,  197,   79,   79,   79,   45,    1,
-  180,   79,   79,    2,    3,  119,  120,   90,   90,   90,
-   90,   90,   90,  181,   90,   90,   90,   90,   90,   90,
-   41,  186,  187,  166,   44,   90,  177,  167,   46,   46,
-  167,   76,   84,   76,   76,   76,  194,   50,  196,   76,
-   76,  184,  185,   87,  201,   91,   91,   91,   91,   91,
-   91,   89,   91,   91,   91,   91,   91,   91,   90,  195,
-   91,  100,   91,   91,   91,  200,   47,  202,   91,   91,
-  104,  204,   98,   98,   98,   98,  108,   98,   98,   98,
-   98,   98,   98,   98,   98,  175,  176,   98,  182,   98,
-   98,   98,  167,   98,   98,   98,   98,   92,   92,   92,
-   92,   92,   92,  105,   92,   92,   92,   92,   92,   92,
-  121,   92,   92,   48,   92,   92,   92,  134,   48,   48,
-   92,   92,   93,   93,   93,   93,   93,   93,  122,   93,
-   93,   93,   93,   93,   93,  117,  118,   93,  189,   93,
-   93,   93,   86,   49,  126,   93,   93,   95,   95,   95,
-   95,   95,   95,  123,   95,   95,   95,   95,   95,   95,
-  129,  168,   95,  167,   95,   95,   95,  138,   51,  139,
-   95,   95,   96,   96,   96,   96,   96,   96,  133,   96,
-   96,   96,   96,   96,   96,   71,   71,   96,   17,   96,
-   96,   96,   17,   52,  140,   96,   96,   90,   90,   90,
-   90,   90,   90,  141,   90,   90,   90,   90,   90,   90,
-   68,   68,   90,   41,   90,   90,   90,   41,   46,  145,
-   90,   90,   94,   94,   94,   94,   94,   94,  164,   94,
-   94,   94,   94,   94,   94,  165,  183,   94,  167,   94,
-   94,   94,   24,   50,   24,   94,   94,   97,   97,   97,
-   97,   97,   97,  173,   97,   97,   97,   97,   97,   97,
-  174,   41,   97,   41,   97,   97,   97,  154,  155,  178,
-   97,   97,   84,   84,   84,   84,   84,   84,   20,   84,
-   84,  156,  157,   84,   84,  193,  190,   84,  198,   84,
-   84,   84,  199,  203,    1,   84,   84,   85,   85,   85,
-   85,   85,   85,   67,   85,   85,    0,   19,   85,   85,
-  142,  130,   85,   91,   85,   85,   85,    0,    0,    0,
-   85,   85,   86,   86,   86,   86,   86,   86,    0,   86,
-   86,    0,    0,   86,   86,    0,    0,   86,    0,   86,
-   86,   86,    0,    0,    0,   86,   86,   90,   90,   90,
-   90,   90,   90,    0,   90,   90,   90,   90,   90,   90,
-    0,    0,   90,   82,   82,    0,    0,   82,   46,   82,
-   82,   82,    0,   80,   80,   82,   82,   80,    0,   80,
-   80,   80,    0,   81,   81,   80,   80,   81,    0,   81,
-   81,   81,    0,   77,   77,   81,   81,   77,    0,   77,
-   77,   77,    0,   78,   78,   77,   77,   78,    0,   78,
-   78,   78,    0,    0,    0,   78,   78,  111,  112,  113,
-  114,  115,  116,    0,  117,  118,  148,  149,  150,  151,
-  152,  153,
+#define YYTABLESIZE 568
+static int yytable[] = {                                      26,
+   72,  107,   28,   30,   93,  133,  134,   86,   17,  144,
+   39,   56,   57,   58,   59,   60,   31,   31,   54,   90,
+  104,  201,   20,   91,  112,  113,   32,    1,  109,   38,
+  202,    2,    3,   33,   18,   99,   65,   66,  166,  115,
+  116,  103,   56,   57,   58,   59,   60,  137,   22,  102,
+   23,   87,  169,  177,  178,   56,   57,   58,   59,   60,
+   61,   40,   62,   63,   64,   88,   49,   65,   66,   42,
+  150,  130,   19,   50,  153,  154,   35,  151,  131,   42,
+   65,   66,   45,   42,   67,  138,  170,  179,  187,   91,
+   91,  168,  174,   51,  172,  165,  175,  167,   56,   57,
+   58,   59,   60,  197,   87,   87,  125,  126,   87,  185,
+   87,   87,   87,  175,  180,  203,   87,   87,  188,   83,
+   83,  208,   91,   83,   66,   83,   83,   83,  189,  191,
+   48,   83,   83,  175,  190,  155,  156,  157,  158,  159,
+  160,   55,  195,  196,   94,   94,   94,   94,   94,   94,
+   89,   94,   94,   94,   94,   94,   94,  183,  184,  205,
+  199,  207,   94,   19,   91,   50,   92,   19,  212,  193,
+  194,   45,   52,   94,   53,   45,   95,   95,   95,   95,
+   95,   95,   95,   95,   95,   95,   95,   95,   95,  206,
+   22,   95,   25,   95,   95,   95,  211,   51,  213,   95,
+   95,   96,  215,  102,  102,  102,  102,  106,  102,  102,
+  102,  102,  102,  102,  102,  102,  110,   22,  102,   27,
+  102,  102,  102,  111,  102,  102,  102,  102,  114,   96,
+   96,   96,   96,   96,   96,  129,   96,   96,   96,   96,
+   96,   96,  132,   22,   96,   29,   96,   96,   96,   98,
+   52,   53,   96,   96,   97,   97,   97,   97,   97,   97,
+  127,   97,   97,   97,   97,   97,   97,  135,  141,   97,
+   53,   97,   97,   97,  128,   53,  139,   97,   97,   99,
+   99,   99,   99,   99,   99,  140,   99,   99,   99,   99,
+   99,   99,  147,  176,   99,  175,   99,   99,   99,  100,
+   55,  101,   99,   99,  100,  100,  100,  100,  100,  100,
+  148,  100,  100,  100,  100,  100,  100,  152,  192,  100,
+  175,  100,  100,  100,  145,   56,  146,  100,  100,   94,
+   94,   94,   94,   94,   94,  171,   94,   94,   94,   94,
+   94,   94,  173,   26,   94,   26,   94,   94,   94,   45,
+   50,   45,   94,   94,   98,   98,   98,   98,   98,   98,
+  181,   98,   98,   98,   98,   98,   98,  123,  124,   98,
+  182,   98,   98,   98,   22,   54,  186,   98,   98,  101,
+  101,  101,  101,  101,  101,  198,  101,  101,  101,  101,
+  101,  101,   75,   75,  101,  200,  101,  101,  101,   72,
+   72,  209,  101,  101,   88,   88,   88,   88,   88,   88,
+  204,   88,   88,  163,  164,   88,   88,  161,  162,   88,
+  210,   88,   88,   88,  214,    1,   71,   88,   88,   89,
+   89,   89,   89,   89,   89,    0,   89,   89,   21,  149,
+   89,   89,  136,   97,   89,    0,   89,   89,   89,    0,
+    0,    0,   89,   89,   90,   90,   90,   90,   90,   90,
+    0,   90,   90,    0,    0,   90,   90,    0,    0,   90,
+    0,   90,   90,   90,    0,    0,    0,   90,   90,   94,
+   94,   94,   94,   94,   94,    0,   94,   94,   94,   94,
+   94,   94,    0,    0,   94,   86,   86,    0,    0,   86,
+   50,   86,   86,   86,    0,   84,   84,   86,   86,   84,
+    0,   84,   84,   84,    0,   85,   85,   84,   84,   85,
+    0,   85,   85,   85,    0,   81,   81,   85,   85,   81,
+    0,   81,   81,   81,    0,   82,   82,   81,   81,   82,
+    0,   82,   82,   82,    0,    0,    0,   82,   82,   80,
+    0,   80,   80,   80,    0,    0,    0,   80,   80,  117,
+  118,  119,  120,  121,  122,    0,  123,  124,
 };
 static int yycheck[] = {                                      11,
-   45,   37,   14,   37,   83,   84,   57,   17,   95,  257,
-  258,  259,  260,  261,  273,  257,  258,  259,  260,  261,
-   34,   57,   56,  259,  283,  283,   60,   61,  285,  284,
-  287,  290,  290,  259,  282,  283,   50,  124,  293,  287,
-  282,  283,   87,   53,  257,  258,  259,  260,  261,  285,
-  129,  138,  139,  257,  258,  259,  260,  261,  262,  274,
-  264,  265,  266,  274,  285,  285,  287,  287,  273,  105,
-  283,  105,  286,  288,  288,  109,  110,  288,  282,  283,
-  285,  283,  286,  285,  284,  164,  260,  123,  288,  125,
-  141,  259,  126,  284,  280,  281,  259,  288,  284,  178,
-  286,  287,  288,  287,  284,  141,  292,  293,  288,  280,
-  281,  280,  281,  284,  193,  286,  287,  288,  283,  263,
-  165,  292,  293,  267,  268,  278,  279,  269,  270,  271,
-  272,  273,  274,  167,  276,  277,  278,  279,  280,  281,
-  259,  175,  176,  284,  259,  287,  284,  288,  290,  289,
-  288,  284,  289,  286,  287,  288,  190,  285,  192,  292,
-  293,  173,  174,  283,  198,  269,  270,  271,  272,  273,
-  274,  259,  276,  277,  278,  279,  280,  281,  290,  191,
-  284,  259,  286,  287,  288,  197,  290,  199,  292,  293,
-  283,  203,  269,  270,  271,  272,  287,  274,  275,  276,
-  277,  278,  279,  280,  281,  291,  292,  284,  284,  286,
-  287,  288,  288,  290,  291,  292,  293,  269,  270,  271,
-  272,  273,  274,  283,  276,  277,  278,  279,  280,  281,
-  287,  286,  284,  288,  286,  287,  288,  286,  290,  288,
-  292,  293,  269,  270,  271,  272,  273,  274,  287,  276,
-  277,  278,  279,  280,  281,  276,  277,  284,  284,  286,
-  287,  288,  288,  290,  275,  292,  293,  269,  270,  271,
-  272,  273,  274,  290,  276,  277,  278,  279,  280,  281,
-  289,  286,  284,  288,  286,  287,  288,  283,  290,  285,
-  292,  293,  269,  270,  271,  272,  273,  274,  259,  276,
-  277,  278,  279,  280,  281,  287,  288,  284,  284,  286,
-  287,  288,  288,  290,  287,  292,  293,  269,  270,  271,
-  272,  273,  274,  288,  276,  277,  278,  279,  280,  281,
-  287,  288,  284,  284,  286,  287,  288,  288,  290,  284,
-  292,  293,  269,  270,  271,  272,  273,  274,  289,  276,
-  277,  278,  279,  280,  281,  283,  286,  284,  288,  286,
-  287,  288,  286,  290,  288,  292,  293,  269,  270,  271,
-  272,  273,  274,  284,  276,  277,  278,  279,  280,  281,
-  284,  286,  284,  288,  286,  287,  288,  117,  118,  289,
-  292,  293,  269,  270,  271,  272,  273,  274,  285,  276,
-  277,  119,  120,  280,  281,  289,  292,  284,  293,  286,
-  287,  288,  284,  284,    0,  292,  293,  269,  270,  271,
-  272,  273,  274,  287,  276,  277,  273,    5,  280,  281,
-  104,   86,  284,   48,  286,  287,  288,   -1,   -1,   -1,
-  292,  293,  269,  270,  271,  272,  273,  274,   -1,  276,
-  277,   -1,   -1,  280,  281,   -1,   -1,  284,   -1,  286,
-  287,  288,   -1,   -1,   -1,  292,  293,  269,  270,  271,
-  272,  273,  274,   -1,  276,  277,  278,  279,  280,  281,
-   -1,   -1,  284,  280,  281,   -1,   -1,  284,  290,  286,
-  287,  288,   -1,  280,  281,  292,  293,  284,   -1,  286,
-  287,  288,   -1,  280,  281,  292,  293,  284,   -1,  286,
-  287,  288,   -1,  280,  281,  292,  293,  284,   -1,  286,
-  287,  288,   -1,  280,  281,  292,  293,  284,   -1,  286,
-  287,  288,   -1,   -1,   -1,  292,  293,  269,  270,  271,
-  272,  273,  274,   -1,  276,  277,  111,  112,  113,  114,
-  115,  116,
+   41,   62,   14,   15,   49,   88,   89,   41,  259,  101,
+   19,  257,  258,  259,  260,  261,  273,  273,   38,  284,
+   61,  284,  260,  288,   65,   66,  283,  263,   62,  285,
+  293,  267,  268,  290,  285,   55,  282,  283,  130,  280,
+  281,  287,  257,  258,  259,  260,  261,   92,  285,   58,
+  287,  274,  135,  145,  146,  257,  258,  259,  260,  261,
+  262,  287,  264,  265,  266,  288,  283,  282,  283,  274,
+  111,  283,  259,  290,  115,  116,  259,  111,  290,  259,
+  282,  283,  259,  288,  286,  284,  284,  148,  171,  288,
+  288,  132,  284,  289,  139,  129,  288,  131,  257,  258,
+  259,  260,  261,  186,  280,  281,  278,  279,  284,  284,
+  286,  287,  288,  288,  148,  198,  292,  293,  284,  280,
+  281,  204,  288,  284,  283,  286,  287,  288,  173,  284,
+  259,  292,  293,  288,  175,  117,  118,  119,  120,  121,
+  122,  285,  183,  184,  269,  270,  271,  272,  273,  274,
+  289,  276,  277,  278,  279,  280,  281,  291,  292,  200,
+  284,  202,  287,  284,  288,  290,  283,  288,  209,  181,
+  182,  284,  286,  259,  288,  288,  269,  270,  271,  272,
+  273,  274,  259,  276,  277,  278,  279,  280,  281,  201,
+  285,  284,  287,  286,  287,  288,  208,  290,  210,  292,
+  293,  290,  214,  269,  270,  271,  272,  259,  274,  275,
+  276,  277,  278,  279,  280,  281,  283,  285,  284,  287,
+  286,  287,  288,  283,  290,  291,  292,  293,  287,  269,
+  270,  271,  272,  273,  274,  290,  276,  277,  278,  279,
+  280,  281,  275,  285,  284,  287,  286,  287,  288,  286,
+  290,  288,  292,  293,  269,  270,  271,  272,  273,  274,
+  287,  276,  277,  278,  279,  280,  281,  289,  286,  284,
+  288,  286,  287,  288,  287,  290,  283,  292,  293,  269,
+  270,  271,  272,  273,  274,  259,  276,  277,  278,  279,
+  280,  281,  287,  286,  284,  288,  286,  287,  288,  283,
+  290,  285,  292,  293,  269,  270,  271,  272,  273,  274,
+  288,  276,  277,  278,  279,  280,  281,  284,  286,  284,
+  288,  286,  287,  288,  283,  290,  285,  292,  293,  269,
+  270,  271,  272,  273,  274,  289,  276,  277,  278,  279,
+  280,  281,  283,  286,  284,  288,  286,  287,  288,  286,
+  290,  288,  292,  293,  269,  270,  271,  272,  273,  274,
+  284,  276,  277,  278,  279,  280,  281,  276,  277,  284,
+  284,  286,  287,  288,  285,  290,  289,  292,  293,  269,
+  270,  271,  272,  273,  274,  289,  276,  277,  278,  279,
+  280,  281,  287,  288,  284,  292,  286,  287,  288,  287,
+  288,  293,  292,  293,  269,  270,  271,  272,  273,  274,
+  289,  276,  277,  125,  126,  280,  281,  123,  124,  284,
+  284,  286,  287,  288,  284,    0,  287,  292,  293,  269,
+  270,  271,  272,  273,  274,  273,  276,  277,    5,  110,
+  280,  281,   91,   53,  284,   -1,  286,  287,  288,   -1,
+   -1,   -1,  292,  293,  269,  270,  271,  272,  273,  274,
+   -1,  276,  277,   -1,   -1,  280,  281,   -1,   -1,  284,
+   -1,  286,  287,  288,   -1,   -1,   -1,  292,  293,  269,
+  270,  271,  272,  273,  274,   -1,  276,  277,  278,  279,
+  280,  281,   -1,   -1,  284,  280,  281,   -1,   -1,  284,
+  290,  286,  287,  288,   -1,  280,  281,  292,  293,  284,
+   -1,  286,  287,  288,   -1,  280,  281,  292,  293,  284,
+   -1,  286,  287,  288,   -1,  280,  281,  292,  293,  284,
+   -1,  286,  287,  288,   -1,  280,  281,  292,  293,  284,
+   -1,  286,  287,  288,   -1,   -1,   -1,  292,  293,  284,
+   -1,  286,  287,  288,   -1,   -1,   -1,  292,  293,  269,
+  270,  271,  272,  273,  274,   -1,  276,  277,
 };
-static int yyctable[] = {                                     27,
-   98,   -1,
+static int yyctable[] = {                                     31,
+  102,   -1,
 };
 #define YYFINAL 4
 #ifndef YYDEBUG
@@ -319,7 +327,9 @@ static char *yyrule[] = {
 "GlobalStatement : FunctionDefinition SEMICOLON",
 "GlobalStatement : TemplateFunctionDefinition SEMICOLON",
 "GlobalStatement : MethodDefinition SEMICOLON",
+"GlobalStatement : TemplateObjectMethodDefinition SEMICOLON",
 "GlobalStatement : MethodDeclaration",
+"GlobalStatement : TemplateObjectMethodDeclaration",
 "GlobalStatement : FunctionDeclaration",
 "GlobalStatement : ObjectDeclaration",
 "GlobalStatement : TraitMethodDeclaration",
@@ -341,6 +351,8 @@ static char *yyrule[] = {
 "MemberDeclarationList : MemberDeclaration",
 "MethodDefinition : KW_FUNCTION IDENTIFIER DOT IDENTIFIER LPAREN FPDeclarationList RPAREN COLON Type",
 "MethodDeclaration : MethodDefinition Block",
+"TemplateObjectMethodDefinition : KW_FUNCTION IDENTIFIER TemplateDeclaration DOT IDENTIFIER LPAREN FPDeclarationList RPAREN COLON Type",
+"TemplateObjectMethodDeclaration : TemplateObjectMethodDefinition Block",
 "TraitMethodDeclaration : KW_FUNCTION LBRACE MemberDeclarationList RBRACE DOT IDENTIFIER LPAREN FPDeclarationList RPAREN COLON Type Block",
 "ReturnStatement : KW_RETURN Expression SEMICOLON",
 "ReturnStatement : KW_RETURN SEMICOLON",
@@ -562,7 +574,7 @@ yyparsestate *YYNewState(int size);
 void YYFreeState(yyparsestate *p);
 
 
-#line 526 "parser.y"
+#line 549 "parser.y"
 
 void yyerror(const char *s) {
     ddlbx::utility::LOG_ERROR("Error: " + std::string(s) + " at " + std::to_string(yylineno) + ":" + std::to_string(yycolumn) + " near " + std::string(yytext));
@@ -575,7 +587,7 @@ void parseText(const char* text) {
     yy_delete_buffer(buffer);
     return;
 }
-#line 617 "y.tab.c"
+#line 629 "y.tab.c"
 #line 186 "btyaccpa.ske"
 
 
@@ -971,7 +983,7 @@ case 1:
         yyval.program->statements = *yyvsp[0].stmtvec;
         programs.push_back(std::shared_ptr<ddlbx::ir::NProgram>(yyval.program));
       }
-#line 1013 "y.tab.c"
+#line 1025 "y.tab.c"
 break;
 case 2:
   if (!yytrial)
@@ -980,7 +992,7 @@ case 2:
         yyval.stmtvec = new std::vector<std::shared_ptr<ddlbx::ir::NStatement>>();
         yyval.stmtvec->push_back(std::shared_ptr<ddlbx::ir::NStatement>(yyvsp[0].stmt));
       }
-#line 1022 "y.tab.c"
+#line 1034 "y.tab.c"
 break;
 case 3:
   if (!yytrial)
@@ -988,7 +1000,7 @@ case 3:
 {
         yyvsp[-1].stmtvec->push_back(std::shared_ptr<ddlbx::ir::NStatement>(yyvsp[0].stmt));
       }
-#line 1030 "y.tab.c"
+#line 1042 "y.tab.c"
 break;
 case 4:
   if (!yytrial)
@@ -996,7 +1008,7 @@ case 4:
 {
         yyval.stmt = yyvsp[-1].stmt;
       }
-#line 1038 "y.tab.c"
+#line 1050 "y.tab.c"
 break;
 case 5:
   if (!yytrial)
@@ -1004,7 +1016,7 @@ case 5:
 {
         yyval.stmt = yyvsp[-1].stmt;
       }
-#line 1046 "y.tab.c"
+#line 1058 "y.tab.c"
 break;
 case 6:
   if (!yytrial)
@@ -1012,158 +1024,189 @@ case 6:
 {
         yyval.stmt = yyvsp[-1].stmt;
       }
-#line 1054 "y.tab.c"
+#line 1066 "y.tab.c"
 break;
-case 12:
+case 7:
   if (!yytrial)
-#line 111 "parser.y"
+#line 103 "parser.y"
+{
+        yyval.stmt = yyvsp[-1].stmt;
+      }
+#line 1074 "y.tab.c"
+break;
+case 14:
+  if (!yytrial)
+#line 115 "parser.y"
 {
         yyval.stmt = new ddlbx::ir::NGetModule(*yyvsp[-1].string);
       }
-#line 1062 "y.tab.c"
+#line 1082 "y.tab.c"
 break;
-case 13:
+case 15:
   if (!yytrial)
-#line 117 "parser.y"
+#line 121 "parser.y"
 {
         yyval.stmt = new ddlbx::ir::NFunctionDefinition(std::shared_ptr<ddlbx::ir::NType>(yyvsp[0].type),
                                                 *yyvsp[-5].string,
                                                 *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>(yyvsp[-3].argvec)));
       }
-#line 1072 "y.tab.c"
+#line 1092 "y.tab.c"
 break;
-case 14:
+case 16:
   if (!yytrial)
-#line 125 "parser.y"
+#line 129 "parser.y"
 {
         yyval.stmt = new ddlbx::ir::NTemplateFunctionDefinition(std::shared_ptr<ddlbx::ir::NType>(yyvsp[0].type),
                                                 *yyvsp[-6].string,
                                                 *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>(yyvsp[-3].argvec)),
                                                 *yyvsp[-5].stringvec);
       }
-#line 1083 "y.tab.c"
+#line 1103 "y.tab.c"
 break;
-case 15:
+case 17:
   if (!yytrial)
-#line 134 "parser.y"
+#line 138 "parser.y"
 {
         yyval.stmt = new ddlbx::ir::NFunctionDeclaration(std::shared_ptr<ddlbx::ir::NFunctionDefinition>(dynamic_cast<ddlbx::ir::NFunctionDefinition*>(yyvsp[-1].stmt)),
                                                  std::shared_ptr<ddlbx::ir::NBlock>(yyvsp[0].block));
       }
-#line 1092 "y.tab.c"
+#line 1112 "y.tab.c"
 break;
-case 16:
+case 18:
   if (!yytrial)
-#line 138 "parser.y"
+#line 142 "parser.y"
 {
         yyval.stmt = new ddlbx::ir::NTemplateFunctionDeclaration(std::shared_ptr<ddlbx::ir::NFunctionDefinition>(dynamic_cast<ddlbx::ir::NFunctionDefinition*>(yyvsp[-1].stmt)),
                                                          std::shared_ptr<ddlbx::ir::NBlock>(yyvsp[0].block));
       }
-#line 1101 "y.tab.c"
-break;
-case 17:
-  if (!yytrial)
-#line 145 "parser.y"
-{
-        yyval.argvec = new std::vector<std::shared_ptr<ddlbx::ir::NArgument>>();
-      }
-#line 1109 "y.tab.c"
-break;
-case 18:
-  if (!yytrial)
-#line 148 "parser.y"
-{
-        yyvsp[-2].argvec->push_back(std::shared_ptr<ddlbx::ir::NArgument>(dynamic_cast<ddlbx::ir::NArgument*>(yyvsp[0].expr)));
-      }
-#line 1117 "y.tab.c"
+#line 1121 "y.tab.c"
 break;
 case 19:
   if (!yytrial)
-#line 151 "parser.y"
+#line 149 "parser.y"
+{
+        yyval.argvec = new std::vector<std::shared_ptr<ddlbx::ir::NArgument>>();
+      }
+#line 1129 "y.tab.c"
+break;
+case 20:
+  if (!yytrial)
+#line 152 "parser.y"
+{
+        yyvsp[-2].argvec->push_back(std::shared_ptr<ddlbx::ir::NArgument>(dynamic_cast<ddlbx::ir::NArgument*>(yyvsp[0].expr)));
+      }
+#line 1137 "y.tab.c"
+break;
+case 21:
+  if (!yytrial)
+#line 155 "parser.y"
 {
         yyval.argvec = new std::vector<std::shared_ptr<ddlbx::ir::NArgument>>();
         yyval.argvec->push_back(std::shared_ptr<ddlbx::ir::NArgument>(dynamic_cast<ddlbx::ir::NArgument*>(yyvsp[0].expr)));
       }
-#line 1126 "y.tab.c"
-break;
-case 20:
-  if (!yytrial)
-#line 158 "parser.y"
-{
-        yyval.expr = new ddlbx::ir::NArgument(std::shared_ptr<ddlbx::ir::NType>(yyvsp[0].type), *yyvsp[-2].string);
-      }
-#line 1134 "y.tab.c"
-break;
-case 21:
-  if (!yytrial)
-#line 164 "parser.y"
-{
-        yyval.stmt = new ddlbx::ir::NObjectDeclaration(*yyvsp[-3].string, *yyvsp[-1].membervec);
-      }
-#line 1142 "y.tab.c"
+#line 1146 "y.tab.c"
 break;
 case 22:
   if (!yytrial)
-#line 167 "parser.y"
+#line 162 "parser.y"
 {
-        yyval.stmt = new ddlbx::ir::NTemplateObjectDeclaration(*yyvsp[-4].string, *yyvsp[-1].membervec, *yyvsp[-3].stringvec);
+        yyval.expr = new ddlbx::ir::NArgument(std::shared_ptr<ddlbx::ir::NType>(yyvsp[0].type), *yyvsp[-2].string);
       }
-#line 1150 "y.tab.c"
+#line 1154 "y.tab.c"
 break;
 case 23:
   if (!yytrial)
-#line 172 "parser.y"
+#line 168 "parser.y"
 {
-        yyval.member = new ddlbx::ir::NMemberDeclaration(std::make_shared<ddlbx::ir::NType>(*yyvsp[0].string), *yyvsp[-2].string);
+        yyval.stmt = new ddlbx::ir::NObjectDeclaration(*yyvsp[-3].string, *yyvsp[-1].membervec);
       }
-#line 1158 "y.tab.c"
+#line 1162 "y.tab.c"
 break;
 case 24:
   if (!yytrial)
-#line 178 "parser.y"
+#line 171 "parser.y"
 {
-        yyval.membervec = new std::vector<std::shared_ptr<ddlbx::ir::NMemberDeclaration>>();
+        yyval.stmt = new ddlbx::ir::NTemplateObjectDeclaration(*yyvsp[-4].string, *yyvsp[-1].membervec, *yyvsp[-3].stringvec);
       }
-#line 1166 "y.tab.c"
+#line 1170 "y.tab.c"
 break;
 case 25:
   if (!yytrial)
-#line 181 "parser.y"
+#line 176 "parser.y"
 {
-        yyvsp[-2].membervec->push_back(std::shared_ptr<ddlbx::ir::NMemberDeclaration>(yyvsp[0].member));
+        yyval.member = new ddlbx::ir::NMemberDeclaration(std::make_shared<ddlbx::ir::NType>(*yyvsp[0].string), *yyvsp[-2].string);
       }
-#line 1174 "y.tab.c"
+#line 1178 "y.tab.c"
 break;
 case 26:
   if (!yytrial)
-#line 184 "parser.y"
+#line 182 "parser.y"
+{
+        yyval.membervec = new std::vector<std::shared_ptr<ddlbx::ir::NMemberDeclaration>>();
+      }
+#line 1186 "y.tab.c"
+break;
+case 27:
+  if (!yytrial)
+#line 185 "parser.y"
+{
+        yyvsp[-2].membervec->push_back(std::shared_ptr<ddlbx::ir::NMemberDeclaration>(yyvsp[0].member));
+      }
+#line 1194 "y.tab.c"
+break;
+case 28:
+  if (!yytrial)
+#line 188 "parser.y"
 {
         yyval.membervec = new std::vector<std::shared_ptr<ddlbx::ir::NMemberDeclaration>>();
         yyval.membervec->push_back(std::shared_ptr<ddlbx::ir::NMemberDeclaration>(yyvsp[0].member));
       }
-#line 1183 "y.tab.c"
+#line 1203 "y.tab.c"
 break;
-case 27:
+case 29:
   if (!yytrial)
-#line 191 "parser.y"
+#line 195 "parser.y"
 {
         yyval.stmt = new ddlbx::ir::NMethodDefinition(
             std::shared_ptr<ddlbx::ir::NType>(yyvsp[0].type), *yyvsp[-5].string, *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>(yyvsp[-3].argvec)), *yyvsp[-7].string);
       }
-#line 1192 "y.tab.c"
+#line 1212 "y.tab.c"
 break;
-case 28:
+case 30:
   if (!yytrial)
-#line 198 "parser.y"
+#line 202 "parser.y"
 {
         yyval.stmt = new ddlbx::ir::NMethodDeclaration(std::shared_ptr<ddlbx::ir::NMethodDefinition>(dynamic_cast<ddlbx::ir::NMethodDefinition*>(yyvsp[-1].stmt)),
                                                std::shared_ptr<ddlbx::ir::NBlock>(yyvsp[0].block));
       }
-#line 1201 "y.tab.c"
+#line 1221 "y.tab.c"
 break;
-case 29:
+case 31:
   if (!yytrial)
-#line 205 "parser.y"
+#line 209 "parser.y"
+{
+        yyval.stmt = new ddlbx::ir::NTemplateObjectMethodDefinition(
+          std::shared_ptr<ddlbx::ir::NType>(yyvsp[0].type),
+          *yyvsp[-5].string,
+          *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>(yyvsp[-3].argvec)),
+          *yyvsp[-8].string,
+          *yyvsp[-7].stringvec);
+      }
+#line 1234 "y.tab.c"
+break;
+case 32:
+  if (!yytrial)
+#line 220 "parser.y"
+{
+        yyval.stmt = new ddlbx::ir::NTemplateObjectMethodDeclaration(
+          std::shared_ptr<ddlbx::ir::NTemplateObjectMethodDefinition>(dynamic_cast<ddlbx::ir::NTemplateObjectMethodDefinition*>(yyvsp[-1].stmt)),
+          std::shared_ptr<ddlbx::ir::NBlock>(yyvsp[0].block));
+      }
+#line 1244 "y.tab.c"
+break;
+case 33:
+  if (!yytrial)
+#line 228 "parser.y"
 {
         ddlbx::ir::NMethodDefinition *funcDef = new ddlbx::ir::NMethodDefinition(
             std::shared_ptr<ddlbx::ir::NType>(yyvsp[-1].type), *yyvsp[-6].string, *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>(yyvsp[-4].argvec)), "");
@@ -1171,222 +1214,222 @@ case 29:
             std::shared_ptr<ddlbx::ir::NFunctionDefinition>(funcDef), std::shared_ptr<ddlbx::ir::NBlock>(yyvsp[0].block));
         yyval.stmt = new ddlbx::ir::NTraitMethodDeclaration(std::shared_ptr<ddlbx::ir::NFunctionDeclaration>(funcDecl), *yyvsp[-9].membervec);
       }
-#line 1213 "y.tab.c"
-break;
-case 30:
-  if (!yytrial)
-#line 214 "parser.y"
-{
-        yyval.stmt = new ddlbx::ir::NReturnStatement(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-1].expr));
-      }
-#line 1221 "y.tab.c"
-break;
-case 31:
-  if (!yytrial)
-#line 217 "parser.y"
-{
-        yyval.stmt = new ddlbx::ir::NReturnStatement();
-      }
-#line 1229 "y.tab.c"
-break;
-case 32:
-  if (!yytrial)
-#line 223 "parser.y"
-{
-        yyval.expr = new ddlbx::ir::NFunctionCall(*yyvsp[-3].string, std::vector<std::shared_ptr<ddlbx::ir::NExpression>>(*yyvsp[-1].exprvec));
-      }
-#line 1237 "y.tab.c"
-break;
-case 33:
-  if (!yytrial)
-#line 226 "parser.y"
-{
-        yyval.expr = new ddlbx::ir::NFunctionCall(*yyvsp[-4].string, std::vector<std::shared_ptr<ddlbx::ir::NExpression>>(*yyvsp[-1].exprvec), *yyvsp[-3].stringvec);
-      }
-#line 1245 "y.tab.c"
+#line 1256 "y.tab.c"
 break;
 case 34:
   if (!yytrial)
-#line 229 "parser.y"
+#line 237 "parser.y"
+{
+        yyval.stmt = new ddlbx::ir::NReturnStatement(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-1].expr));
+      }
+#line 1264 "y.tab.c"
+break;
+case 35:
+  if (!yytrial)
+#line 240 "parser.y"
+{
+        yyval.stmt = new ddlbx::ir::NReturnStatement();
+      }
+#line 1272 "y.tab.c"
+break;
+case 36:
+  if (!yytrial)
+#line 246 "parser.y"
+{
+        yyval.expr = new ddlbx::ir::NFunctionCall(*yyvsp[-3].string, std::vector<std::shared_ptr<ddlbx::ir::NExpression>>(*yyvsp[-1].exprvec));
+      }
+#line 1280 "y.tab.c"
+break;
+case 37:
+  if (!yytrial)
+#line 249 "parser.y"
+{
+        yyval.expr = new ddlbx::ir::NFunctionCall(*yyvsp[-4].string, std::vector<std::shared_ptr<ddlbx::ir::NExpression>>(*yyvsp[-1].exprvec), *yyvsp[-3].stringvec);
+      }
+#line 1288 "y.tab.c"
+break;
+case 38:
+  if (!yytrial)
+#line 252 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NFunctionCall(std::shared_ptr<ddlbx::ir::NMemberAccess>(dynamic_cast<ddlbx::ir::NMemberAccess*>(yyvsp[-3].expr)),
                                                           std::vector<std::shared_ptr<ddlbx::ir::NExpression>>(*yyvsp[-1].exprvec));
       }
-#line 1254 "y.tab.c"
-break;
-case 35:
-  if (!yytrial)
-#line 236 "parser.y"
-{
-        yyval.expr = new ddlbx::ir::NObjectCreation(*yyvsp[-3].string, std::vector<std::shared_ptr<ddlbx::ir::NExpression>>(*yyvsp[-1].exprvec));
-      }
-#line 1262 "y.tab.c"
-break;
-case 36:
-  if (!yytrial)
-#line 239 "parser.y"
-{
-        yyval.expr = new ddlbx::ir::NObjectCreation(*yyvsp[-4].string, std::vector<std::shared_ptr<ddlbx::ir::NExpression>>(*yyvsp[-1].exprvec), *yyvsp[-3].stringvec);
-      }
-#line 1270 "y.tab.c"
-break;
-case 37:
-  if (!yytrial)
-#line 245 "parser.y"
-{
-        yyval.stringvec = yyvsp[-1].stringvec;
-      }
-#line 1278 "y.tab.c"
-break;
-case 38:
-  if (!yytrial)
-#line 251 "parser.y"
-{
-        yyval.stringvec = new std::vector<std::string>();
-      }
-#line 1286 "y.tab.c"
+#line 1297 "y.tab.c"
 break;
 case 39:
   if (!yytrial)
-#line 254 "parser.y"
+#line 259 "parser.y"
 {
-        yyvsp[-2].stringvec->push_back(yyvsp[0].type->name);
+        yyval.expr = new ddlbx::ir::NObjectCreation(*yyvsp[-3].string, std::vector<std::shared_ptr<ddlbx::ir::NExpression>>(*yyvsp[-1].exprvec));
       }
-#line 1294 "y.tab.c"
+#line 1305 "y.tab.c"
 break;
 case 40:
   if (!yytrial)
-#line 257 "parser.y"
+#line 262 "parser.y"
+{
+        yyval.expr = new ddlbx::ir::NObjectCreation(*yyvsp[-4].string, std::vector<std::shared_ptr<ddlbx::ir::NExpression>>(*yyvsp[-1].exprvec), *yyvsp[-3].stringvec);
+      }
+#line 1313 "y.tab.c"
+break;
+case 41:
+  if (!yytrial)
+#line 268 "parser.y"
+{
+        yyval.stringvec = yyvsp[-1].stringvec;
+      }
+#line 1321 "y.tab.c"
+break;
+case 42:
+  if (!yytrial)
+#line 274 "parser.y"
+{
+        yyval.stringvec = new std::vector<std::string>();
+      }
+#line 1329 "y.tab.c"
+break;
+case 43:
+  if (!yytrial)
+#line 277 "parser.y"
+{
+        yyvsp[-2].stringvec->push_back(yyvsp[0].type->name);
+      }
+#line 1337 "y.tab.c"
+break;
+case 44:
+  if (!yytrial)
+#line 280 "parser.y"
 {
         yyval.stringvec = new std::vector<std::string>();
         yyval.stringvec->push_back(yyvsp[0].type->name);
       }
-#line 1303 "y.tab.c"
+#line 1346 "y.tab.c"
 break;
-case 41:
+case 45:
   if (!yytrial)
-#line 264 "parser.y"
+#line 287 "parser.y"
 {
         yyval.exprvec = new std::vector<std::shared_ptr<ddlbx::ir::NExpression>>();
       }
-#line 1311 "y.tab.c"
+#line 1354 "y.tab.c"
 break;
-case 42:
+case 46:
   if (!yytrial)
-#line 267 "parser.y"
+#line 290 "parser.y"
 {
         yyvsp[-2].exprvec->push_back(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1319 "y.tab.c"
+#line 1362 "y.tab.c"
 break;
-case 43:
+case 47:
   if (!yytrial)
-#line 270 "parser.y"
+#line 293 "parser.y"
 {
         yyval.exprvec = new std::vector<std::shared_ptr<ddlbx::ir::NExpression>>();
         yyval.exprvec->push_back(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1328 "y.tab.c"
-break;
-case 44:
-  if (!yytrial)
-#line 277 "parser.y"
-{
-        dynamic_cast<ddlbx::ir::NMemberAccess*>(yyvsp[-2].expr)->ids.push_back(std::shared_ptr<ddlbx::ir::NIdentifier>(yyvsp[0].identifier));
-      }
-#line 1336 "y.tab.c"
-break;
-case 45:
-  if (!yytrial)
-#line 280 "parser.y"
-{
-        yyval.expr = new ddlbx::ir::NMemberAccess(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), {std::shared_ptr<ddlbx::ir::NIdentifier>(yyvsp[0].identifier)});
-      }
-#line 1344 "y.tab.c"
-break;
-case 46:
-  if (!yytrial)
-#line 286 "parser.y"
-{
-        yyval.expr = yyvsp[0].identifier;
-      }
-#line 1352 "y.tab.c"
-break;
-case 47:
-  if (!yytrial)
-#line 289 "parser.y"
-{
-        yyval.expr = yyvsp[0].expr;
-      }
-#line 1360 "y.tab.c"
+#line 1371 "y.tab.c"
 break;
 case 48:
   if (!yytrial)
-#line 292 "parser.y"
+#line 300 "parser.y"
 {
-        yyval.expr = yyvsp[0].expr;
+        dynamic_cast<ddlbx::ir::NMemberAccess*>(yyvsp[-2].expr)->ids.push_back(std::shared_ptr<ddlbx::ir::NIdentifier>(yyvsp[0].identifier));
       }
-#line 1368 "y.tab.c"
+#line 1379 "y.tab.c"
 break;
 case 49:
   if (!yytrial)
-#line 295 "parser.y"
+#line 303 "parser.y"
 {
-        yyval.expr = yyvsp[0].expr;
+        yyval.expr = new ddlbx::ir::NMemberAccess(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), {std::shared_ptr<ddlbx::ir::NIdentifier>(yyvsp[0].identifier)});
       }
-#line 1376 "y.tab.c"
+#line 1387 "y.tab.c"
 break;
 case 50:
   if (!yytrial)
-#line 298 "parser.y"
+#line 309 "parser.y"
 {
-        yyval.expr = yyvsp[-1].expr;
+        yyval.expr = yyvsp[0].identifier;
       }
-#line 1384 "y.tab.c"
+#line 1395 "y.tab.c"
 break;
 case 51:
   if (!yytrial)
-#line 301 "parser.y"
+#line 312 "parser.y"
 {
         yyval.expr = yyvsp[0].expr;
       }
-#line 1392 "y.tab.c"
+#line 1403 "y.tab.c"
 break;
 case 52:
   if (!yytrial)
-#line 304 "parser.y"
+#line 315 "parser.y"
 {
         yyval.expr = yyvsp[0].expr;
       }
-#line 1400 "y.tab.c"
+#line 1411 "y.tab.c"
 break;
 case 53:
   if (!yytrial)
-#line 310 "parser.y"
+#line 318 "parser.y"
 {
-        yyval.stmt = new ddlbx::ir::NExpressionStatement(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-1].expr));
+        yyval.expr = yyvsp[0].expr;
       }
-#line 1408 "y.tab.c"
+#line 1419 "y.tab.c"
 break;
 case 54:
   if (!yytrial)
-#line 313 "parser.y"
+#line 321 "parser.y"
 {
-        yyval.stmt = new ddlbx::ir::NExpressionStatement(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-1].expr));
+        yyval.expr = yyvsp[-1].expr;
       }
-#line 1416 "y.tab.c"
+#line 1427 "y.tab.c"
 break;
 case 55:
   if (!yytrial)
-#line 316 "parser.y"
+#line 324 "parser.y"
+{
+        yyval.expr = yyvsp[0].expr;
+      }
+#line 1435 "y.tab.c"
+break;
+case 56:
+  if (!yytrial)
+#line 327 "parser.y"
+{
+        yyval.expr = yyvsp[0].expr;
+      }
+#line 1443 "y.tab.c"
+break;
+case 57:
+  if (!yytrial)
+#line 333 "parser.y"
 {
         yyval.stmt = new ddlbx::ir::NExpressionStatement(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-1].expr));
       }
-#line 1424 "y.tab.c"
+#line 1451 "y.tab.c"
+break;
+case 58:
+  if (!yytrial)
+#line 336 "parser.y"
+{
+        yyval.stmt = new ddlbx::ir::NExpressionStatement(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-1].expr));
+      }
+#line 1459 "y.tab.c"
 break;
 case 59:
   if (!yytrial)
-#line 325 "parser.y"
+#line 339 "parser.y"
+{
+        yyval.stmt = new ddlbx::ir::NExpressionStatement(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-1].expr));
+      }
+#line 1467 "y.tab.c"
+break;
+case 63:
+  if (!yytrial)
+#line 348 "parser.y"
 {
         yyval.stmt = new ddlbx::ir::NForStatement(std::shared_ptr<ddlbx::ir::NIdentifier>(yyvsp[-4].identifier),
                                           nullptr,
@@ -1394,11 +1437,11 @@ case 59:
                                           nullptr,
                                           std::shared_ptr<ddlbx::ir::NBlock>(yyvsp[0].block));
       }
-#line 1436 "y.tab.c"
+#line 1479 "y.tab.c"
 break;
-case 60:
+case 64:
   if (!yytrial)
-#line 332 "parser.y"
+#line 355 "parser.y"
 {
         yyval.stmt = new ddlbx::ir::NForStatement(std::shared_ptr<ddlbx::ir::NIdentifier>(yyvsp[-6].identifier),
                                           nullptr,
@@ -1406,11 +1449,11 @@ case 60:
                                           std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr),
                                           std::shared_ptr<ddlbx::ir::NBlock>(yyvsp[0].block));
       }
-#line 1448 "y.tab.c"
+#line 1491 "y.tab.c"
 break;
-case 61:
+case 65:
   if (!yytrial)
-#line 339 "parser.y"
+#line 362 "parser.y"
 {
         yyval.stmt = new ddlbx::ir::NForStatement(std::shared_ptr<ddlbx::ir::NIdentifier>(yyvsp[-8].identifier),
                                           std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-6].expr),
@@ -1418,349 +1461,349 @@ case 61:
                                           std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr),
                                           std::shared_ptr<ddlbx::ir::NBlock>(yyvsp[0].block));
       }
-#line 1460 "y.tab.c"
-break;
-case 62:
-  if (!yytrial)
-#line 346 "parser.y"
-{
-        yyval.stmt = new ddlbx::ir::NForStatement(nullptr, nullptr, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), nullptr, std::shared_ptr<ddlbx::ir::NBlock>(yyvsp[0].block));
-      }
-#line 1468 "y.tab.c"
-break;
-case 63:
-  if (!yytrial)
-#line 352 "parser.y"
-{
-        yyval.stmt = new ddlbx::ir::NOptStatement(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), std::shared_ptr<ddlbx::ir::NBlock>(yyvsp[0].block));
-      }
-#line 1476 "y.tab.c"
-break;
-case 64:
-  if (!yytrial)
-#line 358 "parser.y"
-{
-        yyval.block = yyvsp[-1].block;
-      }
-#line 1484 "y.tab.c"
-break;
-case 65:
-  if (!yytrial)
-#line 364 "parser.y"
-{
-        yyval.block = new ddlbx::ir::NBlock();
-      }
-#line 1492 "y.tab.c"
+#line 1503 "y.tab.c"
 break;
 case 66:
   if (!yytrial)
-#line 367 "parser.y"
+#line 369 "parser.y"
 {
-        yyvsp[-1].block->statements.push_back(yyvsp[0].stmt);
+        yyval.stmt = new ddlbx::ir::NForStatement(nullptr, nullptr, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), nullptr, std::shared_ptr<ddlbx::ir::NBlock>(yyvsp[0].block));
       }
-#line 1500 "y.tab.c"
+#line 1511 "y.tab.c"
 break;
 case 67:
   if (!yytrial)
-#line 373 "parser.y"
+#line 375 "parser.y"
+{
+        yyval.stmt = new ddlbx::ir::NOptStatement(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), std::shared_ptr<ddlbx::ir::NBlock>(yyvsp[0].block));
+      }
+#line 1519 "y.tab.c"
+break;
+case 68:
+  if (!yytrial)
+#line 381 "parser.y"
+{
+        yyval.block = yyvsp[-1].block;
+      }
+#line 1527 "y.tab.c"
+break;
+case 69:
+  if (!yytrial)
+#line 387 "parser.y"
+{
+        yyval.block = new ddlbx::ir::NBlock();
+      }
+#line 1535 "y.tab.c"
+break;
+case 70:
+  if (!yytrial)
+#line 390 "parser.y"
+{
+        yyvsp[-1].block->statements.push_back(yyvsp[0].stmt);
+      }
+#line 1543 "y.tab.c"
+break;
+case 71:
+  if (!yytrial)
+#line 396 "parser.y"
 {
         std::vector<std::shared_ptr<ddlbx::ir::NVariableDeclaration>> *varList = yyvsp[0].varvec;
         yyval.expr = new ddlbx::ir::NVariableDeclarationList(*varList);
       }
-#line 1509 "y.tab.c"
+#line 1552 "y.tab.c"
 break;
-case 68:
+case 72:
   if (!yytrial)
-#line 380 "parser.y"
+#line 403 "parser.y"
 {
         yyvsp[-2].varvec->push_back(std::make_shared<ddlbx::ir::NVariableDeclaration>(std::shared_ptr<ddlbx::ir::NIdentifier>(yyvsp[0].identifier), nullptr));
       }
-#line 1517 "y.tab.c"
+#line 1560 "y.tab.c"
 break;
-case 69:
+case 73:
   if (!yytrial)
-#line 383 "parser.y"
+#line 406 "parser.y"
 {
         yyvsp[-2].varvec->push_back(std::make_shared<ddlbx::ir::NVariableDeclaration>(std::shared_ptr<ddlbx::ir::NAssignment>(dynamic_cast<ddlbx::ir::NAssignment*>(yyvsp[0].expr))));
       }
-#line 1525 "y.tab.c"
+#line 1568 "y.tab.c"
 break;
-case 70:
+case 74:
   if (!yytrial)
-#line 386 "parser.y"
+#line 409 "parser.y"
 {
         yyval.varvec = new std::vector<std::shared_ptr<ddlbx::ir::NVariableDeclaration>>();
         yyval.varvec->push_back(std::make_shared<ddlbx::ir::NVariableDeclaration>(std::shared_ptr<ddlbx::ir::NAssignment>(dynamic_cast<ddlbx::ir::NAssignment*>(yyvsp[0].expr))));
       }
-#line 1534 "y.tab.c"
+#line 1577 "y.tab.c"
 break;
-case 71:
+case 75:
   if (!yytrial)
-#line 390 "parser.y"
+#line 413 "parser.y"
 {
         yyval.varvec = new std::vector<std::shared_ptr<ddlbx::ir::NVariableDeclaration>>();
         yyval.varvec->push_back(std::make_shared<ddlbx::ir::NVariableDeclaration>(std::shared_ptr<ddlbx::ir::NIdentifier>(yyvsp[0].identifier), nullptr));
       }
-#line 1543 "y.tab.c"
-break;
-case 72:
-  if (!yytrial)
-#line 397 "parser.y"
-{
-        yyval.expr = new ddlbx::ir::NAssignment(std::shared_ptr<ddlbx::ir::NIdentifier>(yyvsp[-2].identifier), std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
-      }
-#line 1551 "y.tab.c"
-break;
-case 73:
-  if (!yytrial)
-#line 403 "parser.y"
-{
-        yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
-      }
-#line 1559 "y.tab.c"
-break;
-case 74:
-  if (!yytrial)
-#line 406 "parser.y"
-{
-        yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
-      }
-#line 1567 "y.tab.c"
-break;
-case 75:
-  if (!yytrial)
-#line 409 "parser.y"
-{
-        yyval.expr = new ddlbx::ir::NUnaryOperator(yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
-      }
-#line 1575 "y.tab.c"
+#line 1586 "y.tab.c"
 break;
 case 76:
   if (!yytrial)
-#line 412 "parser.y"
+#line 420 "parser.y"
 {
-        yyval.expr = yyvsp[0].expr;
+        yyval.expr = new ddlbx::ir::NAssignment(std::shared_ptr<ddlbx::ir::NIdentifier>(yyvsp[-2].identifier), std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1583 "y.tab.c"
+#line 1594 "y.tab.c"
 break;
 case 77:
   if (!yytrial)
-#line 418 "parser.y"
+#line 426 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1591 "y.tab.c"
+#line 1602 "y.tab.c"
 break;
 case 78:
   if (!yytrial)
-#line 421 "parser.y"
+#line 429 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1599 "y.tab.c"
+#line 1610 "y.tab.c"
 break;
 case 79:
   if (!yytrial)
-#line 424 "parser.y"
+#line 432 "parser.y"
 {
-        yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
+        yyval.expr = new ddlbx::ir::NUnaryOperator(yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1607 "y.tab.c"
+#line 1618 "y.tab.c"
 break;
 case 80:
   if (!yytrial)
-#line 427 "parser.y"
+#line 435 "parser.y"
 {
-        yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
+        yyval.expr = yyvsp[0].expr;
       }
-#line 1615 "y.tab.c"
+#line 1626 "y.tab.c"
 break;
 case 81:
   if (!yytrial)
-#line 430 "parser.y"
+#line 441 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1623 "y.tab.c"
+#line 1634 "y.tab.c"
 break;
 case 82:
   if (!yytrial)
-#line 433 "parser.y"
+#line 444 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1631 "y.tab.c"
+#line 1642 "y.tab.c"
 break;
 case 83:
   if (!yytrial)
-#line 436 "parser.y"
+#line 447 "parser.y"
 {
-        yyval.expr = yyvsp[0].expr;
+        yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1639 "y.tab.c"
+#line 1650 "y.tab.c"
 break;
 case 84:
   if (!yytrial)
-#line 442 "parser.y"
+#line 450 "parser.y"
 {
-        yyval.expr = yyvsp[0].expr;
+        yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1647 "y.tab.c"
+#line 1658 "y.tab.c"
 break;
 case 85:
   if (!yytrial)
-#line 445 "parser.y"
+#line 453 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1655 "y.tab.c"
+#line 1666 "y.tab.c"
 break;
 case 86:
   if (!yytrial)
-#line 448 "parser.y"
+#line 456 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1663 "y.tab.c"
+#line 1674 "y.tab.c"
 break;
 case 87:
   if (!yytrial)
-#line 454 "parser.y"
+#line 459 "parser.y"
 {
         yyval.expr = yyvsp[0].expr;
       }
-#line 1671 "y.tab.c"
+#line 1682 "y.tab.c"
 break;
 case 88:
   if (!yytrial)
-#line 457 "parser.y"
+#line 465 "parser.y"
 {
-        yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
+        yyval.expr = yyvsp[0].expr;
       }
-#line 1679 "y.tab.c"
+#line 1690 "y.tab.c"
 break;
 case 89:
   if (!yytrial)
-#line 460 "parser.y"
+#line 468 "parser.y"
 {
         yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1687 "y.tab.c"
+#line 1698 "y.tab.c"
 break;
 case 90:
   if (!yytrial)
-#line 466 "parser.y"
+#line 471 "parser.y"
 {
-        yyval.expr = yyvsp[0].identifier;
+        yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1695 "y.tab.c"
+#line 1706 "y.tab.c"
 break;
 case 91:
   if (!yytrial)
-#line 469 "parser.y"
+#line 477 "parser.y"
 {
         yyval.expr = yyvsp[0].expr;
       }
-#line 1703 "y.tab.c"
+#line 1714 "y.tab.c"
 break;
 case 92:
   if (!yytrial)
-#line 472 "parser.y"
+#line 480 "parser.y"
 {
-        yyval.expr = yyvsp[0].expr;
+        yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1711 "y.tab.c"
+#line 1722 "y.tab.c"
 break;
 case 93:
   if (!yytrial)
-#line 475 "parser.y"
+#line 483 "parser.y"
 {
-        yyval.expr = yyvsp[0].expr;
+        yyval.expr = new ddlbx::ir::NBinaryOperator(std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[-2].expr), yyvsp[-1].token, std::shared_ptr<ddlbx::ir::NExpression>(yyvsp[0].expr));
       }
-#line 1719 "y.tab.c"
+#line 1730 "y.tab.c"
 break;
 case 94:
   if (!yytrial)
-#line 478 "parser.y"
+#line 489 "parser.y"
 {
-        yyval.expr = yyvsp[-1].expr;
+        yyval.expr = yyvsp[0].identifier;
       }
-#line 1727 "y.tab.c"
+#line 1738 "y.tab.c"
 break;
 case 95:
   if (!yytrial)
-#line 481 "parser.y"
+#line 492 "parser.y"
 {
         yyval.expr = yyvsp[0].expr;
       }
-#line 1735 "y.tab.c"
+#line 1746 "y.tab.c"
 break;
 case 96:
   if (!yytrial)
-#line 484 "parser.y"
+#line 495 "parser.y"
 {
         yyval.expr = yyvsp[0].expr;
       }
-#line 1743 "y.tab.c"
+#line 1754 "y.tab.c"
 break;
 case 97:
   if (!yytrial)
-#line 487 "parser.y"
+#line 498 "parser.y"
 {
         yyval.expr = yyvsp[0].expr;
       }
-#line 1751 "y.tab.c"
+#line 1762 "y.tab.c"
 break;
 case 98:
   if (!yytrial)
-#line 493 "parser.y"
+#line 501 "parser.y"
+{
+        yyval.expr = yyvsp[-1].expr;
+      }
+#line 1770 "y.tab.c"
+break;
+case 99:
+  if (!yytrial)
+#line 504 "parser.y"
+{
+        yyval.expr = yyvsp[0].expr;
+      }
+#line 1778 "y.tab.c"
+break;
+case 100:
+  if (!yytrial)
+#line 507 "parser.y"
+{
+        yyval.expr = yyvsp[0].expr;
+      }
+#line 1786 "y.tab.c"
+break;
+case 101:
+  if (!yytrial)
+#line 510 "parser.y"
+{
+        yyval.expr = yyvsp[0].expr;
+      }
+#line 1794 "y.tab.c"
+break;
+case 102:
+  if (!yytrial)
+#line 516 "parser.y"
 {
         yyval.identifier = new ddlbx::ir::NIdentifier(*(yyvsp[0].string));
         delete yyvsp[0].string;
       }
-#line 1760 "y.tab.c"
-break;
-case 99:
-  if (!yytrial)
-#line 500 "parser.y"
-{
-        yyval.expr = new ddlbx::ir::NInteger(atol(yyvsp[0].string->c_str()));
-      }
-#line 1768 "y.tab.c"
-break;
-case 100:
-  if (!yytrial)
-#line 503 "parser.y"
-{
-        yyval.expr = new ddlbx::ir::NFloat(atof(yyvsp[0].string->c_str()));
-      }
-#line 1776 "y.tab.c"
-break;
-case 101:
-  if (!yytrial)
-#line 509 "parser.y"
-{
-        yyval.expr = new ddlbx::ir::NBoolean(*yyvsp[0].string);
-      }
-#line 1784 "y.tab.c"
-break;
-case 102:
-  if (!yytrial)
-#line 515 "parser.y"
-{
-        yyval.expr = new ddlbx::ir::NString(*yyvsp[0].string);
-      }
-#line 1792 "y.tab.c"
+#line 1803 "y.tab.c"
 break;
 case 103:
   if (!yytrial)
-#line 521 "parser.y"
+#line 523 "parser.y"
+{
+        yyval.expr = new ddlbx::ir::NInteger(atol(yyvsp[0].string->c_str()));
+      }
+#line 1811 "y.tab.c"
+break;
+case 104:
+  if (!yytrial)
+#line 526 "parser.y"
+{
+        yyval.expr = new ddlbx::ir::NFloat(atof(yyvsp[0].string->c_str()));
+      }
+#line 1819 "y.tab.c"
+break;
+case 105:
+  if (!yytrial)
+#line 532 "parser.y"
+{
+        yyval.expr = new ddlbx::ir::NBoolean(*yyvsp[0].string);
+      }
+#line 1827 "y.tab.c"
+break;
+case 106:
+  if (!yytrial)
+#line 538 "parser.y"
+{
+        yyval.expr = new ddlbx::ir::NString(*yyvsp[0].string);
+      }
+#line 1835 "y.tab.c"
+break;
+case 107:
+  if (!yytrial)
+#line 544 "parser.y"
 {
         yyval.type = new ddlbx::ir::NType(*yyvsp[0].string);
       }
-#line 1800 "y.tab.c"
+#line 1843 "y.tab.c"
 break;
-#line 1802 "y.tab.c"
+#line 1845 "y.tab.c"
 #line 573 "btyaccpa.ske"
 
   default:

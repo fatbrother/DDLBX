@@ -32,6 +32,11 @@ Value NProgram::codeGen(CodeGenContext& context) {
             context.registerTraitMethod(traitMethod);
             continue;
         }
+        if ("NTemplateObjectMethodDeclaration" == statement->getType()) {
+            std::shared_ptr<NTemplateObjectMethodDeclaration> templateObjectMethod = std::dynamic_pointer_cast<NTemplateObjectMethodDeclaration>(statement);
+            context.registerTemplateObjectMethod(templateObjectMethod);
+            continue;
+        }
         statement->codeGen(context);
     }
     return Value::null();

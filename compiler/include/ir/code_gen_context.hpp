@@ -41,6 +41,7 @@ struct Function {
 
 class NTemplateObjectDeclaration;
 class NTemplateFunctionDeclaration;
+class NTemplateObjectMethodDeclaration;
 class NTraitMethodDeclaration;
 
 #define DDLBX_TYPE_INT "Int"
@@ -76,6 +77,7 @@ public:
     int getTypeMemberIndex(const std::string &typeName, const std::string &memberName);
     void registerTemplateObject(std::shared_ptr<NTemplateObjectDeclaration> templateObject);
     void registerTemplateFunction(std::shared_ptr<NTemplateFunctionDeclaration> templateFunction);
+    void registerTemplateObjectMethod(std::shared_ptr<NTemplateObjectMethodDeclaration> templateObjectMethod);
     void registerTraitMethod(std::shared_ptr<NTraitMethodDeclaration> traitMethod);
     void registerFunction(const std::string &name, const std::string &returnType);
     void pushTemplateTypeStack();
@@ -83,6 +85,7 @@ public:
     void popTemplateTypeStack();
     std::shared_ptr<NTemplateObjectDeclaration> getTemplateObject(const std::string &name);
     std::shared_ptr<NTemplateFunctionDeclaration> getTemplateFunction(const std::string &name);
+    std::shared_ptr<NTemplateObjectMethodDeclaration> getTemplateObjectMethod(const std::string &name);
     std::shared_ptr<NTraitMethodDeclaration> getTraitMethod(const std::string &name);
     Function& getFunction(const std::string &name);
 
@@ -96,6 +99,7 @@ private:
     std::map<std::string, Function> functions;
     std::map<std::string, std::shared_ptr<NTemplateObjectDeclaration>> templateObjects;
     std::map<std::string, std::shared_ptr<NTemplateFunctionDeclaration>> templateFunctions;
+    std::map<std::string, std::shared_ptr<NTemplateObjectMethodDeclaration>> templateObjectMethods;
     std::map<std::string, std::shared_ptr<NTraitMethodDeclaration>> traitMethods;
     std::stack<std::map<std::string, Type>> templateTypeStack;
 };

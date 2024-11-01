@@ -2,6 +2,7 @@
 
 #include "utils/logger.hpp"
 #include "utils/scope_guard.hpp"
+#include "utils/type_parser.hpp"
 
 using namespace ddlbx::ir;
 
@@ -92,12 +93,7 @@ Value NTemplateFunctionDeclaration::codeGen(CodeGenContext& context, std::vector
 
     std::string originalName = definition->name;
 
-    definition->name += "<";
-    for (const auto& arg : templateArgs) {
-        definition->name += arg + ",";
-    }
-    definition->name.pop_back();
-    definition->name += ">";
+    definition->name += utility::getTemplateString(templateArgs);
     auto resetNameGuard = makeGuard([&]() {
         definition->name = originalName;
     });
@@ -144,12 +140,7 @@ Value NFunctionCall::codeGen(CodeGenContext& context) {
     }
 
     if (false == templateArgs.empty()) {
-        fullName += "<";
-        for (const auto& arg : templateArgs) {
-            fullName += arg + ",";
-        }
-        fullName.pop_back();
-        fullName += ">";
+        fullName += utility::getTemplateString(templateArgs);
     }
 
     llvm::Function* targetFunction = context.getModule().getFunction(fullName);
@@ -157,7 +148,20 @@ Value NFunctionCall::codeGen(CodeGenContext& context) {
     if (!targetFunction) {
         LOG_DEBUG("Function " + fullName + " not found");
 
-        if (false == templateArgs.empty()) {
+        if (std::string::npos != parentValue.ddlbxTypeName.find("<")) {
+            LOG_DEBUG("Trying to find " + parentValue.ddlbxTypeName + " method " + name);
+            std::string targetName = utility::getOrginalNameFromFullName(parentValue.ddlbxTypeName) + "." + name;
+            std::shared_ptr<NTemplateObjectMethodDeclaration> templateObjectMethod = context.getTemplateObjectMethod(targetName);
+            std::vector<std::string> templateArgs = utility::getTemplateArgsFromFullName(parentValue.ddlbxTypeName);
+
+            if (nullptr != templateObjectMethod) {
+                targetFunction = static_cast<llvm::Function*>(templateObjectMethod->codeGen(context, templateArgs).llvmValue);
+                returnType = templateObjectMethod->definition->retType->name;
+                LOG_DEBUG("Template object method " + fullName + " created");
+            } else {
+                LOG_DEBUG("Template object method " + name + " creation failed");
+            }
+        } else if (false == templateArgs.empty()) {
             LOG_DEBUG("Trying to find template function " + name);
             std::shared_ptr<NTemplateFunctionDeclaration> templateFunction = context.getTemplateFunction(name);
             if (nullptr != templateFunction) {
@@ -220,6 +224,23 @@ Value NMethodDeclaration::codeGen(CodeGenContext& context) {
     auto res = methodDefintion->codeGen(context);
 
     return NFunctionDeclaration::codeGen(context);
+}
+
+Value NTemplateObjectMethodDeclaration::codeGen(CodeGenContext& context, std::vector<std::string> templateArgs) {
+    auto methodDefintion = std::dynamic_pointer_cast<NTemplateObjectMethodDefinition>(this->definition);
+    methodDefintion->parentName += utility::getTemplateString(templateArgs);
+    context.pushTemplateTypeStack();
+    auto popStackGuard = makeGuard([&]() {
+        context.popTemplateTypeStack();
+        methodDefintion->parentName = utility::getOrginalNameFromFullName(methodDefintion->parentName);
+    });
+
+    for (int i = 0; i < templateArgs.size(); i++) {
+        LOG_DEBUG("Registering template type " + methodDefintion->templates[i] + " as " + templateArgs[i]);
+        context.registerTemplateType(methodDefintion->templates[i], templateArgs[i]);
+    }
+
+    return NMethodDeclaration::codeGen(context);
 }
 
 Value NTraitMethodDeclaration::codeGen(CodeGenContext& context, std::string parentName) {

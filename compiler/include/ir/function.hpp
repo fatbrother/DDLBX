@@ -98,6 +98,28 @@ public:
     virtual std::string getType() override { return "NMethodDeclaration"; }
 };
 
+class NTemplateObjectMethodDefinition : public NMethodDefinition {
+public:
+    std::vector<std::string> templates;
+    NTemplateObjectMethodDefinition(std::shared_ptr<NType> retType, std::string funcName,
+                                    std::vector<std::shared_ptr<NArgument>> arguments,
+                                    std::string parentName, std::vector<std::string> templates)
+        : NMethodDefinition(retType, funcName, arguments, parentName), templates(templates) {}
+    virtual std::string getType() override { return "NTemplateObjectMethodDefinition"; }
+};
+
+class NTemplateObjectMethodDeclaration : public NMethodDeclaration {
+public:
+    NTemplateObjectMethodDeclaration(std::shared_ptr<NFunctionDefinition> definition, std::shared_ptr<NBlock> block)
+        : NMethodDeclaration(definition, block) {}
+    virtual Value codeGen(CodeGenContext& context) override {
+        LOG_DEBUG("NTemplateObjectMethodDeclaration::codeGen() should not be called");
+        return Value::null();
+    }
+    Value codeGen(CodeGenContext& context, std::vector<std::string> templateArgs);
+    virtual std::string getType() override { return "NTemplateObjectMethodDeclaration"; }
+};
+
 class NTraitMethodDeclaration : public NMethodDeclaration {
 public:
     std::vector<std::shared_ptr<NMemberDeclaration>> traits;
