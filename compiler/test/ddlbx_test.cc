@@ -708,6 +708,36 @@ TEST_F(CodeGennerTest, GenerateTemplateWithExpression) {
     EXPECT_EQ(callInst, retInst->getReturnValue());
 }
 
+TEST_F(CodeGennerTest, GenerateTemplateObjectMethod) {
+    const std::string input = R"(
+        obj Test<T> {
+            a: T
+        }
+
+        fun Test<T>.test(): T { ret this.a! }
+
+        fun main(): Non {
+            var t = Test<Int>{0}!
+            t.test()!
+            var t2 = Test<Boo>{true}!
+            t2.test()!
+        }
+    )";
+    generate(input);
+
+    // Check if the Test<Int>.test function is generated
+    llvm::Function* testFunction = module.getFunction("Test<Int>.test");
+    ASSERT_NE(nullptr, testFunction);
+    EXPECT_TRUE(testFunction->getReturnType()->isIntegerTy());
+    EXPECT_EQ(1, testFunction->arg_size());
+
+    // Check if the Test<Bool>.test function is generated
+    testFunction = module.getFunction("Test<Boo>.test");
+    ASSERT_NE(nullptr, testFunction);
+    EXPECT_TRUE(testFunction->getReturnType()->isIntegerTy());
+    EXPECT_EQ(1, testFunction->arg_size());
+}
+
 TEST_F(CodeGennerTest, GenerateTraitFunction) {
     const std::string input = R"(
         obj Test {
