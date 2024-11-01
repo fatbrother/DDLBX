@@ -81,11 +81,19 @@ public:
     virtual std::string getType() override { return "NFunctionCall"; }
 };
 
-class NMethodDeclaration : public NStatement {
+class NMethodDefinition : public NFunctionDefinition {
 public:
     std::string parentName;
-    std::shared_ptr<NFunctionDeclaration> declaration;
-    NMethodDeclaration(std::string parentName, std::shared_ptr<NFunctionDeclaration> declaration) : parentName(parentName), declaration(declaration) {}
+    NMethodDefinition(std::shared_ptr<NType> retType, std::string funcName,
+                      std::vector<std::shared_ptr<NArgument>> arguments,
+                      std::string parentName) : NFunctionDefinition(retType, funcName, arguments), parentName(parentName) {}
+    virtual std::string getType() override { return "MethodDefinition"; }
+};
+
+class NMethodDeclaration : public NFunctionDeclaration {
+public:
+    NMethodDeclaration(std::shared_ptr<NFunctionDefinition> definition, std::shared_ptr<NBlock> block)
+        : NFunctionDeclaration(definition, block) {}
     virtual Value codeGen(CodeGenContext& context) override;
     virtual std::string getType() override { return "NMethodDeclaration"; }
 };
@@ -93,8 +101,8 @@ public:
 class NTraitMethodDeclaration : public NMethodDeclaration {
 public:
     std::vector<std::shared_ptr<NMemberDeclaration>> traits;
-    NTraitMethodDeclaration(std::string parentName, std::shared_ptr<NFunctionDeclaration> declaration, std::vector<std::shared_ptr<NMemberDeclaration>> traits)
-        : NMethodDeclaration(parentName, declaration), traits(traits) {}
+    NTraitMethodDeclaration(std::shared_ptr<NFunctionDeclaration> declaration, std::vector<std::shared_ptr<NMemberDeclaration>> traits)
+        : NMethodDeclaration(declaration->definition, declaration->block), traits(traits) {}
     Value codeGen(CodeGenContext& context, std::string parentName);
     virtual std::string getType() override { return "NTraitMethodDeclaration"; }
 };

@@ -269,7 +269,7 @@ Value NMemberAccess::codeGen(CodeGenContext& context) {
             return Value::null();
         }
         parentValue = context.getBuilder().CreateExtractValue(parentValue, memberIndex);
-        parentTypeName = context.getType(parentTypeName).nameTypeMap[id->name];
+        parentTypeName = context.getType(parentTypeName).memberNameTypeMap[id->name];
     }
 
     return Value::create(parentTypeName, parentValue);

@@ -8,18 +8,18 @@ using namespace ddlbx::ir;
 
 Value NObjectDeclaration::codeGen(CodeGenContext& context) {
     llvm::StructType* structType = llvm::StructType::create(context.getContext(), name);
-    std::unordered_map<std::string, std::string> nameTypeMap;
+    std::unordered_map<std::string, std::string> memberNameTypeMap;
     std::vector<llvm::Type*> memberTypes;
 
     for (const auto& member : members) {
         auto [typeName, type, _] = member->type->codeGen(context);
         memberTypes.push_back(type);
-        nameTypeMap[member->name] = typeName;
+        memberNameTypeMap[member->name] = typeName;
     }
 
     structType->setBody(memberTypes);
 
-    context.addType(name, structType, nameTypeMap);
+    context.addType(name, structType, memberNameTypeMap);
 
     // create constructor
     genConstructor(context, memberTypes);
@@ -54,6 +54,8 @@ void NObjectDeclaration::genConstructor(CodeGenContext& context, std::vector<llv
 
 llvm::Type* NTemplateObjectDeclaration::codeGen(CodeGenContext& context, std::vector<std::shared_ptr<NType>> templateTypes) {
     std::string originalName = name;
+    std::unordered_map<std::string, std::string> memberNameTypeMap;
+    std::unordered_map<std::string, llvm::Type*> templateNameTypeMap;
 
     name += "<";
     for (const auto& type : templateTypes) {
@@ -66,8 +68,6 @@ llvm::Type* NTemplateObjectDeclaration::codeGen(CodeGenContext& context, std::ve
         name = originalName;
     });
 
-    std::unordered_map<std::string, std::string> nameTypeMap;
-    std::unordered_map<std::string, llvm::Type*> templateNameTypeMap;
     for (int i = 0; i < templates.size(); i++) {
         templateNameTypeMap[templates[i]] = templateTypes[i]->codeGen(context).type;
     }
@@ -80,13 +80,13 @@ llvm::Type* NTemplateObjectDeclaration::codeGen(CodeGenContext& context, std::ve
         } else {
             memberTypes.push_back(member->type->codeGen(context).type);
         }
-        nameTypeMap[member->name] = member->type->name;
+        memberNameTypeMap[member->name] = member->type->name;
     }
 
     llvm::StructType* structType = llvm::StructType::create(context.getContext(), name);
     structType->setBody(memberTypes);
 
-    context.addType(name, structType, nameTypeMap);
+    context.addType(name, structType, memberNameTypeMap);
 
     // create constructor
     genConstructor(context, memberTypes);

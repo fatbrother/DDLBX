@@ -189,29 +189,25 @@ MemberDeclarationList:
 
 MethodDefinition:
       KW_FUNCTION IDENTIFIER DOT IDENTIFIER LPAREN FPDeclarationList RPAREN COLON Type {
-        std::string name = *$2 + "." + *$4;
-        $6->push_back(std::make_shared<ddlbx::ir::NArgument>(std::make_shared<ddlbx::ir::NType>(*$2), "this"));
-        $$ = new ddlbx::ir::NFunctionDefinition(
-            std::shared_ptr<ddlbx::ir::NType>($9), name, *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>($6)));
+        $$ = new ddlbx::ir::NMethodDefinition(
+            std::shared_ptr<ddlbx::ir::NType>($9), *$4, *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>($6)), *$2);
       }
+    ;
 
 MethodDeclaration:
-      KW_FUNCTION IDENTIFIER DOT IDENTIFIER LPAREN FPDeclarationList RPAREN COLON Type Block {
-        std::string name = *$2 + "." + *$4;
-        ddlbx::ir::NFunctionDefinition *funcDef = new ddlbx::ir::NFunctionDefinition(
-            std::shared_ptr<ddlbx::ir::NType>($9), name, *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>($6)));
-        ddlbx::ir::NFunctionDeclaration *funcDecl = new ddlbx::ir::NFunctionDeclaration(
-            std::shared_ptr<ddlbx::ir::NFunctionDefinition>(funcDef), std::shared_ptr<ddlbx::ir::NBlock>($10));
-        $$ = new ddlbx::ir::NMethodDeclaration(*$2, std::shared_ptr<ddlbx::ir::NFunctionDeclaration>(funcDecl));
+      MethodDefinition Block {
+        $$ = new ddlbx::ir::NMethodDeclaration(std::shared_ptr<ddlbx::ir::NMethodDefinition>(dynamic_cast<ddlbx::ir::NMethodDefinition*>($1)),
+                                               std::shared_ptr<ddlbx::ir::NBlock>($2));
       }
+    ;
 
 TraitMethodDeclaration:
       KW_FUNCTION LBRACE MemberDeclarationList RBRACE DOT IDENTIFIER LPAREN FPDeclarationList RPAREN COLON Type Block {
-        ddlbx::ir::NFunctionDefinition *funcDef = new ddlbx::ir::NFunctionDefinition(
-            std::shared_ptr<ddlbx::ir::NType>($11), *$6, *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>($8)));
+        ddlbx::ir::NMethodDefinition *funcDef = new ddlbx::ir::NMethodDefinition(
+            std::shared_ptr<ddlbx::ir::NType>($11), *$6, *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>($8)), "");
         ddlbx::ir::NFunctionDeclaration *funcDecl = new ddlbx::ir::NFunctionDeclaration(
             std::shared_ptr<ddlbx::ir::NFunctionDefinition>(funcDef), std::shared_ptr<ddlbx::ir::NBlock>($12));
-        $$ = new ddlbx::ir::NTraitMethodDeclaration(*$6, std::shared_ptr<ddlbx::ir::NFunctionDeclaration>(funcDecl), *$3);
+        $$ = new ddlbx::ir::NTraitMethodDeclaration(std::shared_ptr<ddlbx::ir::NFunctionDeclaration>(funcDecl), *$3);
       }
 
 ReturnStatement:

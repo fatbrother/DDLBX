@@ -172,7 +172,7 @@ Value NFunctionCall::codeGen(CodeGenContext& context) {
             std::shared_ptr<NTraitMethodDeclaration> traitMethod = context.getTraitMethod(name);
             if (nullptr != traitMethod) {
                 targetFunction = static_cast<llvm::Function*>(traitMethod->codeGen(context, parentValue.ddlbxTypeName).llvmValue);
-                returnType = traitMethod->declaration->definition->retType->name;
+                returnType = traitMethod->definition->retType->name;
                 LOG_DEBUG("Trait method " + fullName + " created");
             } else {
                 LOG_DEBUG("Trait method " + name + " creation failed");
@@ -198,23 +198,33 @@ Value NFunctionCall::codeGen(CodeGenContext& context) {
 }
 
 Value NMethodDeclaration::codeGen(CodeGenContext& context) {
-    llvm::Type* parentType = context.getType(parentName).type;
+    auto methodDefintion = std::dynamic_pointer_cast<NMethodDefinition>(this->definition);
+    llvm::Type* parentType = context.getType(methodDefintion->parentName).type;
     if (nullptr == parentType) {
-        LOG_ERROR("Type \"" + parentName + "\" is not defined");
+        LOG_ERROR("Type \"" + methodDefintion->parentName + "\" is not defined");
         return Value::null();
     }
 
     llvm::StructType* structType = llvm::cast<llvm::StructType>(parentType);
-    declaration->definition->arguments.push_back(std::make_shared<NArgument>(std::make_shared<NType>(parentName), "this"));
-    auto res = declaration->codeGen(context);
-    declaration->definition->arguments.pop_back();
+    methodDefintion->arguments.push_back(std::make_shared<NArgument>(std::make_shared<NType>(methodDefintion->parentName), "this"));
+    auto resetGuard = makeGuard([&]() {
+        methodDefintion->arguments.pop_back();
+    });
 
-    return res;
+    std::string originalName = methodDefintion->name;
+    methodDefintion->name = methodDefintion->parentName + "." + methodDefintion->name;
+    auto resetNameGuard = makeGuard([&]() {
+        methodDefintion->name = originalName;
+    });
+
+    auto res = methodDefintion->codeGen(context);
+
+    return NFunctionDeclaration::codeGen(context);
 }
 
 Value NTraitMethodDeclaration::codeGen(CodeGenContext& context, std::string parentName) {
-    this->parentName = parentName;
-    declaration->definition->name = parentName + "." + declaration->definition->name;
+    auto methodDefintion = std::dynamic_pointer_cast<NMethodDefinition>(this->definition);
+    methodDefintion->parentName = parentName;
 
     return NMethodDeclaration::codeGen(context);
 }

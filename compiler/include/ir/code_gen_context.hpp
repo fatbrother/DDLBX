@@ -18,7 +18,7 @@ struct Variable {
 struct Type {
     std::string name;
     llvm::Type *type;
-    std::unordered_map<std::string, std::string> nameTypeMap;
+    std::unordered_map<std::string, std::string> memberNameTypeMap;
 };
 
 struct Value {
@@ -46,7 +46,7 @@ class NTraitMethodDeclaration;
 #define DDLBX_TYPE_INT "Int"
 #define DDLBX_TYPE_FLT "Flt"
 #define DDLBX_TYPE_STR "Str"
-#define DDLBX_TYPE_PTR "Ptr"
+#define DDLBX_TYPE_MEM "Mem"
 #define DDLBX_TYPE_BOO "Boo"
 #define DDLBX_TYPE_NON "Non"
 #define DDLBX_TYPE_CHR "Chr"
@@ -60,7 +60,7 @@ public:
         types[DDLBX_TYPE_INT] = {DDLBX_TYPE_INT, llvm::Type::getInt32Ty(context), {}};
         types[DDLBX_TYPE_FLT] = {DDLBX_TYPE_FLT, llvm::Type::getFloatTy(context), {}};
         types[DDLBX_TYPE_STR] = {DDLBX_TYPE_STR, llvm::Type::getInt8PtrTy(context), {}};
-        types[DDLBX_TYPE_PTR] = {DDLBX_TYPE_PTR, llvm::Type::getInt8PtrTy(context), {}};
+        types[DDLBX_TYPE_MEM] = {DDLBX_TYPE_MEM, llvm::Type::getInt8PtrTy(context), {}};
         types[DDLBX_TYPE_BOO] = {DDLBX_TYPE_BOO, llvm::Type::getInt1Ty(context), {}};
         types[DDLBX_TYPE_NON] = {DDLBX_TYPE_NON, llvm::Type::getVoidTy(context), {}};
         types[DDLBX_TYPE_CHR] = {DDLBX_TYPE_CHR, llvm::Type::getInt8Ty(context), {}};
@@ -70,7 +70,7 @@ public:
     llvm::LLVMContext &getContext();
     llvm::IRBuilder<> &getBuilder();
     Type& getType(const std::string &name);
-    void addType(const std::string &name, llvm::Type *type, const std::unordered_map<std::string, std::string> &nameTypeMap);
+    void addType(const std::string &name, llvm::Type *type, const std::unordered_map<std::string, std::string> &memberNameTypeMap);
     Variable& getVariable(const std::string &name);
     void setVariable(const std::string &name, Variable variable);
     int getTypeMemberIndex(const std::string &typeName, const std::string &memberName);

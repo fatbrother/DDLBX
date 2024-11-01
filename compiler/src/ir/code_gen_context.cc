@@ -25,11 +25,11 @@ Type& CodeGenContext::getType(const std::string &name) {
     }
 }
 
-void CodeGenContext::addType(const std::string &name, llvm::Type *type, const std::unordered_map<std::string, std::string> &nameTypeMap) {
+void CodeGenContext::addType(const std::string &name, llvm::Type *type, const std::unordered_map<std::string, std::string> &memberNameTypeMap) {
     types[name] = {
         .name = name,
         .type = type,
-        .nameTypeMap = nameTypeMap
+        .memberNameTypeMap = memberNameTypeMap
     };
 }
 
@@ -42,9 +42,9 @@ void CodeGenContext::setVariable(const std::string &name, Variable variable) {
 }
 
 int CodeGenContext::getTypeMemberIndex(const std::string &typeName, const std::string &memberName) {
-    int i = std::distance(types[typeName].nameTypeMap.begin(),
-                          types[typeName].nameTypeMap.find(memberName));
-    return i == types[typeName].nameTypeMap.size() ? -1 : i;
+    int i = std::distance(types[typeName].memberNameTypeMap.begin(),
+                          types[typeName].memberNameTypeMap.find(memberName));
+    return i == types[typeName].memberNameTypeMap.size() ? -1 : i;
 }
 
 void CodeGenContext::registerTemplateObject(std::shared_ptr<NTemplateObjectDeclaration> templateObject) {
@@ -56,7 +56,7 @@ void CodeGenContext::registerTemplateFunction(std::shared_ptr<NTemplateFunctionD
 }
 
 void CodeGenContext::registerTraitMethod(std::shared_ptr<NTraitMethodDeclaration> traitMethod) {
-    traitMethods[traitMethod->declaration->definition->name] = traitMethod;
+    traitMethods[traitMethod->definition->name] = traitMethod;
 }
 
 void CodeGenContext::registerFunction(const std::string &name, const std::string &returnType) {
