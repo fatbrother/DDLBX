@@ -18,8 +18,9 @@ create_parser() {
 }
 
 BUILD_TYPE=Release
+CLEAN=0
 
-while getopts "pd" opt; do
+while getopts "cpd" opt; do
     case $opt in
         p)
             create_parser
@@ -27,11 +28,19 @@ while getopts "pd" opt; do
         d)
             BUILD_TYPE=Debug
             ;;
+        c)
+            CLEAN=1
+            ;;
         \?)
             echo "Invalid option: -$OPTARG" >&2
             ;;
     esac
 done
+
+
+if [ $CLEAN -eq 1 ]; then
+    rm -rf $root_path/build
+fi
 
 mkdir -p $root_path/build
 mkdir -p $root_path/build/bin
