@@ -43,12 +43,12 @@ add_executable(ddlbx ddlbx.cc)
 target_link_libraries(ddlbx source)
 target_link_libraries(ddlbx ${llvm_libs})
 
-add_executable(ddlbx_test test/ddlbx_test.cc)
-target_link_libraries(ddlbx_test source)
-target_link_libraries(ddlbx_test ${llvm_libs})
-target_link_libraries(ddlbx_test gtest gtest_main)
+add_executable(unit_test test/unit_test.cc)
+target_link_libraries(unit_test source)
+target_link_libraries(unit_test ${llvm_libs})
+target_link_libraries(unit_test gtest gtest_main)
 
-add_test(ddlbx_test ddlbx_test)
+add_test(unit_test unit_test)
 
 #core folder
 add_subdirectory(core)

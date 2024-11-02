@@ -157,6 +157,8 @@ TEST_F(CodeGennerTest, GenerateAssignment) {
     )";
     generate(input);
 
+    module.print(llvm::errs(), nullptr);
+
     // Assuming the test function is declared in the module
     llvm::Function* testFunction = module.getFunction("main");
     ASSERT_NE(nullptr, testFunction);
