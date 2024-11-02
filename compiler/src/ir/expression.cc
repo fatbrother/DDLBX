@@ -60,24 +60,37 @@ Value NIdentifier::codeGen(CodeGenContext& context) {
     );
 }
 
+Value NIdentifier::codeGenLoacation(CodeGenContext& context) {
+    Variable& variable = context.getVariable(name);
+
+    if (variable.ptr == nullptr) {
+        LOG_ERROR("Variable \"" + name + "\" is not defined");
+        return Value::null();
+    }
+
+    return Value::create(variable.ddlbxTypeName, variable.ptr);
+}
+
 Value NAssignment::codeGen(CodeGenContext& context) {
     Value value = rhs->codeGen(context);
-    std::string name = lhs->name;
+    Value lhsPtr = lhs->codeGenLoacation(context);
 
     if (value.llvmValue == nullptr) {
         LOG_ERROR("Assignment failed");
         return value;
     }
 
-    if (context.getVariable(name).ptr == nullptr) {
-        LOG_ERROR("Variable \"" + name + "\" is not defined");
-        return {
-            .ddlbxTypeName = "",
-            .llvmValue = nullptr
-        };
+    if (lhsPtr.llvmValue == nullptr) {
+        LOG_ERROR("Assignment target not found");
+        return Value::null();
     }
 
-    context.getBuilder().CreateStore(value.llvmValue, context.getVariable(name).ptr);
+    if (lhsPtr.ddlbxTypeName != value.ddlbxTypeName) {
+        LOG_ERROR("Assignment type mismatch");
+        return Value::null();
+    }
+
+    context.getBuilder().CreateStore(value.llvmValue, lhsPtr.llvmValue);
     return value;
 }
 
@@ -92,7 +105,14 @@ Value NVariableDeclarationList::codeGen(CodeGenContext& context) {
 Value NVariableDeclaration::codeGen(CodeGenContext& context) {
     Value value = assignmentExpr->codeGen(context);
     llvm::Type* type = nullptr;
-    std::string name = id->name;
+    std::string name = "";
+
+    if ("NIdentifier" == id->getType()) {
+        name = std::static_pointer_cast<NIdentifier>(id)->name;
+    } else {
+        LOG_ERROR("Invalid left-hand side of assignment");
+        return Value::null();
+    }
 
     if (value.llvmValue == nullptr) {
         LOG_ERROR("Variable declaration failed");
@@ -273,4 +293,39 @@ Value NMemberAccess::codeGen(CodeGenContext& context) {
     }
 
     return Value::create(parentTypeName, parentValue);
+}
+
+Value NMemberAccess::codeGenLoacation(CodeGenContext& context) {
+    Value parentPtr = Value::null();
+
+    if (parent->getType() == "NIdentifier") {
+        parentPtr = std::static_pointer_cast<NIdentifier>(parent)->codeGenLoacation(context);
+    } else {
+        LOG_ERROR("Invalid parent type");
+        return Value::null();
+    }
+
+    if (parentPtr.llvmValue == nullptr) {
+        LOG_ERROR("Parent value error");
+        return Value::null();
+    }
+
+    for (const auto& id : ids) {
+        Type& type = context.getType(parentPtr.ddlbxTypeName);
+        if (type.type == nullptr) {
+            LOG_ERROR("Type \"" + parentPtr.ddlbxTypeName + "\" is not defined");
+            return Value::null();
+        }
+
+        llvm::StructType* structType = llvm::cast<llvm::StructType>(type.type);
+        int memberIndex = context.getTypeMemberIndex(parentPtr.ddlbxTypeName, id->name);
+        if (memberIndex == -1) {
+            LOG_ERROR("Member " + id->name + " not found in type " + parentPtr.ddlbxTypeName);
+            return Value::null();
+        }
+        parentPtr.llvmValue = context.getBuilder().CreateStructGEP(structType, parentPtr.llvmValue, memberIndex);
+        parentPtr.ddlbxTypeName = type.memberNameTypeMap[id->name];
+    }
+
+    return parentPtr;
 }

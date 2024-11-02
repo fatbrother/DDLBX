@@ -57,7 +57,7 @@ std::vector<std::shared_ptr<ddlbx::ir::NProgram>> programs;
 %type <program> Program
 %type <stmtvec> GlobalStatements
 %type <block> Block Statements
-%type <stmt> Statement GlobalStatement GetModule FunctionDeclaration FunctionDefinition OptStatement ForStatement ReturnStatement ObjectDeclaration MethodDefinition MethodDeclaration TraitMethodDeclaration TemplateFunctionDefinition
+%type <stmt> Statement GlobalStatement GetModule FunctionDeclaration FunctionDefinition OptStatement ForStatement ReturnStatement ObjectDeclaration MethodDefinition MethodDeclaration TraitMethodDeclaration TemplateFunctionDefinition TemplateObjectMethodDefinition TemplateObjectMethodDeclaration
 %type <expr> Expression Condition Calculation Term Factor Numeric Boolean String AssignExpression FunctionCallExpression DeclarationExpression FPDeclaration Primary MemberAccessExpression ObjectCreateExpression
 %type <varvec> DeclarationList
 %type <argvec> FPDeclarationList
@@ -100,7 +100,11 @@ GlobalStatement:
     | MethodDefinition SEMICOLON {
         $$ = $1;
       }
+    | TemplateObjectMethodDefinition SEMICOLON {
+        $$ = $1;
+      }
     | MethodDeclaration
+    | TemplateObjectMethodDeclaration
     | FunctionDeclaration
     | ObjectDeclaration
     | TraitMethodDeclaration
@@ -198,6 +202,25 @@ MethodDeclaration:
       MethodDefinition Block {
         $$ = new ddlbx::ir::NMethodDeclaration(std::shared_ptr<ddlbx::ir::NMethodDefinition>(dynamic_cast<ddlbx::ir::NMethodDefinition*>($1)),
                                                std::shared_ptr<ddlbx::ir::NBlock>($2));
+      }
+    ;
+
+TemplateObjectMethodDefinition:
+      KW_FUNCTION IDENTIFIER TemplateDeclaration DOT IDENTIFIER LPAREN FPDeclarationList RPAREN COLON Type {
+        $$ = new ddlbx::ir::NTemplateObjectMethodDefinition(
+          std::shared_ptr<ddlbx::ir::NType>($10),
+          *$5,
+          *(dynamic_cast<std::vector<std::shared_ptr<ddlbx::ir::NArgument>>*>($7)),
+          *$2,
+          *$3);
+      }
+    ;
+
+TemplateObjectMethodDeclaration:
+      TemplateObjectMethodDefinition Block {
+        $$ = new ddlbx::ir::NTemplateObjectMethodDeclaration(
+          std::shared_ptr<ddlbx::ir::NTemplateObjectMethodDefinition>(dynamic_cast<ddlbx::ir::NTemplateObjectMethodDefinition*>($1)),
+          std::shared_ptr<ddlbx::ir::NBlock>($2));
       }
     ;
 
@@ -395,7 +418,10 @@ DeclarationList:
 
 AssignExpression:
       Identifier OP_ASSIGN Expression {
-        $$ = new ddlbx::ir::NAssignment(std::shared_ptr<ddlbx::ir::NIdentifier>($1), std::shared_ptr<ddlbx::ir::NExpression>($3));
+        $$ = new ddlbx::ir::NAssignment(std::shared_ptr<ddlbx::ir::NExpression>($1), std::shared_ptr<ddlbx::ir::NExpression>($3));
+      }
+    | MemberAccessExpression OP_ASSIGN Expression {
+        $$ = new ddlbx::ir::NAssignment(std::shared_ptr<ddlbx::ir::NExpression>($1), std::shared_ptr<ddlbx::ir::NExpression>($3));
       }
     ;
 

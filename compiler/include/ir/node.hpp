@@ -15,7 +15,17 @@ namespace ddlbx::ir {
 
 class Node {
 public:
+    bool isAsignable = false;
     virtual Value codeGen(CodeGenContext& context) = 0;
+    virtual Value codeGenLoacation(CodeGenContext& context) {
+        if (false == isAsignable) {
+            LOG_ERROR("Node is not asignable");
+            return Value::null();
+        }
+
+        LOG_ERROR("Node codeGenLoacation not implemented");
+        return Value::null();
+    }
     virtual std::string getType() { return "Node"; }
 };
 

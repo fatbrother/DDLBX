@@ -59,21 +59,22 @@ public:
     std::string name;
     NIdentifier(std::string name) : name(name) {}
     virtual Value codeGen(CodeGenContext& context) override;
+    Value codeGenLoacation(CodeGenContext& context);
     virtual std::string getType() override { return "NIdentifier"; }
 };
 
 class NAssignment : public NExpression {
 public:
-    std::shared_ptr<NIdentifier> lhs;
+    std::shared_ptr<NExpression> lhs;
     std::shared_ptr<NExpression> rhs;
-    NAssignment(std::shared_ptr<NIdentifier> lhs, std::shared_ptr<NExpression> rhs) : lhs(lhs), rhs(rhs) {}
+    NAssignment(std::shared_ptr<NExpression> lhs, std::shared_ptr<NExpression> rhs) : lhs(lhs), rhs(rhs) {}
     virtual Value codeGen(CodeGenContext& context) override;
     virtual std::string getType() override { return "NAssignment"; }
 };
 
 class NVariableDeclaration : public NExpression {
 public:
-    std::shared_ptr<NIdentifier> id;
+    std::shared_ptr<NExpression> id;
     std::shared_ptr<NExpression> assignmentExpr;
     NVariableDeclaration(std::shared_ptr<NIdentifier> id, std::shared_ptr<NExpression> assignmentExpr = nullptr) : id(id), assignmentExpr(assignmentExpr) {}
     NVariableDeclaration(std::shared_ptr<NAssignment> assignment) : id(assignment->lhs), assignmentExpr(assignment->rhs) {}
@@ -114,6 +115,7 @@ public:
     std::vector<std::shared_ptr<NIdentifier>> ids;
     NMemberAccess(std::shared_ptr<NExpression> parent, const std::vector<std::shared_ptr<NIdentifier>>& ids) : parent(parent), ids(ids) {}
     virtual Value codeGen(CodeGenContext& context) override;
+    Value codeGenLoacation(CodeGenContext& context);
     virtual std::string getType() override { return "NMemberAccess"; }
 };
 
