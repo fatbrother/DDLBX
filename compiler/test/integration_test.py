@@ -51,7 +51,11 @@ class TestCompileExamples(unittest.TestCase):
             "test1.ddlbx": {
                 "stdin": "",
                 "stdout": "Hello, World!",
-            }
+            },
+            "test2.ddlbx": {
+                "stdin": "5",
+                "stdout": "1\n2",
+            },
         }
 
         for test_file in test_cases.keys():

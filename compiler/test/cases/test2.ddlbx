@@ -1,0 +1,10 @@
+get 'core/core_lib.ddlbx'!
+
+fun main(): Int {
+    var a = 1!
+    println(a.toString())!
+    a = a + 1!
+    println(a.toString())!
+
+    ret 0!
+}
