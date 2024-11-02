@@ -161,7 +161,9 @@ Value NFunctionCall::codeGen(CodeGenContext& context) {
             } else {
                 LOG_DEBUG("Template object method " + name + " creation failed");
             }
-        } else if (false == templateArgs.empty()) {
+        }
+
+        if (nullptr == targetFunction && false == templateArgs.empty()) {
             LOG_DEBUG("Trying to find template function " + name);
             std::shared_ptr<NTemplateFunctionDeclaration> templateFunction = context.getTemplateFunction(name);
             if (nullptr != templateFunction) {
@@ -171,7 +173,9 @@ Value NFunctionCall::codeGen(CodeGenContext& context) {
             } else {
                 LOG_DEBUG("Template function " + name + " creation failed");
             }
-        } else {
+        }
+
+        if (nullptr == targetFunction) {
             LOG_DEBUG("Trying to find trait method " + name);
             std::shared_ptr<NTraitMethodDeclaration> traitMethod = context.getTraitMethod(name);
             if (nullptr != traitMethod) {
