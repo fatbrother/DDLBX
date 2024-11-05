@@ -9,8 +9,8 @@
 #include "utils/logger.hpp"
 #include "parser/parser.hpp"
 
-#define SAVE_TOKEN yylval.string = new std::string(yytext)
-#define TOKEN(t) yylval.token = t; return t
+#define SAVE_TOKEN yylval.string = new std::string(yytext); yycolumn += yyleng;
+#define TOKEN(t) yylval.token = t; yycolumn += yyleng; return t;
 #define YYTEXT_STR std::string(yytext)
 
 extern int yylineno;
@@ -36,21 +36,21 @@ int yycolumn = 1;
 <MULTI_COMMENT>\*+[^*/]* { ; }
 <MULTI_COMMENT>\*+\/ { BEGIN 0; }
 
-"get"           { ddlbx::utility::LOG_INFO("TOKEN: KW_GET");      TOKEN(KW_GET); }
-"opt"           { ddlbx::utility::LOG_INFO("TOKEN: KW_OPT");      TOKEN(KW_OPT); }
-"for"           { ddlbx::utility::LOG_INFO("TOKEN: KW_FOR");      TOKEN(KW_FOR); }
-"ret"           { ddlbx::utility::LOG_INFO("TOKEN: KW_RETURN");   TOKEN(KW_RETURN); }
-"fun"           { ddlbx::utility::LOG_INFO("TOKEN: KW_FUNCTION"); TOKEN(KW_FUNCTION); }
-"var"           { ddlbx::utility::LOG_INFO("TOKEN: KW_VAR");      TOKEN(KW_VAR); }
-"obj"           { ddlbx::utility::LOG_INFO("TOKEN: KW_OBJECT");   TOKEN(KW_OBJECT); }
+"get"           { ddlbx::utility::LOG_INFO("TOKEN: KW_GET");        TOKEN(KW_GET);      }
+"opt"           { ddlbx::utility::LOG_INFO("TOKEN: KW_OPT");        TOKEN(KW_OPT);      }
+"for"           { ddlbx::utility::LOG_INFO("TOKEN: KW_FOR");        TOKEN(KW_FOR);      }
+"ret"           { ddlbx::utility::LOG_INFO("TOKEN: KW_RETURN");     TOKEN(KW_RETURN);   }
+"fun"           { ddlbx::utility::LOG_INFO("TOKEN: KW_FUNCTION");   TOKEN(KW_FUNCTION); }
+"var"           { ddlbx::utility::LOG_INFO("TOKEN: KW_VAR");        TOKEN(KW_VAR);      }
+"obj"           { ddlbx::utility::LOG_INFO("TOKEN: KW_OBJECT");     TOKEN(KW_OBJECT);   }
 
-"and"           { ddlbx::utility::LOG_INFO("TOKEN: AND");  TOKEN(OP_AND); }
-"or"            { ddlbx::utility::LOG_INFO("TOKEN: OR");   TOKEN(OP_OR);  }
-"not"           { ddlbx::utility::LOG_INFO("TOKEN: NOT");  TOKEN(OP_NOT); }
+"and"           { ddlbx::utility::LOG_INFO("TOKEN: AND");           TOKEN(OP_AND);      }
+"or"            { ddlbx::utility::LOG_INFO("TOKEN: OR");            TOKEN(OP_OR);       }
+"not"           { ddlbx::utility::LOG_INFO("TOKEN: NOT");           TOKEN(OP_NOT);      }
 
-"from"          { ddlbx::utility::LOG_INFO("TOKEN: FROM");  TOKEN(KW_FROM); }
-"to"            { ddlbx::utility::LOG_INFO("TOKEN: TO");    TOKEN(KW_TO); }
-"step"          { ddlbx::utility::LOG_INFO("TOKEN: STEP");  TOKEN(KW_STEP); }
+"from"          { ddlbx::utility::LOG_INFO("TOKEN: FROM");          TOKEN(KW_FROM);     }
+"to"            { ddlbx::utility::LOG_INFO("TOKEN: TO");            TOKEN(KW_TO);       }
+"step"          { ddlbx::utility::LOG_INFO("TOKEN: STEP");          TOKEN(KW_STEP);     }
 
 "true"                   { SAVE_TOKEN;     ddlbx::utility::LOG_INFO("TOKEN: BOOL " + YYTEXT_STR);         return BOOL; }
 "false"                  { SAVE_TOKEN;     ddlbx::utility::LOG_INFO("TOKEN: BOOL " + YYTEXT_STR);         return BOOL; }
@@ -61,31 +61,31 @@ int yycolumn = 1;
 \'[^']*\'                { SAVE_TOKEN;     ddlbx::utility::LOG_INFO("TOKEN: STRING " + YYTEXT_STR);       return STRING; }
 
 
-"=="            { ddlbx::utility::LOG_INFO("TOKEN: EQ");   TOKEN(COM_EQ); }
-"<="            { ddlbx::utility::LOG_INFO("TOKEN: LE");   TOKEN(COM_LE); }
-">="            { ddlbx::utility::LOG_INFO("TOKEN: GE");   TOKEN(COM_GE); }
-"<>"            { ddlbx::utility::LOG_INFO("TOKEN: NE");   TOKEN(COM_NE); }
+"=="            { ddlbx::utility::LOG_INFO("TOKEN: EQ");            TOKEN(COM_EQ);      }
+"<="            { ddlbx::utility::LOG_INFO("TOKEN: LE");            TOKEN(COM_LE);      }
+">="            { ddlbx::utility::LOG_INFO("TOKEN: GE");            TOKEN(COM_GE);      }
+"<>"            { ddlbx::utility::LOG_INFO("TOKEN: NE");            TOKEN(COM_NE);      }
 
-"<"             { ddlbx::utility::LOG_INFO("TOKEN: '<'");  TOKEN(COM_LT);  }
-">"             { ddlbx::utility::LOG_INFO("TOKEN: '>'");  TOKEN(COM_GT);  }
+"<"             { ddlbx::utility::LOG_INFO("TOKEN: '<'");           TOKEN(COM_LT);      }
+">"             { ddlbx::utility::LOG_INFO("TOKEN: '>'");           TOKEN(COM_GT);      }
 
-"="             { ddlbx::utility::LOG_INFO("TOKEN: '='");  TOKEN(OP_ASSIGN); }
-"+"             { ddlbx::utility::LOG_INFO("TOKEN: '+'");  TOKEN(OP_PLUS);   }
-"-"             { ddlbx::utility::LOG_INFO("TOKEN: '-'");  TOKEN(OP_MINUS);  }
-"*"             { ddlbx::utility::LOG_INFO("TOKEN: '*'");  TOKEN(OP_MULT);   }
-"/"             { ddlbx::utility::LOG_INFO("TOKEN: '/'");  TOKEN(OP_DIV);    }
+"="             { ddlbx::utility::LOG_INFO("TOKEN: '='");           TOKEN(OP_ASSIGN);   }
+"+"             { ddlbx::utility::LOG_INFO("TOKEN: '+'");           TOKEN(OP_PLUS);     }
+"-"             { ddlbx::utility::LOG_INFO("TOKEN: '-'");           TOKEN(OP_MINUS);    }
+"*"             { ddlbx::utility::LOG_INFO("TOKEN: '*'");           TOKEN(OP_MULT);     }
+"/"             { ddlbx::utility::LOG_INFO("TOKEN: '/'");           TOKEN(OP_DIV);      }
 
-"("             { ddlbx::utility::LOG_INFO("TOKEN: '('");  TOKEN(LPAREN); }
-")"             { ddlbx::utility::LOG_INFO("TOKEN: ')'");  TOKEN(RPAREN); }
-"{"             { ddlbx::utility::LOG_INFO("TOKEN: '{'");  TOKEN(LBRACE); }
-"}"             { ddlbx::utility::LOG_INFO("TOKEN: '}'");  TOKEN(RBRACE); }
+"("             { ddlbx::utility::LOG_INFO("TOKEN: '('");           TOKEN(LPAREN);      }
+")"             { ddlbx::utility::LOG_INFO("TOKEN: ')'");           TOKEN(RPAREN);      }
+"{"             { ddlbx::utility::LOG_INFO("TOKEN: '{'");           TOKEN(LBRACE);      }
+"}"             { ddlbx::utility::LOG_INFO("TOKEN: '}'");           TOKEN(RBRACE);      }
 
-","             { ddlbx::utility::LOG_INFO("TOKEN: ','");  TOKEN(COMMA);    }
-":"             { ddlbx::utility::LOG_INFO("TOKEN: ':'");  TOKEN(COLON); }
-"!"             { ddlbx::utility::LOG_INFO("TOKEN: '!'");  TOKEN(SEMICOLON); }
-"."             { ddlbx::utility::LOG_INFO("TOKEN: '.'");  TOKEN(DOT); }
+","             { ddlbx::utility::LOG_INFO("TOKEN: ','");           TOKEN(COMMA);       }
+":"             { ddlbx::utility::LOG_INFO("TOKEN: ':'");           TOKEN(COLON);       }
+"!"             { ddlbx::utility::LOG_INFO("TOKEN: '!'");           TOKEN(SEMICOLON);   }
+"."             { ddlbx::utility::LOG_INFO("TOKEN: '.'");           TOKEN(DOT);         }
 
-[ \t\r]+        { ; }
+[ \t\r]+        { yycolumn += yyleng; }
 \n              { yycolumn = 1; }
 
 .               { ddlbx::utility::LOG_INFO("unknown token: " + YYTEXT_STR + "\n"); yyterminate(); }
