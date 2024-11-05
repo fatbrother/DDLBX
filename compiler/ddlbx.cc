@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    programs.back()->codeGen(codeGenContext);
+    programs.back()->codeGenValue(codeGenContext);
 
     std::string outStr;
     llvm::raw_string_ostream out(outStr);

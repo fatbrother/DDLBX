@@ -6,13 +6,13 @@
 
 using namespace ddlbx::ir;
 
-Value NObjectDeclaration::codeGen(CodeGenContext& context) {
+Value NObjectDeclaration::codeGenValue(CodeGenContext& context) {
     llvm::StructType* structType = llvm::StructType::create(context.getContext(), name);
     std::unordered_map<std::string, std::string> memberNameTypeMap;
     std::vector<llvm::Type*> memberTypes;
 
     for (const auto& member : members) {
-        auto [typeName, type, _] = member->type->codeGen(context);
+        auto [typeName, type, _] = member->type->codeGenValue(context);
         memberTypes.push_back(type);
         memberNameTypeMap[member->name] = typeName;
     }
@@ -52,7 +52,7 @@ void NObjectDeclaration::genConstructor(CodeGenContext& context, std::vector<llv
     context.registerFunction(name, name);
 }
 
-llvm::Type* NTemplateObjectDeclaration::codeGen(CodeGenContext& context, std::vector<std::shared_ptr<NType>> templateTypes) {
+llvm::Type* NTemplateObjectDeclaration::codeGenValue(CodeGenContext& context, std::vector<std::shared_ptr<NType>> templateTypes) {
     std::string originalName = name;
     std::unordered_map<std::string, std::string> memberNameTypeMap;
     std::unordered_map<std::string, llvm::Type*> templateNameTypeMap;
@@ -69,7 +69,7 @@ llvm::Type* NTemplateObjectDeclaration::codeGen(CodeGenContext& context, std::ve
     });
 
     for (int i = 0; i < templates.size(); i++) {
-        templateNameTypeMap[templates[i]] = templateTypes[i]->codeGen(context).type;
+        templateNameTypeMap[templates[i]] = templateTypes[i]->codeGenValue(context).type;
     }
 
     std::vector<llvm::Type*> memberTypes;
@@ -78,7 +78,7 @@ llvm::Type* NTemplateObjectDeclaration::codeGen(CodeGenContext& context, std::ve
         if (templateNameTypeMap.find(member->type->name) != templateNameTypeMap.end()) {
             memberTypes.push_back(templateNameTypeMap[member->type->name]);
         } else {
-            memberTypes.push_back(member->type->codeGen(context).type);
+            memberTypes.push_back(member->type->codeGenValue(context).type);
         }
         memberNameTypeMap[member->name] = member->type->name;
     }
@@ -94,7 +94,7 @@ llvm::Type* NTemplateObjectDeclaration::codeGen(CodeGenContext& context, std::ve
     return structType;
 }
 
-Value NObjectCreation::codeGen(CodeGenContext& context) {
+Value NObjectCreation::codeGenValue(CodeGenContext& context) {
     std::string fullName = name;
     if (!templateArgs.empty()) {
         fullName += "<";
@@ -124,7 +124,7 @@ Value NObjectCreation::codeGen(CodeGenContext& context) {
             templateArgTypes.push_back(std::make_shared<NType>(arg));
         }
 
-        type = templateObject->codeGen(context, templateArgTypes);
+        type = templateObject->codeGenValue(context, templateArgTypes);
     }
 
     context.getBuilder().SetInsertPoint(currentBlock);
@@ -132,7 +132,7 @@ Value NObjectCreation::codeGen(CodeGenContext& context) {
 
     std::vector<llvm::Value*> argValues;
     for (const auto& arg : arguments) {
-        argValues.push_back(arg->codeGen(context).llvmValue);
+        argValues.push_back(arg->codeGenValue(context).llvmValue);
         if (argValues.back() == nullptr) {
             LOG_ERROR("Object creation argument error");
             return Value::null();

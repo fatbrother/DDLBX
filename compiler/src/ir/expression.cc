@@ -7,7 +7,7 @@
 
 using namespace ddlbx::ir;
 
-Value NInteger::codeGen(CodeGenContext& context) {
+Value NInteger::codeGenValue(CodeGenContext& context) {
     return Value::create(DDLBX_TYPE_INT, llvm::ConstantInt::get(context.getType(DDLBX_TYPE_INT).type, value));
 }
 
@@ -23,15 +23,15 @@ NBoolean::NBoolean(std::string value) {
     }
 }
 
-Value NBoolean::codeGen(CodeGenContext& context) {
+Value NBoolean::codeGenValue(CodeGenContext& context) {
     return Value::create(DDLBX_TYPE_BOO, llvm::ConstantInt::get(context.getType(DDLBX_TYPE_BOO).type, value));
 }
 
-Value NFloat::codeGen(CodeGenContext& context) {
+Value NFloat::codeGenValue(CodeGenContext& context) {
     return Value::create(DDLBX_TYPE_FLT, llvm::ConstantFP::get(context.getType(DDLBX_TYPE_FLT).type, value));
 }
 
-Value NString::codeGen(CodeGenContext& context) {
+Value NString::codeGenValue(CodeGenContext& context) {
     llvm::Constant* strConstant = llvm::ConstantDataArray::getString(context.getContext(), value);
     llvm::GlobalVariable* strGlobal = new llvm::GlobalVariable(context.getModule(), strConstant->getType(),
                                                                true, llvm::GlobalValue::PrivateLinkage, strConstant);
@@ -40,7 +40,7 @@ Value NString::codeGen(CodeGenContext& context) {
         context.getBuilder().CreatePointerCast(strGlobal, context.getType(DDLBX_TYPE_STR).type));
 }
 
-Value NIdentifier::codeGen(CodeGenContext& context) {
+Value NIdentifier::codeGenValue(CodeGenContext& context) {
     Variable& variable = context.getVariable(name);
     llvm::Type* type = nullptr;
 
@@ -71,8 +71,8 @@ Value NIdentifier::codeGenLoacation(CodeGenContext& context) {
     return Value::create(variable.ddlbxTypeName, variable.ptr);
 }
 
-Value NAssignment::codeGen(CodeGenContext& context) {
-    Value value = rhs->codeGen(context);
+Value NAssignment::codeGenValue(CodeGenContext& context) {
+    Value value = rhs->codeGenValue(context);
     Value lhsPtr = lhs->codeGenLoacation(context);
 
     if (value.llvmValue == nullptr) {
@@ -94,16 +94,16 @@ Value NAssignment::codeGen(CodeGenContext& context) {
     return value;
 }
 
-Value NVariableDeclarationList::codeGen(CodeGenContext& context) {
+Value NVariableDeclarationList::codeGenValue(CodeGenContext& context) {
     for (auto& declaration : declarations) {
-        declaration->codeGen(context);
+        declaration->codeGenValue(context);
     }
 
     return Value::null();
 }
 
-Value NVariableDeclaration::codeGen(CodeGenContext& context) {
-    Value value = assignmentExpr->codeGen(context);
+Value NVariableDeclaration::codeGenValue(CodeGenContext& context) {
+    Value value = assignmentExpr->codeGenValue(context);
     llvm::Type* type = nullptr;
     std::string name = "";
 
@@ -132,9 +132,9 @@ Value NVariableDeclaration::codeGen(CodeGenContext& context) {
     return value;
 }
 
-Value NBinaryOperator::codeGen(CodeGenContext& context) {
-    Value lvalue = lhs->codeGen(context);
-    Value rvalue = rhs->codeGen(context);
+Value NBinaryOperator::codeGenValue(CodeGenContext& context) {
+    Value lvalue = lhs->codeGenValue(context);
+    Value rvalue = rhs->codeGenValue(context);
     llvm::Value* result = nullptr;
 
     if (lvalue.llvmValue == nullptr || rvalue.llvmValue == nullptr) {
@@ -246,8 +246,8 @@ Value NBinaryOperator::codeGen(CodeGenContext& context) {
     return Value::create(lvalue.ddlbxTypeName, result);
 }
 
-Value NUnaryOperator::codeGen(CodeGenContext& context) {
-    Value value = expr->codeGen(context);
+Value NUnaryOperator::codeGenValue(CodeGenContext& context) {
+    Value value = expr->codeGenValue(context);
     llvm::Value* result = nullptr;
 
     if (value.llvmValue == nullptr) {
@@ -266,8 +266,8 @@ Value NUnaryOperator::codeGen(CodeGenContext& context) {
     return Value::create(value.ddlbxTypeName, result);
 }
 
-Value NMemberAccess::codeGen(CodeGenContext& context) {
-    auto [parentTypeName, parentValue] = parent->codeGen(context);
+Value NMemberAccess::codeGenValue(CodeGenContext& context) {
+    auto [parentTypeName, parentValue] = parent->codeGenValue(context);
     llvm::Type* parentType = nullptr;
 
     if (parentValue == nullptr) {

@@ -27,7 +27,7 @@ protected:
             FAIL() << "Failed to parse the input";
         }
 
-        programs.back()->codeGen(codeGenContext);
+        programs.back()->codeGenValue(codeGenContext);
     }
 };
 

@@ -6,29 +6,29 @@
 
 using namespace ddlbx::ir;
 
-Value NFunctionDefinition::codeGen(CodeGenContext& context) {
+Value NFunctionDefinition::codeGenValue(CodeGenContext& context) {
     std::vector<llvm::Type*> argTypes;
 
     for (auto arg : arguments) {
-        argTypes.push_back(arg->type->codeGen(context).type);
+        argTypes.push_back(arg->type->codeGenValue(context).type);
         if (argTypes.back() == nullptr) {
             LOG_ERROR("Function argument type generation failed");
             return Value::null();
         }
     }
 
-    llvm::FunctionType* functionType = llvm::FunctionType::get(retType->codeGen(context).type, argTypes, false);
+    llvm::FunctionType* functionType = llvm::FunctionType::get(retType->codeGenValue(context).type, argTypes, false);
     llvm::Function* function = llvm::Function::Create(functionType, llvm::Function::ExternalLinkage, name.c_str(), context.getModule());
     context.registerFunction(name, retType->name);
 
     return Value::create(DDLBX_TYPE_FUN, function);
 }
 
-Value NFunctionDeclaration::codeGen(CodeGenContext& context) {
+Value NFunctionDeclaration::codeGenValue(CodeGenContext& context) {
     llvm::Function* function = context.getModule().getFunction(this->definition->name.c_str());
 
     if (!function) {
-        function = static_cast<llvm::Function*>(this->definition->codeGen(context).llvmValue);
+        function = static_cast<llvm::Function*>(this->definition->codeGenValue(context).llvmValue);
 
         if (!function) {
             LOG_ERROR("Function " + this->definition->name + " creation failed");
@@ -52,7 +52,7 @@ Value NFunctionDeclaration::codeGen(CodeGenContext& context) {
     for (auto it = function->arg_begin(); it != function->arg_end(); it++) {
         it->setName((*argIt)->name.c_str());
 
-        auto [typeName, type, _] = (*argIt)->type->codeGen(context);
+        auto [typeName, type, _] = (*argIt)->type->codeGenValue(context);
         if (it->getType() != type) {
             LOG_ERROR("Function argument type error");
             return Value::null();
@@ -64,7 +64,7 @@ Value NFunctionDeclaration::codeGen(CodeGenContext& context) {
         argIt++;
     }
 
-    this->block->codeGen(context);
+    this->block->codeGenValue(context);
 
     if (block->getTerminator() == nullptr) {
         if (function->getReturnType()->isVoidTy()) {
@@ -78,7 +78,7 @@ Value NFunctionDeclaration::codeGen(CodeGenContext& context) {
     return Value::create(DDLBX_TYPE_FUN, function);
 }
 
-Value NTemplateFunctionDeclaration::codeGen(CodeGenContext& context, std::vector<std::string> templateArgs) {
+Value NTemplateFunctionDeclaration::codeGenValue(CodeGenContext& context, std::vector<std::string> templateArgs) {
     std::shared_ptr<NTemplateFunctionDefinition> definition = std::dynamic_pointer_cast<NTemplateFunctionDefinition>(this->definition);
 
     context.pushTemplateTypeStack();
@@ -98,18 +98,18 @@ Value NTemplateFunctionDeclaration::codeGen(CodeGenContext& context, std::vector
         definition->name = originalName;
     });
 
-    auto func = NFunctionDeclaration::codeGen(context);
+    auto func = NFunctionDeclaration::codeGenValue(context);
 
     return func;
 }
 
-Value NFunctionCall::codeGen(CodeGenContext& context) {
+Value NFunctionCall::codeGenValue(CodeGenContext& context) {
     if (name == "sizeof" && !parent) {
         if (arguments.size() != 1) {
             LOG_ERROR("Function \"sizeof\" expects 1 argument, but " + std::to_string(arguments.size()) + " were provided");
             return Value::null();
         }
-        Value value = arguments[0]->codeGen(context);
+        Value value = arguments[0]->codeGenValue(context);
         llvm::Type* type = context.getType(value.ddlbxTypeName).type;
         if (type == nullptr) {
             LOG_ERROR("Type \"" + value.ddlbxTypeName + "\" is not defined");
@@ -120,7 +120,7 @@ Value NFunctionCall::codeGen(CodeGenContext& context) {
 
     std::vector<llvm::Value*> argValues;
     for (const auto& arg : arguments) {
-        argValues.push_back(arg->codeGen(context).llvmValue);
+        argValues.push_back(arg->codeGenValue(context).llvmValue);
         if (argValues.back() == nullptr) {
             LOG_ERROR("Function argument error");
             return Value::null();
@@ -130,7 +130,7 @@ Value NFunctionCall::codeGen(CodeGenContext& context) {
     std::string fullName = name;
     Value parentValue = Value::null();
     if (parent) {
-        parentValue = parent->codeGen(context);
+        parentValue = parent->codeGenValue(context);
         if (parentValue.llvmValue == nullptr) {
             LOG_ERROR("Parent value error");
             return Value::null();
@@ -155,7 +155,7 @@ Value NFunctionCall::codeGen(CodeGenContext& context) {
             std::vector<std::string> templateArgs = utility::getTemplateArgsFromFullName(parentValue.ddlbxTypeName);
 
             if (nullptr != templateObjectMethod) {
-                targetFunction = static_cast<llvm::Function*>(templateObjectMethod->codeGen(context, templateArgs).llvmValue);
+                targetFunction = static_cast<llvm::Function*>(templateObjectMethod->codeGenValue(context, templateArgs).llvmValue);
                 returnType = templateObjectMethod->definition->retType->name;
                 LOG_DEBUG("Template object method " + fullName + " created");
             } else {
@@ -167,7 +167,7 @@ Value NFunctionCall::codeGen(CodeGenContext& context) {
             LOG_DEBUG("Trying to find template function " + name);
             std::shared_ptr<NTemplateFunctionDeclaration> templateFunction = context.getTemplateFunction(name);
             if (nullptr != templateFunction) {
-                targetFunction = static_cast<llvm::Function*>(templateFunction->codeGen(context, templateArgs).llvmValue);
+                targetFunction = static_cast<llvm::Function*>(templateFunction->codeGenValue(context, templateArgs).llvmValue);
                 returnType = templateFunction->definition->retType->name;
                 LOG_DEBUG("Template function " + fullName + " created");
             } else {
@@ -179,7 +179,7 @@ Value NFunctionCall::codeGen(CodeGenContext& context) {
             LOG_DEBUG("Trying to find trait method " + name);
             std::shared_ptr<NTraitMethodDeclaration> traitMethod = context.getTraitMethod(name);
             if (nullptr != traitMethod) {
-                targetFunction = static_cast<llvm::Function*>(traitMethod->codeGen(context, parentValue.ddlbxTypeName).llvmValue);
+                targetFunction = static_cast<llvm::Function*>(traitMethod->codeGenValue(context, parentValue.ddlbxTypeName).llvmValue);
                 returnType = traitMethod->definition->retType->name;
                 LOG_DEBUG("Trait method " + fullName + " created");
             } else {
@@ -205,7 +205,7 @@ Value NFunctionCall::codeGen(CodeGenContext& context) {
     return Value::create(returnType, context.getBuilder().CreateCall(targetFunction, argValues));
 }
 
-Value NMethodDeclaration::codeGen(CodeGenContext& context) {
+Value NMethodDeclaration::codeGenValue(CodeGenContext& context) {
     auto methodDefintion = std::dynamic_pointer_cast<NMethodDefinition>(this->definition);
     llvm::Type* parentType = context.getType(methodDefintion->parentName).type;
     if (nullptr == parentType) {
@@ -225,12 +225,12 @@ Value NMethodDeclaration::codeGen(CodeGenContext& context) {
         methodDefintion->name = originalName;
     });
 
-    auto res = methodDefintion->codeGen(context);
+    auto res = methodDefintion->codeGenValue(context);
 
-    return NFunctionDeclaration::codeGen(context);
+    return NFunctionDeclaration::codeGenValue(context);
 }
 
-Value NTemplateObjectMethodDeclaration::codeGen(CodeGenContext& context, std::vector<std::string> templateArgs) {
+Value NTemplateObjectMethodDeclaration::codeGenValue(CodeGenContext& context, std::vector<std::string> templateArgs) {
     auto methodDefintion = std::dynamic_pointer_cast<NTemplateObjectMethodDefinition>(this->definition);
     methodDefintion->parentName += utility::getTemplateString(templateArgs);
     context.pushTemplateTypeStack();
@@ -244,12 +244,12 @@ Value NTemplateObjectMethodDeclaration::codeGen(CodeGenContext& context, std::ve
         context.registerTemplateType(methodDefintion->templates[i], templateArgs[i]);
     }
 
-    return NMethodDeclaration::codeGen(context);
+    return NMethodDeclaration::codeGenValue(context);
 }
 
-Value NTraitMethodDeclaration::codeGen(CodeGenContext& context, std::string parentName) {
+Value NTraitMethodDeclaration::codeGenValue(CodeGenContext& context, std::string parentName) {
     auto methodDefintion = std::dynamic_pointer_cast<NMethodDefinition>(this->definition);
     methodDefintion->parentName = parentName;
 
-    return NMethodDeclaration::codeGen(context);
+    return NMethodDeclaration::codeGenValue(context);
 }

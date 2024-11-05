@@ -9,9 +9,9 @@
 using namespace ddlbx::ir;
 using namespace ddlbx::utility;
 
-Value NReturnStatement::codeGen(CodeGenContext& context) {
+Value NReturnStatement::codeGenValue(CodeGenContext& context) {
     if (expression) {
-        Value value = expression->codeGen(context);
+        Value value = expression->codeGenValue(context);
         if (value.llvmValue == nullptr) {
             LOG_ERROR("Return statement failed");
             return Value::null();
@@ -25,15 +25,15 @@ Value NReturnStatement::codeGen(CodeGenContext& context) {
     return Value::null();
 }
 
-Value NBlock::codeGen(CodeGenContext& context) {
+Value NBlock::codeGenValue(CodeGenContext& context) {
     for (auto& statement : statements) {
-        statement->codeGen(context);
+        statement->codeGenValue(context);
     }
     return Value::null();
 }
 
-Value NOptStatement::codeGen(CodeGenContext& context) {
-    llvm::Value* conditionValue = condition->codeGen(context).llvmValue;
+Value NOptStatement::codeGenValue(CodeGenContext& context) {
+    llvm::Value* conditionValue = condition->codeGenValue(context).llvmValue;
     llvm::Function* function = context.getBuilder().GetInsertBlock()->getParent();
     llvm::BasicBlock* thenBlock = llvm::BasicBlock::Create(context.getContext(), "then", function);
     llvm::BasicBlock* mergeBlock = llvm::BasicBlock::Create(context.getContext(), "ifcont", function);
@@ -50,12 +50,12 @@ Value NOptStatement::codeGen(CodeGenContext& context) {
         context.getBuilder().SetInsertPoint(mergeBlock);
     });
 
-    then->codeGen(context);
+    then->codeGenValue(context);
 
     return Value::null();
 }
 
-Value NForStatement::codeGen(CodeGenContext& context) {
+Value NForStatement::codeGenValue(CodeGenContext& context) {
     llvm::Function* function = context.getBuilder().GetInsertBlock()->getParent();
     llvm::BasicBlock* loopBlock = llvm::BasicBlock::Create(context.getContext(), "loop", function);
     llvm::BasicBlock* conditionBlock = llvm::BasicBlock::Create(context.getContext(), "condition", function);
@@ -69,7 +69,7 @@ Value NForStatement::codeGen(CodeGenContext& context) {
         bool isIteratorDeclared = context.getVariable(iterator->name).ptr != nullptr;
         if (false == isIteratorDeclared) {
             std::shared_ptr<NVariableDeclaration> declaration = std::make_shared<NVariableDeclaration>(iterator, init);
-            declaration->codeGen(context);
+            declaration->codeGenValue(context);
         }
 
         if (nullptr == increment) {
@@ -86,7 +86,7 @@ Value NForStatement::codeGen(CodeGenContext& context) {
         context.getBuilder().SetInsertPoint(afterBlock);
     });
 
-    llvm::Value* conditionValue = condition->codeGen(context).llvmValue;
+    llvm::Value* conditionValue = condition->codeGenValue(context).llvmValue;
     if (nullptr == conditionValue) {
         LOG_ERROR("Loop statement condition error");
         return Value::null();
@@ -111,10 +111,10 @@ Value NForStatement::codeGen(CodeGenContext& context) {
         context.getBuilder().SetInsertPoint(afterBlock);
     });
 
-    block->codeGen(context);
+    block->codeGenValue(context);
 
     if (nullptr != increment) {
-        context.getBuilder().CreateStore(increment->codeGen(context).llvmValue, context.getVariable(iterator->name).ptr);
+        context.getBuilder().CreateStore(increment->codeGenValue(context).llvmValue, context.getVariable(iterator->name).ptr);
     }
 
     context.getBuilder().CreateBr(conditionBlock);
@@ -122,7 +122,7 @@ Value NForStatement::codeGen(CodeGenContext& context) {
     return Value::null();
 }
 
-Value NGetModule::codeGen(CodeGenContext& context) {
+Value NGetModule::codeGenValue(CodeGenContext& context) {
     if (parser::parseFile(file) == false) {
         LOG_ERROR("Failed to parse file: " + file);
         return Value::null();
@@ -138,7 +138,7 @@ Value NGetModule::codeGen(CodeGenContext& context) {
         context.getBuilder().restoreIP(currPos);
     });
 
-    programs.back()->codeGen(context);
+    programs.back()->codeGenValue(context);
 
     return Value::null();
 }

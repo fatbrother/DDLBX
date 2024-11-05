@@ -16,7 +16,7 @@ namespace ddlbx::ir {
 class Node {
 public:
     bool isAsignable = false;
-    virtual Value codeGen(CodeGenContext& context) = 0;
+    virtual Value codeGenValue(CodeGenContext& context) = 0;
     virtual Value codeGenLoacation(CodeGenContext& context) {
         if (false == isAsignable) {
             LOG_ERROR("Node is not asignable");
@@ -32,14 +32,14 @@ public:
 class NExpression : public Node {
 public:
     NExpression() {}
-    virtual Value codeGen(CodeGenContext& context) override { return Value::null(); }
+    virtual Value codeGenValue(CodeGenContext& context) override { return Value::null(); }
     virtual std::string getType() override { return "NExpression"; }
 };
 
 class NStatement : public Node {
 public:
     NStatement() {}
-    virtual Value codeGen(CodeGenContext& context) override { return Value::null(); }
+    virtual Value codeGenValue(CodeGenContext& context) override { return Value::null(); }
     virtual std::string getType() override { return "NStatement"; }
 };
 
@@ -47,7 +47,7 @@ class NProgram : public Node {
 public:
     std::vector<std::shared_ptr<NStatement>> statements;
     NProgram() {}
-    virtual Value codeGen(CodeGenContext& context) override;
+    virtual Value codeGenValue(CodeGenContext& context) override;
     virtual std::string getType() override { return "NProgram"; }
 };
 
@@ -55,7 +55,7 @@ class NType {
 public:
     std::string name;
     NType(std::string name) : name(name) {}
-    virtual Type& codeGen(CodeGenContext& context);
+    virtual Type& codeGenValue(CodeGenContext& context);
     virtual std::string getType() { return "NType"; }
 };
 
